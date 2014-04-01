@@ -1,0 +1,8 @@
+*.pyc
+/*.egg
+/*.egg-info
+/.coverage
+/.tox
+/AUTHORS
+/ChangeLog
+/logs

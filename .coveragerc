@@ -1,0 +1,8 @@
+[run]
+omit = ptero_workflow/api/wsgi.py
+branch = True
+parallel = True
+source = ptero_workflow
+
+[report]
+show_missing = True
