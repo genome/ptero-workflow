@@ -47,7 +47,10 @@ class TestCaseMixin(object):
     def test_got_expected_callbacks(self):
         start_link = self._submit_net()
         self._create_start_token(start_link)
+
         self._wait_for_callback_output()
+        self._print_callback_server_output()
+
         self._verify_expected_callbacks()
 
 
@@ -91,18 +94,17 @@ class TestCaseMixin(object):
                 self._callback_stdout = stdout
                 self._callback_stderr = stderr
 
-                self._print_callback_server_output()
             if not done:
                 time.sleep(_POLLING_DELAY)
 
     def _print_callback_server_output(self):
-            sys.stdout.write('--- Begin callback server STDOUT ---\n')
-            sys.stdout.write(self._callback_stdout)
-            sys.stdout.write('--- End callback server STDOUT ---\n')
+        self._write_with_banner('STDOUT', self._callback_stdout)
+        self._write_with_banner('STDERR', self._callback_stderr)
 
-            sys.stdout.write('--- Begin callback server STDERR ---\n')
-            sys.stdout.write(self._callback_stderr)
-            sys.stdout.write('--- End callback server STDERR ---\n')
+    def _write_with_banner(self, label, data):
+        sys.stdout.write('--- Begin callback server %s ---\n' % label)
+        sys.stdout.write(data)
+        sys.stdout.write('--- End callback server %s ---\n' % label)
 
     def _verify_expected_callbacks(self):
         self._verify_callback_order(self.expected_callbacks,
