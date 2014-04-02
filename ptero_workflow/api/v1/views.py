@@ -3,4 +3,5 @@ from flask.ext.restful import Resource
 
 
 class WorkflowListView(Resource):
-    pass
+    def post(self):
+        return '', 201
