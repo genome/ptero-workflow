@@ -13,7 +13,6 @@ class Factory(object):
 
     def purge(self):
         self._initialize()
-        self._redis.flushall()
 
     def _initialize(self):
         # Lazy initialize to be pre-fork friendly.
