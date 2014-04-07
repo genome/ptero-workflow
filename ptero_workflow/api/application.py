@@ -7,7 +7,7 @@ __all__ = ['create_app']
 
 
 def create_app(purge=False):
-    factory = Factory()
+    factory = Factory('sqlite://')
 
     if purge:  # This is used to create a clean test environment.
         factory.purge()
