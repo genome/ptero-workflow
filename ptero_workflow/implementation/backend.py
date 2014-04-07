@@ -16,17 +16,14 @@ class Backend(object):
             raise exceptions.InvalidWorkflow(
                     "'output connector' is a reserved operation name")
 
+        workflow_data['operations']['input connector']  = {'type': 'input'}
+        workflow_data['operations']['output connector'] = {'type': 'output'}
+
         workflow = models.Workflow()
 
         workflow.environment = simplejson.dumps(workflow_data['environment'])
-
         workflow.inputs = simplejson.dumps(workflow_data['inputs'])
 
-        workflow.operations['input connector'] = models.Operation(
-                type='input', name='input connector')
-
-        workflow.operations['output connector'] = models.Operation(
-                type='output', name='output connector')
 
         for name, operation_data in workflow_data['operations'].iteritems():
             workflow.operations[name] = models.Operation(
