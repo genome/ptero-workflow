@@ -1,3 +1,4 @@
+from . import exceptions
 from . import models
 import simplejson
 
@@ -7,6 +8,14 @@ class Backend(object):
         self.session = session
 
     def create_workflow(self, workflow_data):
+        if 'input connector' in workflow_data['operations']:
+            raise exceptions.InvalidWorkflow(
+                    "'input connector' is a reserved operation name")
+
+        if 'output connector' in workflow_data['operations']:
+            raise exceptions.InvalidWorkflow(
+                    "'output connector' is a reserved operation name")
+
         workflow = models.Workflow()
 
         workflow.environment = simplejson.dumps(workflow_data['environment'])
