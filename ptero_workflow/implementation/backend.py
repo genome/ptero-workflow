@@ -24,6 +24,7 @@ class Backend(object):
         workflow.environment = simplejson.dumps(workflow_data['environment'])
         workflow.inputs = simplejson.dumps(workflow_data['inputs'])
 
+        workflow.root_operation = models.Operation(name='root', type='root')
 
         for name, operation_data in workflow_data['operations'].iteritems():
             workflow.operations[name] = models.Operation(

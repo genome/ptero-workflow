@@ -19,9 +19,10 @@ class Workflow(Base):
     environment = Column(Text)
     inputs      = Column(Text)
 
-    operations = relationship('Operation',
-            collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
+    root_operation_id = Column(Integer,
+            ForeignKey('operation.id'), nullable=False)
+
+    root_operation = relationship('Operation', backref='workflow')
 
     @property
     def links(self):
@@ -31,6 +32,10 @@ class Workflow(Base):
             results.extend(op.input_links)
 
         return results
+
+    @property
+    def operations(self):
+        return self.root_operation.children
 
     @property
     def as_dict(self):
@@ -48,13 +53,19 @@ class Workflow(Base):
 class Operation(Base):
     __tablename__ = 'operation'
     __table_args__ = (
-        UniqueConstraint('workflow_id', 'name'),
+        UniqueConstraint('parent_id', 'name'),
     )
 
-    id          = Column(Integer, primary_key=True)
-    workflow_id = Column(Integer, ForeignKey('workflow.id'), nullable=False)
-    name        = Column(Text, nullable=False)
-    type        = Column(Text, nullable=False)
+    id        = Column(Integer, primary_key=True)
+    parent_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
+    name      = Column(Text, nullable=False)
+    type      = Column(Text, nullable=False)
+
+    parent = relationship('Operation')
+
+    children = relationship('Operation',
+            collection_class=attribute_mapped_collection('name'),
+            cascade='all, delete-orphan')
 
     @property
     def as_dict(self):
