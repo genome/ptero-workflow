@@ -13,3 +13,6 @@ class SimpleWorkflowPostInitialStatusTest(BaseAPITest):
 
     def test_should_return_201(self):
         self.assertEqual(201, self.response.status_code)
+
+    def test_should_set_location_header(self):
+        self.assertIsNotNone(self.response.headers.get('Location'))

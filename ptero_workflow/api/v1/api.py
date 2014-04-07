@@ -7,3 +7,6 @@ __all__ = ['api']
 api = Api(default_mediatype='application/json')
 
 api.add_resource(views.WorkflowListView, '/workflows', endpoint='workflow-list')
+
+api.add_resource(views.WorkflowDetailView,
+    '/workflows/<int:workflow_id>', endpoint='workflow-detail')
