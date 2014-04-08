@@ -13,10 +13,10 @@ class Backend(object):
         workflow_data['operations']['input connector']  = {'type': 'input'}
         workflow_data['operations']['output connector'] = {'type': 'output'}
 
-        workflow = models.Workflow()
-
-        workflow.environment = simplejson.dumps(workflow_data['environment'])
-        workflow.inputs = simplejson.dumps(workflow_data['inputs'])
+        workflow = models.Workflow(
+            inputs=simplejson.dumps(workflow_data['inputs']),
+            environment=simplejson.dumps(workflow_data['environment']),
+        )
 
         workflow.root_operation = models.Operation(name='root', type='root')
 
