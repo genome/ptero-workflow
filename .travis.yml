@@ -14,11 +14,10 @@ install: pip install tox
 
 before_script:
     - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
-    - mkdir petri-logs
     - pushd ptero-petri
     - git --no-pager show -s
     - pip install -r requirements.txt
-    - ./devserver --logdir ../petri-logs --port $PTERO_PETRI_PORT &
+    - ./devserver --logdir $(realpath ../petri-logs) --port $PTERO_PETRI_PORT &
     - popd
 
 script:
