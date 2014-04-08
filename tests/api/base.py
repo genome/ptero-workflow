@@ -1,4 +1,4 @@
-import abc
+from ptero_workflow.api import application
 import simplejson
 import os
 import unittest
@@ -7,11 +7,8 @@ __all__ = ['BaseAPITest']
 
 
 class BaseAPITest(unittest.TestCase):
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
     def create_wsgi_app(self):
-        pass  # pragma: no cover
+        return application.create_app(purge=True)
 
     def setUp(self):
         self.app = self.create_wsgi_app()
