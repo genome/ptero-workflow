@@ -16,8 +16,8 @@ def _build_model_operation(operation_data, operation):
         create_operation(name=name, operation_data=child_operation_data,
                 parent=operation)
 
-    create_operation(name='input connector', operation_data={'type': 'input'},
-            parent=operation)
+    create_operation(name='input connector',
+            operation_data={'type': 'input'}, parent=operation)
     create_operation(name='output connector',
             operation_data={'type': 'output'}, parent=operation)
 
