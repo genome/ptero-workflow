@@ -8,13 +8,7 @@ class Backend(object):
         self.session = session
 
     def create_workflow(self, workflow_data):
-        if 'input connector' in workflow_data['operations']:
-            raise exceptions.InvalidWorkflow(
-                    "'input connector' is a reserved operation name")
-
-        if 'output connector' in workflow_data['operations']:
-            raise exceptions.InvalidWorkflow(
-                    "'output connector' is a reserved operation name")
+        self._validate_workflow_data(workflow_data)
 
         workflow_data['operations']['input connector']  = {'type': 'input'}
         workflow_data['operations']['output connector'] = {'type': 'output'}
@@ -49,3 +43,12 @@ class Backend(object):
 
     def cleanup(self):
         pass
+
+    def _validate_workflow_data(self, workflow_data):
+        if 'input connector' in workflow_data['operations']:
+            raise exceptions.InvalidWorkflow(
+                    "'input connector' is a reserved operation name")
+
+        if 'output connector' in workflow_data['operations']:
+            raise exceptions.InvalidWorkflow(
+                    "'output connector' is a reserved operation name")
