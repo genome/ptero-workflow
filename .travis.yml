@@ -16,7 +16,7 @@ before_script:
     - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
     - mkdir petri-logs
     - pushd ptero-petri
-    - git show HEAD
+    - git --no-pager show -s
     - pip install -r requirements.txt
     - ./devserver --logdir ../petri-logs --port $PTERO_PETRI_PORT &
     - popd
