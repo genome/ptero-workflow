@@ -21,7 +21,7 @@ class Backend(object):
             'links': workflow_data['links'],
         }
 
-        workflow.root_operation = _create_operation(root_operation_data)
+        workflow.root_operation = _create_operation('root', root_operation_data)
 
         self.session.add(workflow)
         self.session.commit()
@@ -44,23 +44,44 @@ class Backend(object):
                     "'output connector' is a reserved operation name")
 
 
-def _create_operation(operation_data):
-    operation_data['operations']['input connector']  = {'type': 'input'}
-    operation_data['operations']['output connector'] = {'type': 'output'}
+def _build_dummy_operation(operation_data, operation):
+    pass
 
-    root_operation = models.Operation(name='root', type='root')
 
+def _build_model_operation(operation_data, operation):
     for name, child_operation_data in operation_data['operations'].iteritems():
-        root_operation.children[name] = models.Operation(name=name,
-                **child_operation_data)
+        _create_operation(name=name, operation_data=child_operation_data,
+                parent=operation)
+
+    _create_operation(name='input connector', operation_data={'type': 'input'},
+            parent=operation)
+    _create_operation(name='output connector',
+            operation_data={'type': 'output'}, parent=operation)
 
     for link_data in operation_data['links']:
-        source = root_operation.children[link_data['source']]
-        destination = root_operation.children[link_data['destination']]
+        source = operation.children[link_data['source']]
+        destination = operation.children[link_data['destination']]
         models.Link(
                 source_operation=source,
                 destination_operation=destination,
                 source_property=link_data['source_property'],
                 destination_property=link_data['destination_property'])
 
-    return root_operation
+
+_OPERATION_TYPE_BUILDERS = {
+    'dummy-operation': _build_dummy_operation,
+    'input': _build_dummy_operation,
+    'model': _build_model_operation,
+    'output': _build_dummy_operation,
+}
+def _create_operation(name, operation_data, parent=None):
+    op_type = operation_data['type'].lower()
+
+    operation = models.Operation(name=name, type=op_type)
+    if parent is not None:
+        parent.children[name] = operation
+
+    _OPERATION_TYPE_BUILDERS[op_type](operation_data,
+            operation=operation)
+
+    return operation
