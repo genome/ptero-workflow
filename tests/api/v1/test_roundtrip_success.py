@@ -128,3 +128,51 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
         },
         'environment': {},
     }
+
+
+class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'operations': {
+            'Inner': {
+                'type': 'model',
+                'operations': {
+                    'A': {
+                        'type': 'dummy-operation',
+                    },
+                },
+                'links': [
+                    {
+                        'source': 'input connector',
+                        'destination': 'A',
+                        'source_property': 'inner_input',
+                        'destination_property': 'param',
+                        'parallel_by': True,
+                    }, {
+                        'source': 'A',
+                        'destination': 'output connector',
+                        'source_property': 'result',
+                        'destination_property': 'inner_output',
+                    },
+                ],
+            },
+        },
+
+        'links': [
+            {
+                'source': 'input connector',
+                'destination': 'Inner',
+                'source_property': 'outer_input',
+                'destination_property': 'inner_input',
+                'parallel_by': True,
+            }, {
+                'source': 'Inner',
+                'destination': 'output connector',
+                'source_property': 'inner_output',
+                'destination_property': 'outer_output',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+        'environment': {},
+    }
