@@ -15,24 +15,18 @@ import urlparse
 import yaml
 
 
-_POLLING_DELAY = 0.05
+_POLLING_DELAY = 0.5
 _TERMINATE_WAIT_TIME = 0.05
 
 _MAX_RETRIES = 10
 _RETRY_DELAY = 0.15
 
-def validate_json(text):
-    data = json.loads(text)
 
 class TestCaseMixin(object):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractproperty
     def api_port(self):
-        pass
-
-    @abc.abstractproperty
-    def callback_port(self):
         pass
 
     @abc.abstractproperty
@@ -44,151 +38,78 @@ class TestCaseMixin(object):
         pass
 
 
-    def test_got_expected_callbacks(self):
-        start_link = self._submit_net()
-        self._create_start_token(start_link)
-
-        self._wait_for_callback_output()
-        self._print_callback_server_output()
-
-        self._verify_expected_callbacks()
-
-
     def setUp(self):
         super(TestCaseMixin, self).setUp()
-        self._clear_memoized_data()
-
         self._start_devserver()
-        self._start_callback_receipt_webserver()
 
     def tearDown(self):
         super(TestCaseMixin, self).tearDown()
-        self._stop_callback_receipt_webserver()
         self._stop_devserver()
 
 
-    def _submit_net(self):
-        response = _retry(requests.post, self._submit_url, self._net_body,
+    def test_got_expected_result(self):
+        workflow_url = self._submit_workflow()
+        self._wait_for_completion(workflow_url)
+        self._verify_result(workflow_url)
+
+
+    def _submit_workflow(self):
+        response = _retry(requests.post, self._submit_url, self._workflow_body,
                 headers={'content-type': 'application/json'})
         self.assertEqual(201, response.status_code)
-        json = response.json()
-        return json['entry_links']['start']
+        return response.headers['Location']
+
+    def _wait_for_completion(self, workflow_url):
+        max_loops = int(self._max_wait_time/_POLLING_DELAY)
+        for iteration in xrange(max_loops):
+            if self._workflow_complete(workflow_url):
+                return
+            time.sleep(_POLLING_DELAY)
+
+    def _verify_result(self, workflow_url):
+        actual_result = self._get_actual_result(workflow_url)
+        expected_result = self._expected_result
+
+        self.assertEqual(expected_result, actual_result)
+
 
     @property
     def _submit_url(self):
-        return 'http://localhost:%d/v1/nets' % self.api_port
-
-
-    def _create_start_token(self, start_link):
-        response = _retry(requests.post, start_link,
-                headers={'content-type': 'application/json'})
-        self.assertEqual(201, response.status_code)
-
-    def _wait_for_callback_output(self):
-        done = False
-        while not done:
-            stuff = self._callback_webserver.poll()
-            if stuff is not None:
-                done = True
-                stdout, stderr = self._callback_webserver.communicate()
-                self._callback_stdout = stdout
-                self._callback_stderr = stderr
-
-            if not done:
-                time.sleep(_POLLING_DELAY)
-
-    def _print_callback_server_output(self):
-        self._write_with_banner('STDOUT', self._callback_stdout)
-        self._write_with_banner('STDERR', self._callback_stderr)
-
-    def _write_with_banner(self, label, data):
-        sys.stdout.write('--- Begin callback server %s ---\n' % label)
-        sys.stdout.write(data)
-        sys.stdout.write('--- End callback server %s ---\n' % label)
-
-    def _verify_expected_callbacks(self):
-        self._verify_callback_order(self.expected_callbacks,
-                self.actual_callbacks)
-        self._verify_callback_counts(self.expected_callbacks,
-                self.actual_callbacks)
-
-    def _verify_callback_order(self, expected_callbacks, actual_callbacks):
-        seen_callbacks = set()
-
-        for callback in actual_callbacks:
-            for prereq_callback in _get_prereq_callbacks(expected_callbacks,
-                    callback):
-                if prereq_callback not in seen_callbacks:
-                    self.fail("Have not yet seen callback '%s' "
-                            "depended on by callback '%s'."
-                            "  Seen callbacks:  %s" % (
-                                prereq_callback,
-                                callback,
-                                seen_callbacks
-                    ))
-            seen_callbacks.add(callback)
-
-    def _verify_callback_counts(self, expected_callbacks, actual_callbacks):
-        actual_callback_counts = _get_actual_callback_counts(actual_callbacks)
-        expected_callback_counts = _get_expected_callback_counts(
-                expected_callbacks)
-        self.assertEqual(expected_callback_counts, actual_callback_counts)
+        return 'http://localhost:%d/v1/workflows' % self.api_port
 
     @property
-    def actual_callbacks(self):
-        if self._actual_callbacks is None:
-            self._actual_callbacks = self._callback_stdout.splitlines()
-        return self._actual_callbacks
+    def _workflow_body(self):
+        with open(self._workflow_file_path) as f:
+            return f.read()
 
     @property
-    def _net_body(self):
-        body = None
-        with open(self._net_file_path) as f:
-            template = jinja2.Template(f.read())
-            body = template.render(callback_url=self._callback_url)
-            validate_json(body)
-        return body
-
-    def _callback_url(self, callback_name, request_name=None, **request_data):
-        if request_name is not None:
-            request_data['request_name'] = request_name
-
-        return '"%s"' % self._assemble_callback_url(callback_name, request_data)
-
-    def _assemble_callback_url(self, callback_name, request_data):
-        return urlparse.urlunparse((
-            'http',
-            'localhost:%d' % self.callback_port,
-            '/' + callback_name,
-            '',
-            urllib.urlencode(request_data),
-            '',
-        ))
+    def _workflow_file_path(self):
+        return os.path.join(self.directory, 'submit.json')
 
     @property
-    def _net_file_path(self):
-        return os.path.join(self.directory, 'net.json')
+    def _expected_result(self):
+        with open(self._expected_result_path) as f:
+            return simplejson.load(f)
 
     @property
-    def expected_callbacks(self):
-        if not self._expected_callbacks:
-            with open(self._expected_callbacks_path) as f:
-                self._expected_callbacks = yaml.load(f)
-        return self._expected_callbacks
+    def _expected_result_path(self):
+        return os.path.join(self.directory, 'result.json')
 
-    @property
-    def _expected_callbacks_path(self):
-        return os.path.join(self.directory, 'expected_callbacks.yaml')
+    def _workflow_complete(self, url):
+        data = self._get_workflow_data(url)
+        if data.get('status') in ['success', 'failure', 'error']:
+            return True
+        else:
+            return False
 
-    @property
-    def _total_expected_callbacks(self):
-        return sum(_get_expected_callback_counts(
-            self.expected_callbacks).itervalues())
+    def _get_workflow_data(self, url):
+        response = _retry(requests.get, url)
+        return response.json()
 
-
-    def _clear_memoized_data(self):
-        self._actual_callbacks = None
-        self._expected_callbacks = None
+    def _get_actual_result(self, workflow_url):
+        data = self._get_workflow_data(workflow_url)
+        response = _retry(requests.get, data['reports']['some-named-report'])
+        return response.json()
 
 
     def _start_devserver(self):
@@ -208,24 +129,8 @@ class TestCaseMixin(object):
     def _wait_for_devserver(self):
         time.sleep(5)
 
-    def _start_callback_receipt_webserver(self):
-        self._callback_webserver = subprocess.Popen(
-                [self._callback_webserver_path,
-                    '--expected-callbacks', str(self._total_expected_callbacks),
-                    '--stop-after', str(self._max_wait_time),
-                    '--port', str(self.callback_port),
-                    ],
-                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-    def _stop_callback_receipt_webserver(self):
-        _stop_subprocess(self._callback_webserver)
-
     def _stop_devserver(self):
         _stop_subprocess(self._devserver)
-
-    @property
-    def _callback_webserver_path(self):
-        return os.path.join(os.path.dirname(__file__), 'callback_webserver.py')
 
     @property
     def _devserver_path(self):
@@ -255,22 +160,6 @@ def _stop_subprocess(process):
         if e.errno != errno.ESRCH:  # ESRCH: no such pid
             raise
 
-
-def _get_prereq_callbacks(expected_callbacks, callback):
-    expected_callback_data = expected_callbacks.get(callback, {})
-    return expected_callback_data.get('depends', [])
-
-
-def _get_actual_callback_counts(actual_callbacks):
-    counts = collections.defaultdict(int)
-    for cb in actual_callbacks:
-        counts[cb] += 1
-    return dict(counts)
-
-
-def _get_expected_callback_counts(expected_callbacks):
-    return {callback: data['count']
-            for callback, data in expected_callbacks.iteritems()}
 
 def _retry(func, *args, **kwargs):
     for attempt in xrange(_MAX_RETRIES):
