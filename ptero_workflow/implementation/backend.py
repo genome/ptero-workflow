@@ -8,8 +8,6 @@ class Backend(object):
         self.session = session
 
     def create_workflow(self, workflow_data):
-        self._validate_workflow_data(workflow_data)
-
         workflow = models.Workflow(
             inputs=simplejson.dumps(workflow_data['inputs']),
             environment=simplejson.dumps(workflow_data['environment']),
@@ -34,21 +32,14 @@ class Backend(object):
     def cleanup(self):
         pass
 
-    def _validate_workflow_data(self, workflow_data):
-        if 'input connector' in workflow_data['operations']:
-            raise exceptions.InvalidWorkflow(
-                    "'input connector' is a reserved operation name")
-
-        if 'output connector' in workflow_data['operations']:
-            raise exceptions.InvalidWorkflow(
-                    "'output connector' is a reserved operation name")
-
 
 def _build_dummy_operation(operation_data, operation):
     pass
 
 
 def _build_model_operation(operation_data, operation):
+    _validate_model_operation_data(operation_data)
+
     for name, child_operation_data in operation_data['operations'].iteritems():
         _create_operation(name=name, operation_data=child_operation_data,
                 parent=operation)
@@ -66,6 +57,16 @@ def _build_model_operation(operation_data, operation):
                 destination_operation=destination,
                 source_property=link_data['source_property'],
                 destination_property=link_data['destination_property'])
+
+
+def _validate_model_operation_data(operation_data):
+    if 'input connector' in operation_data['operations']:
+        raise exceptions.InvalidWorkflow(
+                "'input connector' is a reserved operation name")
+
+    if 'output connector' in operation_data['operations']:
+        raise exceptions.InvalidWorkflow(
+                "'output connector' is a reserved operation name")
 
 
 _OPERATION_TYPE_BUILDERS = {
