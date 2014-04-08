@@ -78,3 +78,99 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
         },
         'environment': {},
     }
+
+class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+    post_data = {
+        'operations': {
+            'Inner': {
+                'type': 'model',
+                'operations': {
+                    'A': {
+                        'type': 'dummy-operation',
+                    },
+                    'input connector': {
+                        'type': 'dummy-operation',
+                    },
+                },
+                'links': [
+                    {
+                        'source': 'input connector',
+                        'destination': 'A',
+                        'source_property': 'inner_input',
+                        'destination_property': 'param',
+                    }, {
+                        'source': 'A',
+                        'destination': 'output connector',
+                        'source_property': 'result',
+                        'destination_property': 'inner_output',
+                    },
+                ],
+            },
+        },
+
+        'links': [
+            {
+                'source': 'input connector',
+                'destination': 'Inner',
+                'source_property': 'outer_input',
+                'destination_property': 'inner_input',
+            }, {
+                'source': 'Inner',
+                'destination': 'output connector',
+                'source_property': 'inner_output',
+                'destination_property': 'outer_output',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+        'environment': {},
+    }
+
+class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+    post_data = {
+        'operations': {
+            'Inner': {
+                'type': 'model',
+                'operations': {
+                    'A': {
+                        'type': 'dummy-operation',
+                    },
+                    'output connector': {
+                        'type': 'dummy-operation',
+                    },
+                },
+                'links': [
+                    {
+                        'source': 'input connector',
+                        'destination': 'A',
+                        'source_property': 'inner_input',
+                        'destination_property': 'param',
+                    }, {
+                        'source': 'A',
+                        'destination': 'output connector',
+                        'source_property': 'result',
+                        'destination_property': 'inner_output',
+                    },
+                ],
+            },
+        },
+
+        'links': [
+            {
+                'source': 'input connector',
+                'destination': 'Inner',
+                'source_property': 'outer_input',
+                'destination_property': 'inner_input',
+            }, {
+                'source': 'Inner',
+                'destination': 'output connector',
+                'source_property': 'inner_output',
+                'destination_property': 'outer_output',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+        'environment': {},
+    }
