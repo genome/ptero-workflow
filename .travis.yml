@@ -17,7 +17,8 @@ before_script:
     - pushd ptero-petri
     - git --no-pager show -s
     - pip install -r requirements.txt
-    - ./devserver --logdir $(readlink -f ../petri-logs) --port $PTERO_PETRI_PORT &
+    - python setup.py install
+    - ./devserver --logdir ../petri-logs --port $PTERO_PETRI_PORT &
     - popd
 
 script:
