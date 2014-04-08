@@ -17,7 +17,7 @@ before_script:
     - pushd ptero-petri
     - git --no-pager show -s
     - pip install -r requirements.txt
-    - ./devserver --logdir $(realpath ../petri-logs) --port $PTERO_PETRI_PORT &
+    - ./devserver --logdir $(readlink -f ../petri-logs) --port $PTERO_PETRI_PORT &
     - popd
 
 script:
