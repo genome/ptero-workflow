@@ -1,5 +1,5 @@
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy import ForeignKey, Integer, Text
+from sqlalchemy import Boolean, ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 import simplejson
@@ -88,6 +88,8 @@ class Link(Base):
     source_property      = Column(Text, nullable=False)
     destination_property = Column(Text, nullable=False)
 
+    parallel_by = Column(Boolean, nullable=False, default=False)
+
     source_operation = relationship('Operation',
             backref=backref('output_links'),
             foreign_keys=[source_id])
@@ -98,9 +100,14 @@ class Link(Base):
 
     @property
     def as_dict(self):
-        return {
+        data = {
             'source': self.source_operation.name,
             'destination': self.destination_operation.name,
             'source_property': self.source_property,
             'destination_property': self.destination_property,
         }
+
+        if self.parallel_by:
+            data['parallel_by'] = True
+
+        return data

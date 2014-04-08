@@ -25,10 +25,12 @@ def _build_model_operation(operation_data, operation):
         source = operation.children[link_data['source']]
         destination = operation.children[link_data['destination']]
         models.Link(
-                source_operation=source,
-                destination_operation=destination,
-                source_property=link_data['source_property'],
-                destination_property=link_data['destination_property'])
+            destination_operation=destination,
+            destination_property=link_data['destination_property'],
+            parallel_by=link_data.get('parallel_by', False),
+            source_operation=source,
+            source_property=link_data['source_property'],
+        )
 
 
 def _validate_model_operation_data(operation_data):

@@ -100,3 +100,31 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
         },
         'environment': {},
     }
+
+
+class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'operations': {
+            'A': {
+                'type': 'dummy-operation',
+            },
+        },
+        'links': [
+            {
+                'source': 'input connector',
+                'destination': 'A',
+                'source_property': 'in_a',
+                'destination_property': 'param',
+                'parallel_by': True,
+            }, {
+                'source': 'A',
+                'destination': 'output connector',
+                'source_property': 'result',
+                'destination_property': 'out_a',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+        'environment': {},
+    }
