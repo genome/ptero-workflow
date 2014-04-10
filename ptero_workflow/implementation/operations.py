@@ -5,10 +5,6 @@ from . import models
 __all__ = ['create_operation']
 
 
-def _build_dummy_operation(operation_data, operation):
-    pass
-
-
 def _build_model_operation(operation_data, operation):
     _validate_model_operation_data(operation_data)
 
@@ -43,12 +39,6 @@ def _validate_model_operation_data(operation_data):
                 "'output connector' is a reserved operation name")
 
 
-_OPERATION_TYPE_BUILDERS = {
-    'dummy-operation': _build_dummy_operation,
-    'input': _build_dummy_operation,
-    'model': _build_model_operation,
-    'output': _build_dummy_operation,
-}
 def create_operation(name, operation_data, parent=None):
     op_type = operation_data['type'].lower()
 
@@ -56,7 +46,7 @@ def create_operation(name, operation_data, parent=None):
     if parent is not None:
         parent.children[name] = operation
 
-    _OPERATION_TYPE_BUILDERS[op_type](operation_data,
-            operation=operation)
+    if op_type == 'model':
+        _build_model_operation(operation_data, operation=operation)
 
     return operation
