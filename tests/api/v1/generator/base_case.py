@@ -149,6 +149,14 @@ class TestCaseMixin(object):
     def _max_wait_time(self):
         return 20
 
+    @property
+    def _db_string(self):
+        return 'sqlite://%s' % self._db_path
+
+    @property
+    def _db_path(self):
+        return os.path.join(self._logdir, 'db.sqlite')
+
 
 def _stop_subprocess(process):
     try:

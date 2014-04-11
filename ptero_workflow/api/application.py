@@ -1,13 +1,14 @@
 from . import v1
 from ..implementation.factory import Factory
 import flask
+import os
 
 
 __all__ = ['create_app']
 
 
 def create_app(purge=False):
-    factory = Factory('sqlite://')
+    factory = Factory(os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'))
 
     if purge:  # This is used to create a clean test environment.
         factory.purge()
