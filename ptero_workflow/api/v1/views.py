@@ -17,3 +17,11 @@ class WorkflowListView(Resource):
 class WorkflowDetailView(Resource):
     def get(self, workflow_id):
         return g.backend.get_workflow(workflow_id), 200
+
+
+class OperationEventCallback(Resource):
+    def put(self, operation_id, event_type):
+        request_data = request.get_json()
+        g.backend.event(operation_id, event_type,
+                color=request_data['token_color'])
+        return ''

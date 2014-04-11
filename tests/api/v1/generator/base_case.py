@@ -125,6 +125,8 @@ class TestCaseMixin(object):
 
         env = os.environ.data
         env['PTERO_WORKFLOW_DB_STRING'] = self._db_string
+        env['PTERO_WORKFLOW_HOST'] = 'localhost'
+        env['PTERO_WORKFLOW_PORT'] = str(self.api_port)
         self._devserver = subprocess.Popen(cmd, close_fds=True, env=env)
         self._wait_for_devserver()
 

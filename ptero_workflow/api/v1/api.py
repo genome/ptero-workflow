@@ -11,3 +11,7 @@ api.add_resource(views.WorkflowListView, '/workflows', endpoint='workflow-list')
 
 api.add_resource(views.WorkflowDetailView,
     '/workflows/<int:workflow_id>', endpoint='workflow-detail')
+
+api.add_resource(views.OperationEventCallback,
+    '/callbacks/operations/<int:operation_id>/events/<string:event_type>',
+    endpoint='event-callback')
