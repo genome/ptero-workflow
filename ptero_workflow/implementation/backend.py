@@ -18,7 +18,7 @@ class Backend(object):
         workflow.net_key = response_data['net_key']
         self.session.commit()
 
-        self._start_net(response_data)
+        self._start_net(response_data['entry_links'][workflow.start_place_name])
 
         return workflow.id
 
@@ -47,8 +47,7 @@ class Backend(object):
                 headers={'Content-Type': 'application/json'})
         return response.json()
 
-    def _start_net(self, submit_response_data):
-        start_url = submit_response_data['entry_links'].values()[0]
+    def _start_net(self, start_url):
         response = requests.post(start_url,
                 headers={'Content-Type': 'application/json'})
         return response.json()
