@@ -1,13 +1,7 @@
 {
     "operations": {
         "A": {
-            "type": "dummy-operation",
-            "input_names": [
-                "param"
-            ],
-            "output_names": [
-                "result"
-            ]
+            "type": "pass-through"
         }
     },
 
@@ -21,7 +15,7 @@
         {
             "source": "A",
             "destination": "output connector",
-            "source_property": "result",
+            "source_property": "param",
             "destination_property": "out_a"
         }
     ],
