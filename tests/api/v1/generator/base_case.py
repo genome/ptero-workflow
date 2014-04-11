@@ -123,7 +123,9 @@ class TestCaseMixin(object):
         if int(os.environ.get('PTERO_TEST_WEBSERVER_DEBUG', 0)) == 1:
             cmd.append('--debug')
 
-        self._devserver = subprocess.Popen(cmd, close_fds=True)
+        env = os.environ.data
+        env['PTERO_WORKFLOW_DB_STRING'] = self._db_string
+        self._devserver = subprocess.Popen(cmd, close_fds=True, env=env)
         self._wait_for_devserver()
 
     def _wait_for_devserver(self):
@@ -151,11 +153,11 @@ class TestCaseMixin(object):
 
     @property
     def _db_string(self):
-        return 'sqlite://%s' % self._db_path
+        return 'sqlite:///%s' % self._db_path
 
     @property
     def _db_path(self):
-        return os.path.join(self._logdir, 'db.sqlite')
+        return os.path.abspath(os.path.join(self._logdir, 'db.sqlite'))
 
 
 def _stop_subprocess(process):
