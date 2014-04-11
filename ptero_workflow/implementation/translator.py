@@ -1,7 +1,7 @@
 def build_petri_net(workflow):
     data = {
         'entry_places': [workflow.start_place_name],
-        'transitions': [],
+        'transitions': workflow.root_operation.get_petri_transitions(),
     }
 
     for operation in workflow.root_operation.children.itervalues():

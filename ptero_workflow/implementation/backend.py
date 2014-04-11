@@ -1,6 +1,7 @@
 from . import models
 from . import operations
 from . import translator
+import os
 import simplejson
 import requests
 
@@ -42,10 +43,17 @@ class Backend(object):
         return workflow
 
     def _submit_net(self, petri_data):
-        response = requests.post('http://localhost:12345/v1/nets',
+        response = requests.post(self._petri_submit_url,
                 data=simplejson.dumps(petri_data),
                 headers={'Content-Type': 'application/json'})
         return response.json()
+
+    @property
+    def _petri_submit_url(self):
+        return 'http://%s:%d/v1/nets' % (
+            os.environ.get('PTERO_PETRI_HOST', 'localhost'),
+            int(os.environ.get('PTERO_PETRI_PORT', 80)),
+        )
 
     def _start_net(self, start_url):
         response = requests.post(start_url,
@@ -55,8 +63,14 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, operation_id, event_type, color=None):
-        pass
+    def event(self, operation_id, event_type, color=None, response_links=None):
+        if event_type == 'execute':
+            if 'success' in response_links:
+                response = requests.put(response_links['success'])
+        elif event_type == 'done':
+            operation = self.session.query(models.Operation).get(operation_id)
+            operation.status = 'success'
+            self.session.commit()
 
     def cleanup(self):
         pass

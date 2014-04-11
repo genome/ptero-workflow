@@ -51,12 +51,15 @@ class Workflow(Base):
         ops = {name: op.as_dict for name,op in self.operations.iteritems()
                 if name not in ['input connector', 'output connector']}
         links = [l.as_dict for l in self.links]
-        return {
+        data = {
             'operations': ops,
             'links': links,
             'inputs': simplejson.loads(self.inputs),
             'environment': simplejson.loads(self.environment),
         }
+        if self.root_operation.status is not None:
+            data['status'] = self.root_operation.status
+        return data
 
 
 class Operation(Base):
@@ -69,6 +72,7 @@ class Operation(Base):
     parent_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
+    status = Column(Text)
 
     parent = relationship('Operation')
 
@@ -109,6 +113,20 @@ class Operation(Base):
     def get_petri_transitions(self):
         if self.type in ['input', 'output']:
             return []
+
+        elif self.type == 'model':
+            result = []
+            result.append({
+                'inputs': [o.success_place_name for o in self.real_child_ops],
+                'outputs': [self.success_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.notify_callback_url('done'),
+                },
+            })
+
+            return result
+
         else:
             result = []
 
@@ -124,7 +142,7 @@ class Operation(Base):
                 'outputs': [self.response_wait_place_name],
                 'action': {
                     'type': 'notify',
-                    'url': self.notify_callback_url('begin'),
+                    'url': self.notify_callback_url('execute'),
                     'response_places': {
                         'success': self.response_callback_place_name,
                     },
@@ -135,6 +153,7 @@ class Operation(Base):
             result.append({
                 'inputs': [self.response_wait_place_name,
                     self.response_callback_place_name],
+                'outputs': [self.success_place_name],
             })
 
             return result
@@ -145,6 +164,12 @@ class Operation(Base):
         s = object_session(self)
         return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
 
+    @property
+    def real_child_ops(self):
+        data = dict(self.children)
+        del data['input connector']
+        del data['output connector']
+        return data.values()
 
 class Link(Base):
     __tablename__ = 'link'
