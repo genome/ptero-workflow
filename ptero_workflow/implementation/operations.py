@@ -42,7 +42,7 @@ def _validate_model_operation_data(operation_data):
 def create_operation(name, operation_data, parent=None):
     op_type = operation_data['type'].lower()
 
-    operation = models.Operation(name=name, type=op_type)
+    operation = models.Operation.from_dict(name=name, type=op_type)
     if parent is not None:
         parent.children[name] = operation
 

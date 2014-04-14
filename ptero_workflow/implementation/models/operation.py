@@ -1,6 +1,7 @@
 from .base import Base
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
+from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
@@ -32,11 +33,25 @@ class Operation(Base):
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
+    __mapper_args__ = {
+        'polymorphic_on': 'type',
+    }
+
+    @classmethod
+    def from_dict(cls, type, **kwargs):
+        mapper = inspect(cls)
+        subclass = mapper.polymorphic_map[type].class_
+        return subclass(**kwargs)
+
     @property
     def as_dict(self):
-        return {
-            'type': self.type,
-        }
+        result = self._as_dict_data
+        result['type'] = self.type
+        return result
+
+    @property
+    def _as_dict_data(self):
+        return {}
 
     @property
     def success_place_name(self):
@@ -122,3 +137,43 @@ class Operation(Base):
         del data['input connector']
         del data['output connector']
         return data.values()
+
+
+class InputConnectorOperation(Operation):
+    __tablename__ = 'operation_input_connector'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'input connector',
+    }
+
+
+class OutputConnectorOperation(Operation):
+    __tablename__ = 'operation_output_connector'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'output connector',
+    }
+
+
+class ModelOperation(Operation):
+    __tablename__ = 'operation_model'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'model',
+    }
+
+
+class CommandOperation(Operation):
+    __tablename__ = 'operation_command'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'command',
+    }
