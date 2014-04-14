@@ -187,11 +187,11 @@ class CommandOperation(Operation):
     }
 
 
-class DummyOperation(Operation):
-    __tablename__ = 'operation_dummy'
+class PassThroughOperation(Operation):
+    __tablename__ = 'operation_pass_through'
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'dummy-operation',
+        'polymorphic_identity': 'pass-through',
     }

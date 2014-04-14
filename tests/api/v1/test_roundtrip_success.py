@@ -33,7 +33,7 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'dummy-operation',
+                'type': 'pass-through',
             },
         },
         'links': [
@@ -63,7 +63,7 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
                 'type': 'model',
                 'operations': {
                     'A': {
-                        'type': 'dummy-operation',
+                        'type': 'pass-through',
                     },
                 },
                 'links': [
@@ -106,7 +106,7 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'dummy-operation',
+                'type': 'pass-through',
             },
         },
         'links': [
@@ -137,7 +137,7 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
                 'type': 'model',
                 'operations': {
                     'A': {
-                        'type': 'dummy-operation',
+                        'type': 'pass-through',
                     },
                 },
                 'links': [

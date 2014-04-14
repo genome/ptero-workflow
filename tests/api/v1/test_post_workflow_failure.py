@@ -24,10 +24,10 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'input connector': {
-                'type': 'dummy-operation',
+                'type': 'pass-through',
             },
             'A': {
-                'type': 'dummy-operation',
+                'type': 'pass-through',
             },
         },
         'links': [
@@ -54,10 +54,10 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'dummy-operation',
+                'type': 'pass-through',
             },
             'output connector': {
-                'type': 'dummy-operation',
+                'type': 'pass-through',
             },
         },
         'links': [
@@ -86,10 +86,10 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
                 'type': 'model',
                 'operations': {
                     'A': {
-                        'type': 'dummy-operation',
+                        'type': 'pass-through',
                     },
                     'input connector': {
-                        'type': 'dummy-operation',
+                        'type': 'pass-through',
                     },
                 },
                 'links': [
@@ -134,10 +134,10 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
                 'type': 'model',
                 'operations': {
                     'A': {
-                        'type': 'dummy-operation',
+                        'type': 'pass-through',
                     },
                     'output connector': {
-                        'type': 'dummy-operation',
+                        'type': 'pass-through',
                     },
                 },
                 'links': [
