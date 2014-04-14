@@ -48,10 +48,11 @@ class Operation(Base):
         return mapper.polymorphic_map[type].class_
 
     @property
-    def as_dict(self):
+    def to_dict(self):
         result = self._as_dict_data
         result['type'] = self.type
         return result
+    as_dict = to_dict
 
     @property
     def _as_dict_data(self):
