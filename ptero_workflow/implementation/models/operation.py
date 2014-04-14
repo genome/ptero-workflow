@@ -39,9 +39,13 @@ class Operation(Base):
 
     @classmethod
     def from_dict(cls, type, **kwargs):
-        mapper = inspect(cls)
-        subclass = mapper.polymorphic_map[type].class_
+        subclass = cls.subclass_for(type)
         return subclass(**kwargs)
+
+    @classmethod
+    def subclass_for(cls, type):
+        mapper = inspect(cls)
+        return mapper.polymorphic_map[type].class_
 
     @property
     def as_dict(self):
