@@ -133,9 +133,11 @@ class Operation(Base):
     @property
     def input_ops(self):
         source_ids = set([l.source_id for l in self.input_links])
-        s = object_session(self)
-        # XXX sqlalchemy gives a warning about this query being slow.
-        return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
+        if source_ids:
+            s = object_session(self)
+            return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
+        else:
+            return []
 
     @property
     def real_child_ops(self):
