@@ -182,3 +182,13 @@ class CommandOperation(Operation):
     __mapper_args__ = {
         'polymorphic_identity': 'command',
     }
+
+
+class DummyOperation(Operation):
+    __tablename__ = 'operation_dummy'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'dummy-operation',
+    }
