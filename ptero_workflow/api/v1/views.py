@@ -24,5 +24,6 @@ class OperationEventCallback(Resource):
         request_data = request.get_json()
         g.backend.event(operation_id, event_type,
                 color=request_data['token_color'],
+                color_group=request_data['color_group'],
                 response_links=request_data.get('response_links'))
         return ''

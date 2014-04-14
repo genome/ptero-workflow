@@ -63,7 +63,8 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, operation_id, event_type, color=None, response_links=None):
+    def event(self, operation_id, event_type, color=None, color_group=None,
+            response_links=None):
         if event_type == 'execute':
             if 'success' in response_links:
                 response = requests.put(response_links['success'])
