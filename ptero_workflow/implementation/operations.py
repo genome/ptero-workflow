@@ -13,9 +13,9 @@ def _build_model_operation(operation_data, operation):
                 parent=operation)
 
     create_operation(name='input connector',
-            operation_data={'type': 'input'}, parent=operation)
+            operation_data={'type': 'input connector'}, parent=operation)
     create_operation(name='output connector',
-            operation_data={'type': 'output'}, parent=operation)
+            operation_data={'type': 'output connector'}, parent=operation)
 
     for link_data in operation_data['links']:
         source = operation.children[link_data['source']]
