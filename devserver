@@ -2,11 +2,15 @@
 
 import argparse
 import errno
+import logging
 import os
 import psutil
 import redis
 import signal
 import subprocess
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 def parse_args():
