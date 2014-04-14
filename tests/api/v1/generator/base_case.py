@@ -123,12 +123,25 @@ class TestCaseMixin(object):
         if int(os.environ.get('PTERO_TEST_WEBSERVER_DEBUG', 0)) == 1:
             cmd.append('--debug')
 
+        env = self._setup_database_environment()
+        self._devserver = subprocess.Popen(cmd, close_fds=True, env=env)
+        self._wait_for_devserver()
+
+    def _setup_database_environment(self):
+        self._remove_existing_database_file()
+
         env = os.environ.data
         env['PTERO_WORKFLOW_DB_STRING'] = self._db_string
         env['PTERO_WORKFLOW_HOST'] = 'localhost'
         env['PTERO_WORKFLOW_PORT'] = str(self.api_port)
-        self._devserver = subprocess.Popen(cmd, close_fds=True, env=env)
-        self._wait_for_devserver()
+        return env
+
+    def _remove_existing_database_file(self):
+        try:
+            os.remove(self._db_path)
+        except OSError as e:
+            if e.errno != errno.ENOENT:
+                raise
 
     def _wait_for_devserver(self):
         time.sleep(5)
