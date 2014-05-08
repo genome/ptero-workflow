@@ -1,7 +1,25 @@
 language: python
 python: "2.7"
 
+services:
+    - rabbitmq
+    - redis
+
+env:
+    global:
+        - PTERO_PETRI_HOST=localhost
+        - PTERO_PETRI_PORT=9001
+
 install: pip install tox
+
+before_script:
+    - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
+    - pushd ptero-petri
+    - git --no-pager show -s
+    - pip install -r requirements.txt
+    - python setup.py install
+    - ./devserver --logdir ../petri-logs --port $PTERO_PETRI_PORT &
+    - popd
 
 script:
     - tox

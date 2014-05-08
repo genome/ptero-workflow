@@ -5,10 +5,6 @@ from . import models
 __all__ = ['create_operation']
 
 
-def _build_dummy_operation(operation_data, operation):
-    pass
-
-
 def _build_model_operation(operation_data, operation):
     _validate_model_operation_data(operation_data)
 
@@ -17,9 +13,9 @@ def _build_model_operation(operation_data, operation):
                 parent=operation)
 
     create_operation(name='input connector',
-            operation_data={'type': 'input'}, parent=operation)
+            operation_data={'type': 'input connector'}, parent=operation)
     create_operation(name='output connector',
-            operation_data={'type': 'output'}, parent=operation)
+            operation_data={'type': 'output connector'}, parent=operation)
 
     for link_data in operation_data['links']:
         source = operation.children[link_data['source']]
@@ -43,20 +39,14 @@ def _validate_model_operation_data(operation_data):
                 "'output connector' is a reserved operation name")
 
 
-_OPERATION_TYPE_BUILDERS = {
-    'dummy-operation': _build_dummy_operation,
-    'input': _build_dummy_operation,
-    'model': _build_model_operation,
-    'output': _build_dummy_operation,
-}
 def create_operation(name, operation_data, parent=None):
     op_type = operation_data['type'].lower()
 
-    operation = models.Operation(name=name, type=op_type)
+    operation = models.Operation.from_dict(name=name, type=op_type)
     if parent is not None:
         parent.children[name] = operation
 
-    _OPERATION_TYPE_BUILDERS[op_type](operation_data,
-            operation=operation)
+    if op_type == 'model':
+        _build_model_operation(operation_data, operation=operation)
 
     return operation
