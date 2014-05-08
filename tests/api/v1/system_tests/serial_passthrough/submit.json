@@ -1,0 +1,46 @@
+{
+    "operations": {
+        "A": {
+            "type": "pass-through"
+        },
+        "B": {
+            "type": "pass-through"
+        },
+        "C": {
+            "type": "pass-through"
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_val",
+            "destination_property": "param"
+        },
+        {
+            "source": "A",
+            "destination": "B",
+            "source_property": "param",
+            "destination_property": "param"
+        },
+        {
+            "source": "B",
+            "destination": "C",
+            "source_property": "param",
+            "destination_property": "param"
+        },
+        {
+            "source": "C",
+            "destination": "output connector",
+            "source_property": "param",
+            "destination_property": "out_val"
+        }
+    ],
+
+    "inputs": {
+        "in_val": "walruses"
+    },
+
+    "environment": {}
+}
