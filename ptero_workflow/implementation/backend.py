@@ -25,7 +25,6 @@ class Backend(object):
 
     def _save_workflow(self, workflow_data):
         workflow = models.Workflow(
-            inputs=simplejson.dumps(workflow_data['inputs']),
             environment=simplejson.dumps(workflow_data['environment']),
         )
 
@@ -36,6 +35,8 @@ class Backend(object):
         }
 
         workflow.root_operation = operations.create_operation('root', root_data)
+        workflow.root_operation.children['input connector'].set_outputs(
+                workflow_data['inputs'])
 
         self.session.add(workflow)
         self.session.commit()
@@ -65,9 +66,13 @@ class Backend(object):
 
     def event(self, operation_id, event_type, color=None, color_group=None,
             response_links=None):
+        operation = self.session.query(models.Operation).get(operation_id)
         if event_type == 'execute':
             if 'success' in response_links:
+                operation.execute(operation.get_inputs())
+                self.session.commit()
                 response = requests.put(response_links['success'])
+
         elif event_type == 'done':
             operation = self.session.query(models.Operation).get(operation_id)
             operation.status = 'success'

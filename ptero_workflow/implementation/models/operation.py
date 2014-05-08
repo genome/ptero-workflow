@@ -1,4 +1,5 @@
 from .base import Base
+from .output import Output
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -7,6 +8,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import logging
 import os
+import simplejson
 
 
 __all__ = ['Operation']
@@ -146,6 +148,33 @@ class Operation(Base):
         del data['output connector']
         return data.values()
 
+    def get_output(self, name):
+        return self.get_outputs().get(name)
+
+    def get_outputs(self):
+        return {o.name: o.value for o in self.outputs}
+
+    def set_outputs(self, outputs):
+        s = object_session(self)
+        for name, value in outputs.iteritems():
+            o = Output(name=name, operation=self,
+                    serialized_value=simplejson.dumps(value))
+
+    def get_inputs(self):
+        result = {}
+        for link in self.input_links:
+            result[link.destination_property] =\
+                    link.source_operation.get_output(link.source_property)
+
+        return result
+
+    def get_input(self, name):
+        return self.get_inputs()[name]
+
+
+    def execute(self, inputs):
+        pass
+
 
 class InputConnectorOperation(Operation):
     __tablename__ = 'operation_input_connector'
@@ -166,6 +195,12 @@ class OutputConnectorOperation(Operation):
         'polymorphic_identity': 'output connector',
     }
 
+    def get_output(self, name):
+        return self.get_input(name)
+
+    def get_outputs(self):
+        return self.get_inputs()
+
 
 class ModelOperation(Operation):
     __tablename__ = 'operation_model'
@@ -175,6 +210,18 @@ class ModelOperation(Operation):
     __mapper_args__ = {
         'polymorphic_identity': 'model',
     }
+
+    def get_inputs(self):
+        return self.children['input connector'].get_inputs()
+
+    def get_input(self, name):
+        return self.children['input connector'].get_input(name)
+
+    def get_output(self, name):
+        return self.children['output connector'].get_output(name)
+
+    def get_outputs(self):
+        return self.children['output connector'].get_outputs()
 
 
 class CommandOperation(Operation):
@@ -195,3 +242,6 @@ class PassThroughOperation(Operation):
     __mapper_args__ = {
         'polymorphic_identity': 'pass-through',
     }
+
+    def execute(self, inputs):
+        self.set_outputs(inputs)

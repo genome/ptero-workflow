@@ -16,7 +16,6 @@ class Workflow(Base):
 
     id          = Column(Integer, primary_key=True)
     environment = Column(Text)
-    inputs      = Column(Text)
 
     root_operation_id = Column(Integer,
             ForeignKey('operation.id'), nullable=False)
@@ -54,7 +53,8 @@ class Workflow(Base):
         data = {
             'operations': ops,
             'links': links,
-            'inputs': simplejson.loads(self.inputs),
+            'inputs': self.root_operation.children['input connector'].get_outputs(),
+            'outputs': self.root_operation.get_outputs(),
             'environment': simplejson.loads(self.environment),
         }
         if self.root_operation.status is not None:
