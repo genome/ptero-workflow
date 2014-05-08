@@ -108,14 +108,14 @@ class TestCaseMixin(object):
 
     def _get_actual_result(self, workflow_url):
         data = self._get_workflow_data(workflow_url)
-        response = _retry(requests.get, data['reports']['some-named-report'])
+        response = _retry(requests.get, data['reports']['workflow-outputs'])
         return response.json()
 
 
     def _start_devserver(self):
         cmd = [
                 self._devserver_path,
-                '--max-run-time', str(self._max_wait_time),
+                '--max-run-time', str(2 * self._max_wait_time),
                 '--port', str(self.api_port),
                 '--logdir', str(self._logdir),
                 '--cover',

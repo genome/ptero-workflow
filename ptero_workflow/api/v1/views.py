@@ -16,7 +16,22 @@ class WorkflowListView(Resource):
 
 class WorkflowDetailView(Resource):
     def get(self, workflow_id):
-        return g.backend.get_workflow(workflow_id), 200
+        workflow_data = g.backend.get_workflow(workflow_id)
+
+        workflow_data['reports'] = _generate_report_links(workflow_id)
+        return workflow_data, 200
+
+
+_REPORTS = [
+    'workflow-outputs',
+]
+def _generate_report_links(workflow_id):
+    return {n: _report_url(workflow_id, n) for n in _REPORTS}
+
+
+def _report_url(workflow_id, report_type):
+    return url_for('report', report_type=report_type, workflow_id=workflow_id,
+            _external=True)
 
 
 class OperationEventCallback(Resource):
@@ -27,3 +42,8 @@ class OperationEventCallback(Resource):
                 color_group=request_data['color_group'],
                 response_links=request_data.get('response_links'))
         return ''
+
+
+class ReportDetailView(Resource):
+    def get(self, report_type, workflow_id):
+        return {'outputs': {'out_a': 'kittens'}}
