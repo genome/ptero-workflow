@@ -25,6 +25,10 @@ class WorkflowDetailView(Resource):
         return workflow_data, 200
 
 
+# XXX I think that the report generators should be instantiated here into a
+#     static dict.  That will allow us to write a url generation function for
+#     each one, so that they can put the necessary arguments into their query
+#     strings.
 _REPORTS = [ep.name for ep in pkg_resources.iter_entry_points('reports')]
 def _generate_report_links(workflow_id):
     return {n: _report_url(workflow_id, n) for n in _REPORTS}
