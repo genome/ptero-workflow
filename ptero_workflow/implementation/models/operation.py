@@ -11,7 +11,7 @@ import os
 import simplejson
 
 
-__all__ = ['Operation']
+__all__ = ['Operation', 'InputHolderOperation']
 
 
 LOG = logging.getLogger(__file__)
@@ -177,9 +177,27 @@ class Operation(Base):
     def get_input(self, name):
         return self.get_inputs()[name]
 
-
     def execute(self, inputs):
         pass
+
+
+class InputHolderOperation(Operation):
+    __tablename__ = 'operation_input_holder'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': '__input_holder',
+    }
+
+    def get_inputs(self):
+        raise RuntimeError()
+
+    def get_input(self, name):
+        raise RuntimeError()
+
+    def get_petri_transitions(self):
+        return []
 
 
 class InputConnectorOperation(Operation):
@@ -191,11 +209,29 @@ class InputConnectorOperation(Operation):
         'polymorphic_identity': 'input connector',
     }
 
+    def get_output(self, name):
+        return self.get_inputs().get(name)
+
+    def get_outputs(self):
+        return self.get_inputs()
+
+    def get_inputs(self):
+        return self.parent.get_inputs()
+
+    def get_input(self, name):
+        return self.parent.get_input(name)
+
     def get_petri_transitions(self):
-        return [{
-            'inputs': [self.success_place_name],
-            'outputs': [self.success_place_pair_name(o) for o in self.output_ops],
-        }]
+        return [
+            {
+                'inputs': [self.parent.ready_place_name],
+                'outputs': [self.success_place_name],
+            },
+            {
+                'inputs': [self.success_place_name],
+                'outputs': [self.success_place_pair_name(o) for o in self.output_ops],
+            }
+        ]
 
 
 class OutputConnectorOperation(Operation):
@@ -226,12 +262,6 @@ class ModelOperation(Operation):
         'polymorphic_identity': 'model',
     }
 
-    def get_inputs(self):
-        return self.children['input connector'].get_inputs()
-
-    def get_input(self, name):
-        return self.children['input connector'].get_input(name)
-
     def get_output(self, name):
         return self.children['output connector'].get_output(name)
 
@@ -239,7 +269,24 @@ class ModelOperation(Operation):
         return self.children['output connector'].get_outputs()
 
     def get_petri_transitions(self):
-        return [{
+        result = []
+
+        if self.input_ops:
+            result.append({
+                'inputs': [o.success_place_pair_name(self) for o in self.input_ops],
+                'outputs': [self.ready_place_name],
+            })
+
+        if self.output_ops:
+            success_outputs = [self.success_place_pair_name(o) for o in self.output_ops]
+            if self.parent:
+                success_outputs.append(self.success_place_pair_name(self.parent))
+            result.append({
+                'inputs': [self.success_place_name],
+                'outputs': success_outputs,
+            })
+
+        result.append({
             'inputs': [o.success_place_pair_name(self)
                 for o in self.real_child_ops],
             'outputs': [self.success_place_name],
@@ -247,7 +294,12 @@ class ModelOperation(Operation):
                 'type': 'notify',
                 'url': self.notify_callback_url('done'),
             },
-        }]
+        })
+
+        for child in self.children.itervalues():
+            result.extend(child.get_petri_transitions())
+
+        return result
 
 
 class CommandOperation(Operation):

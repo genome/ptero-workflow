@@ -50,3 +50,11 @@ def create_operation(name, operation_data, parent=None):
         _build_model_operation(operation_data, operation=operation)
 
     return operation
+
+def create_input_holder(root, inputs):
+    operation = models.InputHolderOperation(name='input_holder')
+    operation.set_outputs(inputs)
+    for i in inputs.iterkeys():
+        models.Link(source_operation=operation, destination_operation=root,
+                source_property=i, destination_property=i)
+    return operation
