@@ -3,7 +3,7 @@ from .output import Output
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import logging
@@ -29,9 +29,8 @@ class Operation(Base):
     type      = Column(Text, nullable=False)
     status = Column(Text)
 
-    parent = relationship('Operation')
-
     children = relationship('Operation',
+            backref=backref('parent', uselist=False, remote_side=[id]),
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
@@ -64,6 +63,9 @@ class Operation(Base):
     def success_place_name(self):
         return 'op-%d-success' % self.id
 
+    def success_place_pair_name(self, op):
+        return 'op-%d-succes-for-%d' % (self.id, op.id)
+
     @property
     def ready_place_name(self):
         return 'op-%d-ready' % self.id
@@ -85,52 +87,42 @@ class Operation(Base):
         )
 
     def get_petri_transitions(self):
-        if self.type in ['input', 'output']:
-            return []
+        result = []
 
-        elif self.type == 'model':
-            result = []
-            result.append({
-                'inputs': [o.success_place_name for o in self.real_child_ops],
-                'outputs': [self.success_place_name],
-                'action': {
-                    'type': 'notify',
-                    'url': self.notify_callback_url('done'),
+        # wait for all input ops
+        result.append({
+            'inputs': [o.success_place_pair_name(self) for o in self.input_ops],
+            'outputs': [self.ready_place_name],
+        })
+
+        # send notification
+        result.append({
+            'inputs': [self.ready_place_name],
+            'outputs': [self.response_wait_place_name],
+            'action': {
+                'type': 'notify',
+                'url': self.notify_callback_url('execute'),
+                'response_places': {
+                    'success': self.response_callback_place_name,
                 },
-            })
+            }
+        })
 
-            return result
+        # wait for response
+        result.append({
+            'inputs': [self.response_wait_place_name,
+                self.response_callback_place_name],
+            'outputs': [self.success_place_name],
+        })
 
-        else:
-            result = []
+        success_outputs = [self.success_place_pair_name(o) for o in self.output_ops]
+        success_outputs.append(self.success_place_pair_name(self.parent))
+        result.append({
+            'inputs': [self.success_place_name],
+            'outputs': success_outputs,
+        })
 
-            # wait for all input ops
-            result.append({
-                'inputs': [o.success_place_name for o in self.input_ops],
-                'outputs': [self.ready_place_name],
-            })
-
-            # send notification
-            result.append({
-                'inputs': [self.ready_place_name],
-                'outputs': [self.response_wait_place_name],
-                'action': {
-                    'type': 'notify',
-                    'url': self.notify_callback_url('execute'),
-                    'response_places': {
-                        'success': self.response_callback_place_name,
-                    },
-                }
-            })
-
-            # wait for response
-            result.append({
-                'inputs': [self.response_wait_place_name,
-                    self.response_callback_place_name],
-                'outputs': [self.success_place_name],
-            })
-
-            return result
+        return result
 
     @property
     def input_ops(self):
@@ -138,6 +130,16 @@ class Operation(Base):
         if source_ids:
             s = object_session(self)
             return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
+        else:
+            return []
+
+    @property
+    def output_ops(self):
+        destination_ids = set([l.destination_id for l in self.output_links])
+        if destination_ids:
+            s = object_session(self)
+            return s.query(Operation).filter(
+                    Operation.id.in_(destination_ids)).all()
         else:
             return []
 
@@ -185,6 +187,12 @@ class InputConnectorOperation(Operation):
         'polymorphic_identity': 'input connector',
     }
 
+    def get_petri_transitions(self):
+        return [{
+            'inputs': [self.success_place_name],
+            'outputs': [self.success_place_pair_name(o) for o in self.output_ops],
+        }]
+
 
 class OutputConnectorOperation(Operation):
     __tablename__ = 'operation_output_connector'
@@ -200,6 +208,9 @@ class OutputConnectorOperation(Operation):
 
     def get_outputs(self):
         return self.get_inputs()
+
+    def get_petri_transitions(self):
+        return []
 
 
 class ModelOperation(Operation):
@@ -222,6 +233,17 @@ class ModelOperation(Operation):
 
     def get_outputs(self):
         return self.children['output connector'].get_outputs()
+
+    def get_petri_transitions(self):
+        return [{
+            'inputs': [o.success_place_pair_name(self)
+                for o in self.real_child_ops],
+            'outputs': [self.success_place_name],
+            'action': {
+                'type': 'notify',
+                'url': self.notify_callback_url('done'),
+            },
+        }]
 
 
 class CommandOperation(Operation):
