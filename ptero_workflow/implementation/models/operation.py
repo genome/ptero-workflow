@@ -60,23 +60,27 @@ class Operation(Base):
         return {}
 
     @property
+    def unique_name(self):
+        return '-'.join(['op', str(self.id), self.name.replace(' ', '_')])
+
+    @property
     def success_place_name(self):
-        return 'op-%d-success' % self.id
+        return '%s-success' % self.unique_name
 
     def success_place_pair_name(self, op):
-        return 'op-%d-succes-for-%d' % (self.id, op.id)
+        return '%s-success-for-%s' % (self.unique_name, op.unique_name)
 
     @property
     def ready_place_name(self):
-        return 'op-%d-ready' % self.id
+        return '%s-ready' % self.unique_name
 
     @property
     def response_wait_place_name(self):
-        return 'op-%d-response-wait' % self.id
+        return '%s-response-wait' % self.unique_name
 
     @property
     def response_callback_place_name(self):
-        return 'op-%d-response-callback' % self.id
+        return '%s-response-callback' % self.unique_name
 
     def notify_callback_url(self, event):
         return 'http://%s:%d/v1/callbacks/operations/%d/events/%s' % (
