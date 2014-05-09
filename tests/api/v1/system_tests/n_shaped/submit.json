@@ -1,0 +1,83 @@
+{
+    "operations": {
+        "A": {
+            "type": "pass-through"
+        },
+        "B": {
+            "type": "pass-through"
+        },
+        "C": {
+            "type": "pass-through"
+        },
+        "D": {
+            "type": "pass-through"
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_a_1",
+            "destination_property": "param_1"
+        },
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_a_2",
+            "destination_property": "param_2"
+        },
+        {
+            "source": "input connector",
+            "destination": "B",
+            "source_property": "in_b",
+            "destination_property": "param"
+        },
+
+        {
+            "source": "A",
+            "destination": "C",
+            "source_property": "param_1",
+            "destination_property": "param"
+        },
+        {
+            "source": "A",
+            "destination": "D",
+            "source_property": "param_2",
+            "destination_property": "param_1"
+        },
+        {
+            "source": "B",
+            "destination": "D",
+            "source_property": "param",
+            "destination_property": "param_2"
+        },
+
+        {
+            "source": "C",
+            "destination": "output connector",
+            "source_property": "param",
+            "destination_property": "out_c"
+        },
+        {
+            "source": "D",
+            "destination": "output connector",
+            "source_property": "param_1",
+            "destination_property": "out_d_1"
+        },
+        {
+            "source": "D",
+            "destination": "output connector",
+            "source_property": "param_2",
+            "destination_property": "out_d_2"
+        }
+    ],
+
+    "inputs": {
+        "in_a_1": "foo",
+        "in_a_2": "bar",
+        "in_b": "baz"
+    },
+
+    "environment": {}
+}
