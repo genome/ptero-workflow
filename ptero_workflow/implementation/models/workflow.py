@@ -20,17 +20,20 @@ class Workflow(Base):
     root_operation_id = Column(Integer,
             ForeignKey('operation.id'), nullable=False)
 
-    root_operation = relationship('Operation', backref='workflow')
+    root_operation = relationship('Operation', backref='workflow',
+            foreign_keys=[root_operation_id])
+
+    input_holder_operation_id = Column(Integer,
+            ForeignKey('operation.id'), nullable=False)
+
+    input_holder_operation = relationship('InputHolderOperation',
+            foreign_keys=[input_holder_operation_id])
 
     net_key = Column(Text, unique=True)
 
     @property
     def start_place_name(self):
-        LOG.debug('root_op: %d', self.root_operation.id)
-        LOG.debug('root input_connector: %d',
-                self.root_operation.children['input connector'].id)
-        return self.root_operation.children['input connector'
-                ].success_place_name
+        return self.root_operation.ready_place_name
 
     @property
     def links(self):

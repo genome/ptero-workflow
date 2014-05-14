@@ -1,0 +1,78 @@
+{
+    "operations": {
+        "A": {
+            "type": "pass-through"
+        },
+        "Inner": {
+            "type": "model",
+            "operations": {
+                "B": {
+                    "type": "pass-through"
+                }
+            },
+            "links": [
+                {
+                    "source": "input connector",
+                    "destination": "B",
+                    "source_property": "inner_in_b",
+                    "destination_property": "param"
+                },
+                {
+                    "source": "B",
+                    "destination": "output connector",
+                    "source_property": "param",
+                    "destination_property": "inner_out_b"
+                }
+            ]
+        },
+        "C": {
+            "type": "pass-through"
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "outer_in_a",
+            "destination_property": "param"
+        },
+        {
+            "source": "input connector",
+            "destination": "Inner",
+            "source_property": "outer_in_inner",
+            "destination_property": "inner_in_b"
+        },
+        {
+            "source": "A",
+            "destination": "C",
+            "source_property": "param",
+            "destination_property": "param_1"
+        },
+        {
+            "source": "Inner",
+            "destination": "C",
+            "source_property": "inner_out_b",
+            "destination_property": "param_2"
+        },
+        {
+            "source": "C",
+            "destination": "output connector",
+            "source_property": "param_1",
+            "destination_property": "outer_out_c_1"
+        },
+        {
+            "source": "C",
+            "destination": "output connector",
+            "source_property": "param_2",
+            "destination_property": "outer_out_c_2"
+        }
+    ],
+
+    "inputs": {
+        "outer_in_a": "ferret",
+        "outer_in_inner": "badger"
+    },
+
+    "environment": {}
+}

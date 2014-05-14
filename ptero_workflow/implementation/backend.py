@@ -35,8 +35,9 @@ class Backend(object):
         }
 
         workflow.root_operation = operations.create_operation('root', root_data)
-        workflow.root_operation.children['input connector'].set_outputs(
-                workflow_data['inputs'])
+
+        workflow.input_holder_operation = operations.create_input_holder(
+                workflow.root_operation, workflow_data['inputs'])
 
         self.session.add(workflow)
         self.session.commit()
