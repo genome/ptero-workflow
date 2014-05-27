@@ -47,9 +47,12 @@ def _validate_model_operation_data(operation_data):
         raise exceptions.InvalidWorkflow(
                 "'output connector' is a reserved operation name")
 
+def _get_operation_type(operation_data):
+    return operation_data['type'].lower()
+
 
 def create_operation(name, operation_data, parent=None):
-    op_type = operation_data['type'].lower()
+    op_type = _get_operation_type(operation_data)
 
     operation = models.Operation.from_dict(name=name, type=op_type)
     if parent is not None:
