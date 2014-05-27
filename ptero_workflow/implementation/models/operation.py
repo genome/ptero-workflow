@@ -207,6 +207,10 @@ class OperationPetriMixin(object):
         return self.success_place_name
 
 
+class ParallelPetriMixin(OperationPetriMixin):
+    parallel_by = Column(Text, nullable=False)
+
+
 class InputHolderOperation(Operation):
     __tablename__ = 'operation_input_holder'
 
@@ -338,6 +342,16 @@ class CommandOperation(OperationPetriMixin, Operation):
     }
 
 
+class ParallelByCommandOperation(ParallelPetriMixin, Operation):
+    __tablename__ = 'operation_command_parallel'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'parallel-by-command',
+    }
+
+
 class PassThroughOperation(OperationPetriMixin, Operation):
     __tablename__ = 'operation_pass_through'
 
@@ -345,6 +359,19 @@ class PassThroughOperation(OperationPetriMixin, Operation):
 
     __mapper_args__ = {
         'polymorphic_identity': 'pass-through',
+    }
+
+    def execute(self, inputs):
+        self.set_outputs(inputs)
+
+
+class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
+    __tablename__ = 'operation_pass_through_parallel'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'parallel-by-pass-through',
     }
 
     def execute(self, inputs):
