@@ -91,6 +91,63 @@ class Operation(Base):
         )
 
     def get_petri_transitions(self):
+        raise RuntimeError('Operation is abstract')
+
+    @property
+    def input_ops(self):
+        source_ids = set([l.source_id for l in self.input_links])
+        if source_ids:
+            s = object_session(self)
+            return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
+        else:
+            return []
+
+    @property
+    def output_ops(self):
+        destination_ids = set([l.destination_id for l in self.output_links])
+        if destination_ids:
+            s = object_session(self)
+            return s.query(Operation).filter(
+                    Operation.id.in_(destination_ids)).all()
+        else:
+            return []
+
+    @property
+    def real_child_ops(self):
+        data = dict(self.children)
+        del data['input connector']
+        del data['output connector']
+        return data.values()
+
+    def get_output(self, name):
+        return self.get_outputs().get(name)
+
+    def get_outputs(self):
+        return {o.name: o.value for o in self.outputs}
+
+    def set_outputs(self, outputs):
+        s = object_session(self)
+        for name, value in outputs.iteritems():
+            o = Output(name=name, operation=self,
+                    serialized_value=simplejson.dumps(value))
+
+    def get_inputs(self):
+        result = {}
+        for link in self.input_links:
+            result[link.destination_property] =\
+                    link.source_operation.get_output(link.source_property)
+
+        return result
+
+    def get_input(self, name):
+        return self.get_inputs()[name]
+
+    def execute(self, inputs):
+        pass
+
+
+class OperationPetriMixin(object):
+    def get_petri_transitions(self):
         transitions = []
 
         input_deps_place = self._attach_input_deps(transitions)
@@ -148,59 +205,6 @@ class Operation(Base):
         })
 
         return self.success_place_name
-
-
-    @property
-    def input_ops(self):
-        source_ids = set([l.source_id for l in self.input_links])
-        if source_ids:
-            s = object_session(self)
-            return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
-        else:
-            return []
-
-    @property
-    def output_ops(self):
-        destination_ids = set([l.destination_id for l in self.output_links])
-        if destination_ids:
-            s = object_session(self)
-            return s.query(Operation).filter(
-                    Operation.id.in_(destination_ids)).all()
-        else:
-            return []
-
-    @property
-    def real_child_ops(self):
-        data = dict(self.children)
-        del data['input connector']
-        del data['output connector']
-        return data.values()
-
-    def get_output(self, name):
-        return self.get_outputs().get(name)
-
-    def get_outputs(self):
-        return {o.name: o.value for o in self.outputs}
-
-    def set_outputs(self, outputs):
-        s = object_session(self)
-        for name, value in outputs.iteritems():
-            o = Output(name=name, operation=self,
-                    serialized_value=simplejson.dumps(value))
-
-    def get_inputs(self):
-        result = {}
-        for link in self.input_links:
-            result[link.destination_property] =\
-                    link.source_operation.get_output(link.source_property)
-
-        return result
-
-    def get_input(self, name):
-        return self.get_inputs()[name]
-
-    def execute(self, inputs):
-        pass
 
 
 class InputHolderOperation(Operation):
@@ -324,7 +328,7 @@ class ModelOperation(Operation):
         return result
 
 
-class CommandOperation(Operation):
+class CommandOperation(OperationPetriMixin, Operation):
     __tablename__ = 'operation_command'
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
@@ -334,7 +338,7 @@ class CommandOperation(Operation):
     }
 
 
-class PassThroughOperation(Operation):
+class PassThroughOperation(OperationPetriMixin, Operation):
     __tablename__ = 'operation_pass_through'
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
