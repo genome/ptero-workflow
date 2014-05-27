@@ -3,7 +3,11 @@ from flask import g, request, url_for
 from flask.ext.restful import Resource
 
 import pkg_resources
+import logging
 import urllib
+
+
+LOG = logging.getLogger(__file__)
 
 
 class WorkflowListView(Resource):
@@ -13,16 +17,25 @@ class WorkflowListView(Resource):
             return '', 201, {
                 'Location': url_for('workflow-detail', workflow_id=workflow_id)
             }
+
         except exceptions.InvalidWorkflow as e:
             return {'error': e.message}, 400
+        except:
+            LOG.exception('Unexpected exception posting workflow')
+            raise
 
 
 class WorkflowDetailView(Resource):
     def get(self, workflow_id):
-        workflow_data = g.backend.get_workflow(workflow_id)
+        try:
+            workflow_data = g.backend.get_workflow(workflow_id)
 
-        workflow_data['reports'] = _generate_report_links(workflow_id)
-        return workflow_data, 200
+            workflow_data['reports'] = _generate_report_links(workflow_id)
+            return workflow_data, 200
+
+        except:
+            LOG.exception('Unexpected exception getting workflow')
+            raise
 
 
 # XXX I think that the report generators should be instantiated here into a
@@ -42,9 +55,15 @@ def _report_url(workflow_id, report_type):
 
 class OperationEventCallback(Resource):
     def put(self, operation_id, event_type):
-        request_data = request.get_json()
-        g.backend.event(operation_id, event_type, **request_data)
-        return ''
+        try:
+            request_data = request.get_json()
+            g.backend.event(operation_id, event_type, **request_data)
+            return ''
+
+        except:
+            LOG.exception('Unexpected exception responding to event (%s)',
+                    event_type)
+            raise
 
 
 class ReportDetailView(Resource):

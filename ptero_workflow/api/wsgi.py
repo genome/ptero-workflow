@@ -1,5 +1,6 @@
 from ptero_workflow.api import application
 import argparse
+import logging
 
 
 app = application.create_app()
@@ -14,4 +15,5 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
+    logging.basicConfig()
     app.run(port=args.port, debug=args.debug)
