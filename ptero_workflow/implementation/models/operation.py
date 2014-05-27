@@ -361,8 +361,8 @@ class PassThroughOperation(OperationPetriMixin, Operation):
         'polymorphic_identity': 'pass-through',
     }
 
-    def execute(self, inputs):
-        self.set_outputs(inputs)
+    def execute(self, color, group):
+        self.set_outputs(self.get_inputs())
 
 
 class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
@@ -374,5 +374,5 @@ class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
         'polymorphic_identity': 'parallel-by-pass-through',
     }
 
-    def execute(self, inputs):
-        self.set_outputs(inputs)
+    def execute(self, color, group):
+        self.set_outputs(self.get_inputs())
