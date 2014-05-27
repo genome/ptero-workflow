@@ -29,6 +29,15 @@ def _build_model_operation(operation_data, operation):
         )
 
 
+_OP_BUILDERS = {
+    'model': _build_model_operation,
+}
+def _build_operation(operation_data, operation):
+    _operation_builder = _OP_BUILDERS.get(operation.type)
+    if _operation_builder:
+        _operation_builder(operation_data, operation=operation)
+
+
 def _validate_model_operation_data(operation_data):
     if 'input connector' in operation_data['operations']:
         raise exceptions.InvalidWorkflow(
@@ -46,8 +55,7 @@ def create_operation(name, operation_data, parent=None):
     if parent is not None:
         parent.children[name] = operation
 
-    if op_type == 'model':
-        _build_model_operation(operation_data, operation=operation)
+    _build_operation(operation_data, operation=operation)
 
     return operation
 
