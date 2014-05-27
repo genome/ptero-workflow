@@ -74,6 +74,15 @@ class Backend(object):
                 self.session.commit()
                 response = requests.put(response_links['success'])
 
+        elif event_type == 'get_split_size':
+            size = operation.get_split_size()
+            response = requests.put(response_links['send_data'],
+                    data=simplejson.dumps({'color_group_size': size}),
+                    headers={'Content-Type': 'application/json'})
+
+        elif event_type == 'color_group_created':
+            pass
+
         elif event_type == 'done':
             operation = self.session.query(models.Operation).get(operation_id)
             operation.status = 'success'
