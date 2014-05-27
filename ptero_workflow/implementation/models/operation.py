@@ -1,5 +1,5 @@
 from .base import Base
-from .output import Output
+from . import output
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -123,13 +123,12 @@ class Operation(Base):
         return self.get_outputs().get(name)
 
     def get_outputs(self):
-        return {o.name: o.value for o in self.outputs}
+        return {o.name: o.data for o in self.outputs}
 
     def set_outputs(self, outputs):
         s = object_session(self)
         for name, value in outputs.iteritems():
-            o = Output(name=name, operation=self,
-                    serialized_value=simplejson.dumps(value))
+            o = output.create_output(self, name, value)
 
     def get_inputs(self):
         result = {}
