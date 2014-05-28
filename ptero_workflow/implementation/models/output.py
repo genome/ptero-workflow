@@ -16,14 +16,17 @@ LOG = logging.getLogger(__file__)
 class Output(Base):
     __tablename__ = 'output'
     __table_args__ = (
-        UniqueConstraint('operation_id', 'name'),
+        UniqueConstraint('operation_id', 'name', 'color'),
     )
 
     id           = Column(Integer, primary_key=True)
-    name         = Column(Text, nullable=False)
-    type         = Column(Text, nullable=False)
 
     operation_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
+    name         = Column(Text, nullable=False, index=True)
+    color        = Column(Integer, nullable=False, index=True)
+
+    type         = Column(Text, nullable=False)
+
     operation = relationship('Operation', backref='outputs')
 
     __mapper_args__ = {
@@ -47,8 +50,6 @@ class ArrayEntry(Base):
 
     array_id = Column(Integer, ForeignKey('output_array.id'), primary_key=True)
     index = Column(Integer, primary_key=True)
-
-    output_id = Column(Integer, ForeignKey('output.id'), nullable=False)
 
     serialized_data = Column(Text)
 
@@ -88,8 +89,8 @@ class Array(Output):
         return entry.data
 
     @classmethod
-    def create(cls, operation, name, data):
-        self = cls(operation=operation, name=name)
+    def create(cls, operation, name, data, color):
+        self = cls(operation=operation, name=name, color=color)
         for index, item in enumerate(data):
             entry = ArrayEntry(index=index)
             entry.data = item
@@ -97,9 +98,10 @@ class Array(Output):
         return self
 
 
-def create_output(operation, name, data):
+def create_output(operation, name, data, color):
     if isinstance(data, list):
-        return Array.create(operation=operation, name=name, data=data)
+        return Array.create(operation=operation, name=name, data=data,
+                color=color)
 
     else:
-        return Scalar(operation=operation, name=name, data=data)
+        return Scalar(operation=operation, name=name, data=data, color=color)

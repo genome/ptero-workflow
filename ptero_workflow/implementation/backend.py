@@ -36,10 +36,14 @@ class Backend(object):
 
         workflow.root_operation = operations.create_operation('root', root_data)
 
+        root_color_group = models.ColorGroup(workflow=workflow, index=0,
+                begin=0, end=1)
+
         workflow.input_holder_operation = operations.create_input_holder(
-                workflow.root_operation, workflow_data['inputs'])
+                workflow.root_operation, workflow_data['inputs'], color=0)
 
         self.session.add(workflow)
+        self.session.add(root_color_group)
         self.session.commit()
 
         return workflow
@@ -75,13 +79,15 @@ class Backend(object):
                 response = requests.put(response_links['success'])
 
         elif event_type == 'get_split_size':
-            size = operation.get_split_size()
+            size = operation.get_split_size(color)
             response = requests.put(response_links['send_data'],
                     data=simplejson.dumps({'color_group_size': size}),
                     headers={'Content-Type': 'application/json'})
 
         elif event_type == 'color_group_created':
-            pass
+            workflow = operation.workflow
+            models.ColorGroup.create(workflow, group)
+            self.session.commit()
 
         elif event_type == 'done':
             operation = self.session.query(models.Operation).get(operation_id)

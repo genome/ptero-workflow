@@ -20,8 +20,8 @@ class Workflow(Base):
     root_operation_id = Column(Integer,
             ForeignKey('operation.id'), nullable=False)
 
-    root_operation = relationship('Operation', backref='workflow',
-            foreign_keys=[root_operation_id])
+    root_operation = relationship('Operation', backref=backref('workflow',
+        uselist=False), foreign_keys=[root_operation_id])
 
     input_holder_operation_id = Column(Integer,
             ForeignKey('operation.id'), nullable=False)
@@ -53,11 +53,17 @@ class Workflow(Base):
         ops = {name: op.as_dict for name,op in self.operations.iteritems()
                 if name not in ['input connector', 'output connector']}
         links = [l.as_dict for l in self.links]
+
+        try:
+            outputs = self.root_operation.get_outputs(color=0)
+        except:
+            outputs = None
+
         data = {
             'operations': ops,
             'links': links,
-            'inputs': self.root_operation.children['input connector'].get_outputs(),
-            'outputs': self.root_operation.get_outputs(),
+            'inputs': self.root_operation.get_inputs(color=0),
+            'outputs': outputs,
             'environment': simplejson.loads(self.environment),
         }
         if self.root_operation.status is not None:

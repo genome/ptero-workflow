@@ -68,9 +68,9 @@ def create_operation(name, operation_data, parent=None):
 
     return operation
 
-def create_input_holder(root, inputs):
+def create_input_holder(root, inputs, color):
     operation = models.InputHolderOperation(name='input_holder')
-    operation.set_outputs(inputs)
+    operation.set_outputs(inputs, color=color)
     for i in inputs.iterkeys():
         models.Link(source_operation=operation, destination_operation=root,
                 source_property=i, destination_property=i)

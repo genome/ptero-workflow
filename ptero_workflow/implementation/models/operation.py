@@ -1,5 +1,6 @@
 from .base import Base
 from . import output
+from .petri import ColorGroup
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -112,34 +113,87 @@ class Operation(Base):
         else:
             return []
 
-    @property
-    def real_child_ops(self):
-        data = dict(self.children)
-        del data['input connector']
-        del data['output connector']
-        return data.values()
+    def get_workflow(self):
+        root = self.get_root()
+        return root.workflow
 
-    def get_output(self, name):
-        return self.get_outputs().get(name)
+    def get_root(self):
+        parent = self.parent
+        if parent is None:
+            return self
 
-    def get_outputs(self):
+        while parent.parent:
+            parent = parent.parent
+
+        return parent
+
+    def get_output(self, name, color):
+        return self.get_outputs(color).get(name)
+
+    def get_outputs(self, color):
         return {o.name: o.data for o in self.outputs}
 
-    def set_outputs(self, outputs):
+    def set_outputs(self, outputs, color):
         s = object_session(self)
         for name, value in outputs.iteritems():
-            o = output.create_output(self, name, value)
+            o = output.create_output(self, name, value, color)
 
-    def get_inputs(self):
+    def get_inputs(self, color):
+        workflow = self.get_workflow()
+        valid_colors = self._valid_color_list(color, workflow)
+
+        source_operations = self._source_op_data()
+
         result = {}
-        for link in self.input_links:
-            result[link.destination_property] =\
-                    link.source_operation.get_output(link.source_property)
+        for property_name, source_data in source_operations.iteritems():
+            result[property_name] = self._fetch_input(color, valid_colors,
+                    source_data, workflow)
 
         return result
 
-    def get_input(self, name):
-        return self.get_inputs()[name]
+    def _valid_color_list(self, color, workflow):
+        s = object_session(self)
+        cg = s.query(ColorGroup).filter(
+            ColorGroup.workflow_id == workflow.id,
+            ColorGroup.begin <= color, color < ColorGroup.end,
+        ).one()
+
+        result = [color]
+        while cg.parent_color:
+            result.append(cg.parent_color)
+            cg = cg.parent_color_group
+
+        return result
+
+    def _source_op_data(self):
+        result = {}
+        for link in self.input_links:
+            result[link.destination_property] =\
+                    link.source_operation.get_source_op_and_name(
+                            link.source_property)
+
+        return result
+
+    def get_source_op_and_name(self, output_param_name):
+        return self, output_param_name
+
+    def get_input_op_and_name(self, input_param_name):
+        for link in self.input_links:
+            if link.destination_property == input_param_name:
+                return link.source_operation, link.source_property
+
+
+    def _fetch_input(self, color, valid_color_list, source_data, workflow):
+        (operation, property_name) = source_data
+
+        s = object_session(self)
+        result = s.query(output.Output
+                ).filter_by(operation=operation, name=property_name
+                ).filter(output.Output.color.in_(valid_color_list)).one()
+        return result.data
+
+    def get_input(self, name, color):
+        return self.get_inputs(color)[name]
 
     def execute(self, inputs):
         pass
@@ -233,8 +287,8 @@ class ParallelPetriMixin(OperationPetriMixin):
     def joined_place_name(self):
         return '%s-joined' % self.unique_name
 
-    def get_split_size(self):
-        return len(self.get_input(self.parallel_by))
+    def get_split_size(self, color):
+        return len(self.get_input(self.parallel_by, color))
 
     def _attach_split(self, transitions, ready_place):
         transitions.extend([
@@ -298,10 +352,10 @@ class InputHolderOperation(Operation):
         'polymorphic_identity': '__input_holder',
     }
 
-    def get_inputs(self):
+    def get_inputs(self, color):
         raise RuntimeError()
 
-    def get_input(self, name):
+    def get_input(self, name, color):
         raise RuntimeError()
 
     def get_petri_transitions(self):
@@ -317,17 +371,21 @@ class InputConnectorOperation(Operation):
         'polymorphic_identity': 'input connector',
     }
 
-    def get_output(self, name):
-        return self.get_inputs().get(name)
+    def get_source_op_and_name(self, output_param_name):
+        op, name = self.parent.get_input_op_and_name(output_param_name)
+        return op.get_source_op_and_name(name)
 
-    def get_outputs(self):
-        return self.get_inputs()
+    def get_output(self, name, color):
+        return self.get_inputs(color).get(name)
 
-    def get_inputs(self):
-        return self.parent.get_inputs()
+    def get_outputs(self, color):
+        return self.get_inputs(color)
 
-    def get_input(self, name):
-        return self.parent.get_input(name)
+    def get_inputs(self, color):
+        return self.parent.get_inputs(color)
+
+    def get_input(self, name, color):
+        return self.parent.get_input(name, color)
 
     def get_petri_transitions(self):
         return [
@@ -351,11 +409,15 @@ class OutputConnectorOperation(Operation):
         'polymorphic_identity': 'output connector',
     }
 
-    def get_output(self, name):
-        return self.get_input(name)
+    def get_output(self, name, color):
+        return self.get_input(name, color)
 
-    def get_outputs(self):
-        return self.get_inputs()
+    def get_outputs(self, color):
+        return self.get_inputs(color)
+
+    def get_source_op_and_name(self, output_param_name):
+        op, name = self.get_input_op_and_name(output_param_name)
+        return op.get_source_op_and_name(name)
 
     def get_petri_transitions(self):
         return []
@@ -370,11 +432,22 @@ class ModelOperation(Operation):
         'polymorphic_identity': 'model',
     }
 
-    def get_output(self, name):
-        return self.children['output connector'].get_output(name)
+    @property
+    def real_child_ops(self):
+        data = dict(self.children)
+        del data['input connector']
+        del data['output connector']
+        return data.values()
 
-    def get_outputs(self):
-        return self.children['output connector'].get_outputs()
+    def get_output(self, name, color):
+        return self.children['output connector'].get_input(name, color)
+
+    def get_outputs(self, color):
+        return self.children['output connector'].get_inputs(color)
+
+    def get_source_op_and_name(self, output_param_name):
+        oc = self.children['output connector']
+        return oc.get_source_op_and_name(output_param_name)
 
     def get_petri_transitions(self):
         result = []
@@ -440,7 +513,7 @@ class PassThroughOperation(OperationPetriMixin, Operation):
     }
 
     def execute(self, color, group):
-        self.set_outputs(self.get_inputs())
+        self.set_outputs(self.get_inputs(color), color)
 
 
 class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
@@ -453,7 +526,7 @@ class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
     }
 
     def execute(self, color, group):
-        self.set_outputs(self.get_inputs())
+        self.set_outputs(self.get_inputs(color), color)
 
 
 def _parallel_index(color, group):
