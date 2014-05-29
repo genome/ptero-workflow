@@ -1,4 +1,12 @@
 class OperationPetriMixin(object):
+    @property
+    def response_wait_place_name(self):
+        return '%s-response-wait' % self.unique_name
+
+    @property
+    def response_callback_place_name(self):
+        return '%s-response-callback' % self.unique_name
+
     def get_petri_transitions(self):
         transitions = []
 

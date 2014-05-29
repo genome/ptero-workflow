@@ -74,14 +74,6 @@ class Operation(Base):
     def ready_place_name(self):
         return '%s-ready' % self.unique_name
 
-    @property
-    def response_wait_place_name(self):
-        return '%s-response-wait' % self.unique_name
-
-    @property
-    def response_callback_place_name(self):
-        return '%s-response-callback' % self.unique_name
-
     def notify_callback_url(self, event):
         return 'http://%s:%d/v1/callbacks/operations/%d/events/%s' % (
             os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
