@@ -352,52 +352,6 @@ class ModelOperation(Operation):
         return result
 
 
-class CommandOperation(OperationPetriMixin, Operation):
-    __tablename__ = 'operation_command'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'command',
-    }
-
-
-class ParallelByCommandOperation(ParallelPetriMixin, Operation):
-    __tablename__ = 'operation_command_parallel'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'parallel-by-command',
-    }
-
-
-class PassThroughOperation(OperationPetriMixin, Operation):
-    __tablename__ = 'operation_pass_through'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'pass-through',
-    }
-
-    def execute(self, color, group):
-        self.set_outputs(self.get_inputs(color), color)
-
-
-class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
-    __tablename__ = 'operation_pass_through_parallel'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'parallel-by-pass-through',
-    }
-
-    def execute(self, color, group):
-        self.set_outputs(self.get_inputs(color), color)
-
-
 def _parallel_index(color, group):
     try:
         return int(color) - int(group['begin'])
