@@ -350,10 +350,3 @@ class ModelOperation(Operation):
             result.extend(child.get_petri_transitions())
 
         return result
-
-
-def _parallel_index(color, group):
-    try:
-        return int(color) - int(group['begin'])
-    except:
-        return None
