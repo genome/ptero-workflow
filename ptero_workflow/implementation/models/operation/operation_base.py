@@ -14,7 +14,7 @@ import os
 import simplejson
 
 
-__all__ = ['Operation', 'InputHolderOperation']
+__all__ = ['Operation']
 
 
 LOG = logging.getLogger(__file__)
@@ -210,22 +210,3 @@ class Operation(Base):
 
     def execute(self, inputs):
         pass
-
-
-class InputHolderOperation(Operation):
-    __tablename__ = 'operation_input_holder'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': '__input_holder',
-    }
-
-    def get_inputs(self, color):
-        raise RuntimeError()
-
-    def get_input(self, name, color):
-        raise RuntimeError()
-
-    def get_petri_transitions(self):
-        return []
