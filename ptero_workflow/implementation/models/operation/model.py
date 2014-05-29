@@ -52,7 +52,7 @@ class ModelOperation(Operation):
             'outputs': [self.success_place_name],
             'action': {
                 'type': 'notify',
-                'url': self.notify_callback_url('done'),
+                'url': self.event_url('done'),
             },
         })
 

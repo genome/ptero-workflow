@@ -74,7 +74,7 @@ class Operation(Base):
     def ready_place_name(self):
         return '%s-ready' % self.unique_name
 
-    def notify_callback_url(self, event):
+    def event_url(self, event):
         return 'http://%s:%d/v1/callbacks/operations/%d/events/%s' % (
             os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
             int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),

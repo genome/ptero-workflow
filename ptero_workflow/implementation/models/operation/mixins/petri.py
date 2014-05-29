@@ -49,7 +49,7 @@ class OperationPetriMixin(object):
             'outputs': [self.response_wait_place_name],
             'action': {
                 'type': 'notify',
-                'url': self.notify_callback_url('execute'),
+                'url': self.event_url('execute'),
                 'response_places': {
                     'success': self.response_callback_place_name,
                 },

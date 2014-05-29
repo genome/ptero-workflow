@@ -56,7 +56,7 @@ class ParallelPetriMixin(OperationPetriMixin):
                 'outputs': [self.split_size_wait_place_name],
                 'action': {
                     'type': 'notify',
-                    'url': self.notify_callback_url('get_split_size'),
+                    'url': self.event_url('get_split_size'),
                     'requested_data': ['color_group_size'],
                     'response_places': {
                         'send_data': self.split_size_place_name,
@@ -76,7 +76,7 @@ class ParallelPetriMixin(OperationPetriMixin):
                 'outputs': [self.color_group_created_place_name],
                 'action': {
                     'type': 'create-color-group',
-                    'url': self.notify_callback_url('color_group_created'),
+                    'url': self.event_url('color_group_created'),
                 },
             },
 
