@@ -1,4 +1,4 @@
-from ...petri import ColorGroup
+from ...color_group import ColorGroup
 from .petri import OperationPetriMixin
 from sqlalchemy import Column, Text
 from sqlalchemy.orm.session import object_session

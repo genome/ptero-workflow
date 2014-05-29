@@ -1,6 +1,6 @@
 from .base import *
+from .color_group import *
 from .link import *
 from .operation import *
 from .output import *
-from .petri import *
 from .workflow import *
