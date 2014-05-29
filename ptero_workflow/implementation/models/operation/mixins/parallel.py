@@ -38,7 +38,7 @@ class ParallelPetriMixin(OperationPetriMixin):
 
     def get_outputs(self, color):
         grouped = {}
-        for o in self.outputs:
+        for o in self.results:
             if o.name not in grouped:
                 grouped[o.name] = []
             grouped[o.name].append(o)

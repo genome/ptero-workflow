@@ -7,14 +7,14 @@ import logging
 import simplejson
 
 
-__all__ = ['Output']
+__all__ = ['Result']
 
 
 LOG = logging.getLogger(__file__)
 
 
-class Output(Base):
-    __tablename__ = 'output'
+class Result(Base):
+    __tablename__ = 'result'
     __table_args__ = (
         UniqueConstraint('operation_id', 'name', 'color'),
     )
@@ -27,17 +27,17 @@ class Output(Base):
 
     type         = Column(Text, nullable=False)
 
-    operation = relationship('Operation', backref='outputs')
+    operation = relationship('Operation', backref='results')
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }
 
 
-class Scalar(Output):
-    __tablename__ = 'output_scalar'
+class Scalar(Result):
+    __tablename__ = 'result_scalar'
 
-    id = Column(Integer, ForeignKey('output.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('result.id'), primary_key=True)
     data = Column(Text)
 
     __mapper_args__ = {
@@ -46,9 +46,9 @@ class Scalar(Output):
 
 
 class ArrayEntry(Base):
-    __tablename__ = 'output_array_entry'
+    __tablename__ = 'result_array_entry'
 
-    array_id = Column(Integer, ForeignKey('output_array.id'), primary_key=True)
+    array_id = Column(Integer, ForeignKey('result_array.id'), primary_key=True)
     index = Column(Integer, primary_key=True)
 
     serialized_data = Column(Text)
@@ -64,10 +64,10 @@ class ArrayEntry(Base):
         self.serialized_data = simplejson.dumps(value)
 
 
-class Array(Output):
-    __tablename__ = 'output_array'
+class Array(Result):
+    __tablename__ = 'result_array'
 
-    id = Column(Integer, ForeignKey('output.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('result.id'), primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'array'
@@ -98,7 +98,7 @@ class Array(Output):
         return self
 
 
-def create_output(operation, name, data, color):
+def create_result(operation, name, data, color):
     if isinstance(data, list):
         return Array.create(operation=operation, name=name, data=data,
                 color=color)

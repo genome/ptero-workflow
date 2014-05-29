@@ -1,5 +1,5 @@
 from ..base import Base
-from .. import output
+from .. import result
 from ..color_group import ColorGroup
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
@@ -50,9 +50,9 @@ class Operation(Base):
 
     @property
     def to_dict(self):
-        result = self._as_dict_data
-        result['type'] = self.type
-        return result
+        d = self._as_dict_data
+        d['type'] = self.type
+        return d
     as_dict = to_dict
 
     @property
@@ -131,12 +131,12 @@ class Operation(Base):
 
     def get_outputs(self, color):
         # XXX Broken -- does not even use color.
-        return {o.name: o.data for o in self.outputs}
+        return {o.name: o.data for o in self.results}
 
     def set_outputs(self, outputs, color):
         s = object_session(self)
         for name, value in outputs.iteritems():
-            o = output.create_output(self, name, value, color)
+            o = result.create_result(self, name, value, color)
 
     def get_inputs(self, color):
         workflow = self.get_workflow()
@@ -144,13 +144,13 @@ class Operation(Base):
 
         source_operations = self._source_op_data()
 
-        result = {}
+        inputs = {}
         for property_name, source_data in source_operations.iteritems():
             output_holder = self._fetch_input(color, valid_colors, source_data)
-            result[property_name] = self._convert_output(property_name,
+            inputs[property_name] = self._convert_output(property_name,
                     output_holder, color)
 
-        return result
+        return inputs
 
     def _convert_output(self, property_name, output_holder, color):
         return output_holder.data
@@ -161,12 +161,12 @@ class Operation(Base):
             ColorGroup.begin <= color, color < ColorGroup.end
         ).one()
 
-        result = [color]
+        color_list = [color]
         while cg.parent_color is not None:
-            result.append(cg.parent_color)
+            color_list.append(cg.parent_color)
             cg = cg.parent_color_group
 
-        return result
+        return color_list
 
     def _get_color_group(self, color):
         s = object_session(self)
@@ -174,13 +174,13 @@ class Operation(Base):
                 ColorGroup.begin <= color, ColorGroup.end > color).one()
 
     def _source_op_data(self):
-        result = {}
+        source_ops = {}
         for link in self.input_links:
-            result[link.destination_property] =\
+            source_ops[link.destination_property] =\
                     link.source_operation.get_source_op_and_name(
                             link.source_property)
 
-        return result
+        return source_ops
 
     def get_source_op_and_name(self, output_param_name):
         return self, output_param_name
@@ -192,20 +192,20 @@ class Operation(Base):
                         link.source_property)
 
     def get_input_sources(self):
-        result = {}
+        input_sources = {}
         for link in self.input_links:
-            result[link.destination_property] = link.source_operation.get_source_op_and_name(
-                    link.source_property)
-        return result
+            input_sources[link.destination_property] =\
+                    link.source_operation.get_source_op_and_name(
+                            link.source_property)
+        return input_sources
 
     def _fetch_input(self, color, valid_color_list, source_data):
         (operation, property_name) = source_data
 
         s = object_session(self)
-        result = s.query(output.Output
+        return s.query(result.Result
                 ).filter_by(operation=operation, name=property_name
-                ).filter(output.Output.color.in_(valid_color_list)).one()
-        return result
+                ).filter(result.Result.color.in_(valid_color_list)).one()
 
     def get_input(self, name, color):
         return self.get_inputs(color)[name]
