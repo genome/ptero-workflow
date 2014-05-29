@@ -1,8 +1,6 @@
 from ..base import Base
 from .. import output
 from ..petri import ColorGroup
-from .mixins.petri import OperationPetriMixin
-from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -11,7 +9,6 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import logging
 import os
-import simplejson
 
 
 __all__ = ['Operation']
