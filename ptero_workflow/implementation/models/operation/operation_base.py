@@ -1,6 +1,6 @@
-from .base import Base
-from . import output
-from .petri import ColorGroup
+from ..base import Base
+from .. import output
+from ..petri import ColorGroup
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
