@@ -26,8 +26,8 @@ class ColorGroup(Base):
     parent_color_group_id = Column(Integer, ForeignKey('color_group.id'),
             nullable=True)
 
-    workflow = relationship('Workflow')
-    parent_color_group = relationship('ColorGroup')
+    workflow = relationship('Workflow', uselist=False)
+    parent_color_group = relationship('ColorGroup', uselist=False)
 
     @classmethod
     def create(cls, workflow, group):
@@ -35,7 +35,7 @@ class ColorGroup(Base):
                 begin=group['begin'], end=group['end'],
                 parent_color=group['parent_color'])
 
-        s = object_session(self)
+        s = object_session(workflow)
         parent_cg = s.query(ColorGroup).filter_by(workflow=workflow,
                 index=group['parent_color_group_idx']).one()
         self.parent_color_group = parent_cg

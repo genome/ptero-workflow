@@ -85,8 +85,9 @@ class Backend(object):
                     headers={'Content-Type': 'application/json'})
 
         elif event_type == 'color_group_created':
-            workflow = operation.workflow
-            models.ColorGroup.create(workflow, group)
+            workflow = operation.get_workflow()
+            cg = models.ColorGroup.create(workflow, group)
+            self.session.add(cg)
             self.session.commit()
 
         elif event_type == 'done':

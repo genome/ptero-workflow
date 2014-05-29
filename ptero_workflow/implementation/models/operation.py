@@ -131,6 +131,7 @@ class Operation(Base):
         return self.get_outputs(color).get(name)
 
     def get_outputs(self, color):
+        # XXX Broken -- does not even use color.
         return {o.name: o.data for o in self.outputs}
 
     def set_outputs(self, outputs, color):
@@ -146,20 +147,23 @@ class Operation(Base):
 
         result = {}
         for property_name, source_data in source_operations.iteritems():
-            result[property_name] = self._fetch_input(color, valid_colors,
-                    source_data, workflow)
+            output_holder = self._fetch_input(color, valid_colors, source_data)
+            result[property_name] = self._convert_output(property_name,
+                    output_holder, color)
 
         return result
 
+    def _convert_output(self, property_name, output_holder, color):
+        return output_holder.data
+
     def _valid_color_list(self, color, workflow):
         s = object_session(self)
-        cg = s.query(ColorGroup).filter(
-            ColorGroup.workflow_id == workflow.id,
-            ColorGroup.begin <= color, color < ColorGroup.end,
+        cg = s.query(ColorGroup).filter_by(workflow=workflow).filter(
+            ColorGroup.begin <= color, color < ColorGroup.end
         ).one()
 
         result = [color]
-        while cg.parent_color:
+        while cg.parent_color is not None:
             result.append(cg.parent_color)
             cg = cg.parent_color_group
 
@@ -180,17 +184,24 @@ class Operation(Base):
     def get_input_op_and_name(self, input_param_name):
         for link in self.input_links:
             if link.destination_property == input_param_name:
-                return link.source_operation, link.source_property
+                return link.source_operation.get_source_op_and_name(
+                        link.source_property)
 
+    def get_input_sources(self):
+        result = {}
+        for link in self.input_links:
+            result[link.destination_property] = link.source_operation.get_source_op_and_name(
+                    link.source_property)
+        return result
 
-    def _fetch_input(self, color, valid_color_list, source_data, workflow):
+    def _fetch_input(self, color, valid_color_list, source_data):
         (operation, property_name) = source_data
 
         s = object_session(self)
         result = s.query(output.Output
                 ).filter_by(operation=operation, name=property_name
                 ).filter(output.Output.color.in_(valid_color_list)).one()
-        return result.data
+        return result
 
     def get_input(self, name, color):
         return self.get_inputs(color)[name]
@@ -212,7 +223,6 @@ class OperationPetriMixin(object):
         self._attach_output_deps(transitions, join_place)
 
         return transitions
-
 
     def _attach_input_deps(self, transitions):
         transitions.append({
@@ -288,7 +298,23 @@ class ParallelPetriMixin(OperationPetriMixin):
         return '%s-joined' % self.unique_name
 
     def get_split_size(self, color):
-        return len(self.get_input(self.parallel_by, color))
+        source_data = self.get_input_op_and_name(self.parallel_by)
+        valid_color_list = self._valid_color_list(color, self.get_workflow())
+        output = self._fetch_input(color, valid_color_list, source_data)
+        return output.size
+
+    def get_outputs(self, color):
+        grouped = {}
+        for o in self.outputs:
+            if o.name not in grouped:
+                grouped[o.name] = []
+            grouped[o.name].append(o)
+
+        results = {}
+        for name, outputs in grouped.iteritems():
+            results[name] = [o.data
+                    for o in sorted(outputs, key=lambda x: x.color)]
+        return results
 
     def _attach_split(self, transitions, ready_place):
         transitions.extend([
@@ -311,6 +337,7 @@ class ParallelPetriMixin(OperationPetriMixin):
                 'outputs': [self.create_color_group_place_name],
             },
 
+            # XXX add color group creation ack callback
             {
                 'inputs': [self.create_color_group_place_name],
                 'outputs': [self.color_group_created_place_name],
@@ -341,6 +368,17 @@ class ParallelPetriMixin(OperationPetriMixin):
             }
         })
         return self.joined_place_name
+
+    def _convert_output(self, property_name, output_holder, color):
+        if property_name == self.parallel_by:
+            workflow = self.get_workflow()
+            s = object_session(self)
+            cg = s.query(ColorGroup).filter_by(workflow=workflow).filter(
+                    ColorGroup.begin <= color, ColorGroup.end > color).one()
+            index = color - cg.begin
+            return output_holder.get_element(index)
+        else:
+            return output_holder.data
 
 
 class InputHolderOperation(Operation):
@@ -409,11 +447,14 @@ class OutputConnectorOperation(Operation):
         'polymorphic_identity': 'output connector',
     }
 
-    def get_output(self, name, color):
-        return self.get_input(name, color)
-
     def get_outputs(self, color):
-        return self.get_inputs(color)
+        source_data = self.get_input_sources()
+        valid_color_list = self._valid_color_list(color, self.get_workflow())
+        result = {}
+        for property_name, source in source_data.iteritems():
+            source_op, source_name = source
+            result[property_name] = source_op.get_output(source_name, color)
+        return result
 
     def get_source_op_and_name(self, output_param_name):
         op, name = self.get_input_op_and_name(output_param_name)
@@ -439,11 +480,8 @@ class ModelOperation(Operation):
         del data['output connector']
         return data.values()
 
-    def get_output(self, name, color):
-        return self.children['output connector'].get_input(name, color)
-
     def get_outputs(self, color):
-        return self.children['output connector'].get_inputs(color)
+        return self.children['output connector'].get_outputs(color)
 
     def get_source_op_and_name(self, output_param_name):
         oc = self.children['output connector']

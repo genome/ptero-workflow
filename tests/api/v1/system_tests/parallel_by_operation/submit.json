@@ -1,0 +1,43 @@
+{
+    "operations": {
+        "A": {
+            "type": "parallel-by-pass-through",
+            "parallel_by": "parallel_param"
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_constant",
+            "destination_property": "constant_param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "source_property": "constant_param",
+            "destination_property": "out_constant"
+        },
+
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_parallel",
+            "destination_property": "parallel_param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "source_property": "parallel_param",
+            "destination_property": "out_parallel"
+        }
+    ],
+
+    "inputs": {
+        "in_constant": "kittens",
+        "in_parallel": ["Simba", "Tabby", "Emelio"]
+    },
+
+    "environment": {}
+}
