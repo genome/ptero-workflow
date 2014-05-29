@@ -168,6 +168,11 @@ class Operation(Base):
 
         return result
 
+    def _get_color_group(self, color):
+        s = object_session(self)
+        return s.query(ColorGroup).filter_by(workflow=self.get_workflow()).filter(
+                ColorGroup.begin <= color, ColorGroup.end > color).one()
+
     def _source_op_data(self):
         result = {}
         for link in self.input_links:

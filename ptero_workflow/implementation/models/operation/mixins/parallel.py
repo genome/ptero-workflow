@@ -1,4 +1,3 @@
-from ...color_group import ColorGroup
 from .petri import OperationPetriMixin
 from sqlalchemy import Column, Text
 from sqlalchemy.orm.session import object_session
@@ -105,10 +104,7 @@ class ParallelPetriMixin(OperationPetriMixin):
 
     def _convert_output(self, property_name, output_holder, color):
         if property_name == self.parallel_by:
-            workflow = self.get_workflow()
-            s = object_session(self)
-            cg = s.query(ColorGroup).filter_by(workflow=workflow).filter(
-                    ColorGroup.begin <= color, ColorGroup.end > color).one()
+            cg = self._get_color_group(color)
             index = color - cg.begin
             return output_holder.get_element(index)
         else:
