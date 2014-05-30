@@ -120,7 +120,7 @@ class Operation(Base):
             o = result.create_result(self, name, value, color)
 
     def get_inputs(self, color):
-        valid_colors = self._valid_color_list(color, self.workflow)
+        valid_colors = self._valid_color_list(color)
 
         source_operations = self._source_op_data()
 
@@ -135,9 +135,9 @@ class Operation(Base):
     def _convert_output(self, property_name, output_holder, color):
         return output_holder.data
 
-    def _valid_color_list(self, color, workflow):
+    def _valid_color_list(self, color):
         s = object_session(self)
-        cg = s.query(ColorGroup).filter_by(workflow=workflow).filter(
+        cg = s.query(ColorGroup).filter_by(workflow=self.workflow).filter(
             ColorGroup.begin <= color, color < ColorGroup.end
         ).one()
 

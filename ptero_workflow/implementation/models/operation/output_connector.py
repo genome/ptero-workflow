@@ -16,7 +16,6 @@ class OutputConnectorOperation(Operation):
 
     def get_outputs(self, color):
         source_data = self.get_input_sources()
-        valid_color_list = self._valid_color_list(color, self.workflow)
         result = {}
         for property_name, source in source_data.iteritems():
             source_op, source_name = source

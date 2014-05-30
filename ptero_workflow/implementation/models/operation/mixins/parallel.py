@@ -32,7 +32,7 @@ class ParallelPetriMixin(OperationPetriMixin):
 
     def get_split_size(self, color):
         source_data = self.get_input_op_and_name(self.parallel_by)
-        valid_color_list = self._valid_color_list(color, self.workflow)
+        valid_color_list = self._valid_color_list(color)
         output = self._fetch_input(color, valid_color_list, source_data)
         return output.size
 
