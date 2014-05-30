@@ -34,13 +34,15 @@ class Backend(object):
             'links': workflow_data['links'],
         }
 
-        workflow.root_operation = operations.create_operation('root', root_data)
+        workflow.root_operation = operations.create_operation('root',
+                root_data, workflow=workflow)
 
         root_color_group = models.ColorGroup(workflow=workflow, index=0,
                 begin=0, end=1)
 
         workflow.input_holder_operation = operations.create_input_holder(
-                workflow.root_operation, workflow_data['inputs'], color=0)
+                workflow.root_operation, workflow_data['inputs'], color=0,
+                workflow=workflow)
 
         self.session.add(workflow)
         self.session.add(root_color_group)
@@ -85,7 +87,7 @@ class Backend(object):
                     headers={'Content-Type': 'application/json'})
 
         elif event_type == 'color_group_created':
-            workflow = operation.get_workflow()
+            workflow = operation.workflow
             cg = models.ColorGroup.create(workflow, group)
             self.session.add(cg)
             self.session.commit()

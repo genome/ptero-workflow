@@ -10,12 +10,14 @@ def _build_model_operation(operation_data, operation):
 
     for name, child_operation_data in operation_data['operations'].iteritems():
         create_operation(name=name, operation_data=child_operation_data,
-                parent=operation)
+                parent=operation, workflow=operation.workflow)
 
     create_operation(name='input connector',
-            operation_data={'type': 'input connector'}, parent=operation)
+            operation_data={'type': 'input connector'}, parent=operation,
+            workflow=operation.workflow)
     create_operation(name='output connector',
-            operation_data={'type': 'output connector'}, parent=operation)
+            operation_data={'type': 'output connector'}, parent=operation,
+            workflow=operation.workflow)
 
     for link_data in operation_data['links']:
         source = operation.children[link_data['source']]
@@ -57,10 +59,11 @@ def _get_operation_type(operation_data):
     return operation_data['type'].lower()
 
 
-def create_operation(name, operation_data, parent=None):
+def create_operation(name, operation_data, parent=None, workflow=None):
     op_type = _get_operation_type(operation_data)
 
-    operation = models.Operation.from_dict(name=name, type=op_type)
+    operation = models.Operation.from_dict(name=name, type=op_type,
+            workflow=workflow)
     if parent is not None:
         parent.children[name] = operation
 
@@ -68,8 +71,9 @@ def create_operation(name, operation_data, parent=None):
 
     return operation
 
-def create_input_holder(root, inputs, color):
-    operation = models.InputHolderOperation(name='input_holder')
+def create_input_holder(root, inputs, color, workflow=None):
+    operation = models.InputHolderOperation(name='input_holder',
+            workflow=workflow)
     operation.set_outputs(inputs, color=color)
     for i in inputs.iterkeys():
         models.Link(source_operation=operation, destination_operation=root,

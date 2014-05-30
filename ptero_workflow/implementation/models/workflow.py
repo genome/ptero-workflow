@@ -17,19 +17,18 @@ class Workflow(Base):
     id          = Column(Integer, primary_key=True)
     environment = Column(Text)
 
-    root_operation_id = Column(Integer,
-            ForeignKey('operation.id'), nullable=False)
-
-    root_operation = relationship('Operation', backref=backref('workflow',
-        uselist=False), foreign_keys=[root_operation_id])
-
-    input_holder_operation_id = Column(Integer,
-            ForeignKey('operation.id'), nullable=False)
-
-    input_holder_operation = relationship('InputHolderOperation',
-            foreign_keys=[input_holder_operation_id])
-
     net_key = Column(Text, unique=True)
+
+    root_operation_id = Column(Integer, ForeignKey('operation.id',
+        use_alter=True, name='fk_workflow_root_operation'))
+    input_holder_operation_id = Column(Integer, ForeignKey('operation.id',
+        use_alter=True, name='fk_input_holder_operation'))
+
+
+    root_operation = relationship('Operation', post_update=True,
+            foreign_keys=[root_operation_id])
+    input_holder_operation = relationship('InputHolderOperation',
+            post_update=True, foreign_keys=[input_holder_operation_id])
 
     @property
     def start_place_name(self):

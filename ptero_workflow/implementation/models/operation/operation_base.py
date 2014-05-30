@@ -27,12 +27,15 @@ class Operation(Base):
     parent_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
+    workflow_id = Column(Integer, ForeignKey('workflow.id'), nullable=False)
     status = Column(Text)
 
     children = relationship('Operation',
             backref=backref('parent', uselist=False, remote_side=[id]),
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
+
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -104,20 +107,6 @@ class Operation(Base):
         else:
             return []
 
-    def get_workflow(self):
-        root = self.get_root()
-        return root.workflow
-
-    def get_root(self):
-        parent = self.parent
-        if parent is None:
-            return self
-
-        while parent.parent:
-            parent = parent.parent
-
-        return parent
-
     def get_output(self, name, color):
         return self.get_outputs(color).get(name)
 
@@ -131,8 +120,7 @@ class Operation(Base):
             o = result.create_result(self, name, value, color)
 
     def get_inputs(self, color):
-        workflow = self.get_workflow()
-        valid_colors = self._valid_color_list(color, workflow)
+        valid_colors = self._valid_color_list(color, self.workflow)
 
         source_operations = self._source_op_data()
 
@@ -162,7 +150,7 @@ class Operation(Base):
 
     def _get_color_group(self, color):
         s = object_session(self)
-        return s.query(ColorGroup).filter_by(workflow=self.get_workflow()).filter(
+        return s.query(ColorGroup).filter_by(workflow=self.workflow).filter(
                 ColorGroup.begin <= color, ColorGroup.end > color).one()
 
     def _source_op_data(self):
