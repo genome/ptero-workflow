@@ -75,10 +75,8 @@ class Backend(object):
             response_links=None):
         operation = self.session.query(models.Operation).get(operation_id)
         if event_type == 'execute':
-            if 'success' in response_links:
-                operation.execute(color, group)
-                self.session.commit()
-                response = requests.put(response_links['success'])
+            operation.execute(color, group, response_links)
+            self.session.commit()
 
         elif event_type == 'get_split_size':
             size = operation.get_split_size(color)

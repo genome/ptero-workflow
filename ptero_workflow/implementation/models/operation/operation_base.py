@@ -190,5 +190,5 @@ class Operation(Base):
     def get_input(self, name, color):
         return self.get_inputs(color)[name]
 
-    def execute(self, inputs):
+    def execute(self, **kwargs):
         pass

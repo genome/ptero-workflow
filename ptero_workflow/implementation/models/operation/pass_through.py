@@ -2,6 +2,8 @@ from .operation_base import Operation
 from .mixins.petri import OperationPetriMixin
 from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm.session import object_session
+import requests
 
 
 __all__ = ['PassThroughOperation', 'ParallelByPassThroughOperation']
@@ -16,8 +18,11 @@ class PassThroughOperation(OperationPetriMixin, Operation):
         'polymorphic_identity': 'pass-through',
     }
 
-    def execute(self, color, group):
+    def execute(self, color, group, response_links):
         self.set_outputs(self.get_inputs(color), color)
+        s = object_session(self)
+        s.commit()
+        response = requests.put(response_links['success'])
 
 
 class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
@@ -29,5 +34,8 @@ class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
         'polymorphic_identity': 'parallel-by-pass-through',
     }
 
-    def execute(self, color, group):
+    def execute(self, color, group, response_links):
         self.set_outputs(self.get_inputs(color), color)
+        s = object_session(self)
+        s.commit()
+        response = requests.put(response_links['success'])
