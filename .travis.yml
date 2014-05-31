@@ -22,8 +22,8 @@ before_script:
     - honcho start --port 5000 &
     - popd
 
-    - git clone --depth 1 https://github.com/mark-burnett/ptero-fork.git
-    - pushd ptero-fork
+    - git clone --depth 1 https://github.com/mark-burnett/ptero-shell-command-fork.git
+    - pushd ptero-shell-command-fork
     - git --no-pager show -s
     - pip install -r requirements.txt
     - honcho start --port 6000 &
