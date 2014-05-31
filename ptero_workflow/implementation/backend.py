@@ -72,10 +72,14 @@ class Backend(object):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
     def event(self, operation_id, event_type, color=None, group=None,
-            response_links=None):
+            response_links=None, **kwargs):
         operation = self.session.query(models.Operation).get(operation_id)
         if event_type == 'execute':
             operation.execute(color, group, response_links)
+            self.session.commit()
+
+        elif event_type == 'ended':
+            operation.ended(**kwargs)
             self.session.commit()
 
         elif event_type == 'get_split_size':

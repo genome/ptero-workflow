@@ -35,10 +35,15 @@ def _build_parallel_by_operation(operation_data, operation):
     operation.parallel_by = operation_data['parallel_by']
 
 
+def _build_command_operation(operation_data, operation):
+    operation.command_line = operation_data['command_line']
+
+
 _OP_BUILDERS = {
     'model': _build_model_operation,
     'parallel-by-pass-through': _build_parallel_by_operation,
     'parallel-by-command': _build_parallel_by_operation,
+    'command': _build_command_operation,
 }
 def _build_operation(operation_data, operation):
     _operation_builder = _OP_BUILDERS.get(operation.type)
