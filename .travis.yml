@@ -8,17 +8,25 @@ services:
 env:
     global:
         - PTERO_PETRI_HOST=localhost
-        - PTERO_PETRI_PORT=9001
+        - PTERO_PETRI_PORT=5000
+        - PTERO_FORK_HOST=localhost
+        - PTERO_FORK_PORT=6000
 
-install: pip install tox
+install: pip install tox gunicorn honcho
 
 before_script:
     - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
     - pushd ptero-petri
     - git --no-pager show -s
     - pip install -r requirements.txt
-    - python setup.py install
-    - ./devserver --logdir ../petri-logs --port $PTERO_PETRI_PORT &
+    - honcho start --port 5000 &
+    - popd
+
+    - git clone --depth 1 https://github.com/mark-burnett/ptero-fork.git
+    - pushd ptero-fork
+    - git --no-pager show -s
+    - pip install -r requirements.txt
+    - honcho start --port 6000 &
     - popd
 
 script:
