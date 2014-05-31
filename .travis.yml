@@ -19,6 +19,7 @@ before_script:
     - pushd ptero-petri
     - git --no-pager show -s
     - pip install -r requirements.txt
+    - python setup.py install
     - honcho start --port 5000 &
     - popd
 
@@ -26,6 +27,7 @@ before_script:
     - pushd ptero-shell-command-fork
     - git --no-pager show -s
     - pip install -r requirements.txt
+    - python setup.py install
     - honcho start --port 6000 &
     - popd
 
