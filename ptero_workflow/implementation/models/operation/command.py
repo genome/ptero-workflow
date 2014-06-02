@@ -32,7 +32,13 @@ class CommandOperation(OperationPetriMixin, Operation):
         'polymorphic_identity': 'command',
     }
 
-    def execute(self, color, group, response_links):
+    VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(['execute', 'ended'])
+
+    def execute(self, data):
+        color = data['color']
+        group = data['group']
+        response_links = data['response_links']
+
         job_id = self._submit_to_fork(color)
 
         job = Job(operation=self, color=color, job_id=job_id)
@@ -44,18 +50,20 @@ class CommandOperation(OperationPetriMixin, Operation):
         s.add(job)
         s.commit()
 
-    def ended(self, job_id, **kwargs):
+    def ended(self, data):
+        job_id = data.pop('job_id')
+
         s = object_session(self)
         job = s.query(Job).filter_by(operation=self, job_id=job_id).one()
 
-        if kwargs['exit_code'] == 0:
-            outputs = simplejson.loads(kwargs['stdout'])
+        if data['exit_code'] == 0:
+            outputs = simplejson.loads(data['stdout'])
             self.set_outputs(outputs, job.color)
             s.commit()
             response = requests.put(job.response_links['success'].url)
 
         else:
-            LOG.error('job failed: %s', kwargs)
+            LOG.error('job failed: %s', data)
             raise RuntimeError('Job failed')
 
 

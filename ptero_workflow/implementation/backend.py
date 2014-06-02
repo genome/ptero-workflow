@@ -71,33 +71,9 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, operation_id, event_type, color=None, group=None,
-            response_links=None, **kwargs):
+    def event(self, operation_id, event_type,  data):
         operation = self.session.query(models.Operation).get(operation_id)
-        if event_type == 'execute':
-            operation.execute(color, group, response_links)
-            self.session.commit()
-
-        elif event_type == 'ended':
-            operation.ended(**kwargs)
-            self.session.commit()
-
-        elif event_type == 'get_split_size':
-            size = operation.get_split_size(color)
-            response = requests.put(response_links['send_data'],
-                    data=simplejson.dumps({'color_group_size': size}),
-                    headers={'Content-Type': 'application/json'})
-
-        elif event_type == 'color_group_created':
-            workflow = operation.workflow
-            cg = models.ColorGroup.create(workflow, group)
-            self.session.add(cg)
-            self.session.commit()
-
-        elif event_type == 'done':
-            operation = self.session.query(models.Operation).get(operation_id)
-            operation.status = 'success'
-            self.session.commit()
+        operation.handle_event(event_type, data)
 
     def cleanup(self):
         pass

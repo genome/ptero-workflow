@@ -57,7 +57,7 @@ class OperationEventCallback(Resource):
     def put(self, operation_id, event_type):
         try:
             request_data = request.get_json()
-            g.backend.event(operation_id, event_type, **request_data)
+            g.backend.event(operation_id, event_type, request_data)
             return ''
 
         except:

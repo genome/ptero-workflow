@@ -1,6 +1,9 @@
+from ...color_group import ColorGroup
 from .petri import OperationPetriMixin
 from sqlalchemy import Column, Text
 from sqlalchemy.orm.session import object_session
+import requests
+import simplejson
 
 
 class ParallelPetriMixin(OperationPetriMixin):
@@ -30,11 +33,27 @@ class ParallelPetriMixin(OperationPetriMixin):
     def joined_place_name(self):
         return '%s-joined' % self.unique_name
 
-    def get_split_size(self, color):
+    def get_split_size(self, data):
+        color = data['color']
+        response_links = data['response_links']
+
         source_data = self.get_input_op_and_name(self.parallel_by)
         valid_color_list = self._valid_color_list(color)
         output = self._fetch_input(color, valid_color_list, source_data)
-        return output.size
+        response = requests.put(response_links['send_data'],
+                data=simplejson.dumps({'color_group_size': output.size}),
+                headers={'Content-Type': 'application/json'})
+        return response
+
+    def color_group_created(self, data):
+        workflow = self.workflow
+        group = data['group']
+
+        cg = ColorGroup.create(workflow, group)
+        s = object_session(self)
+        s.add(cg)
+        s.commit()
+        return cg
 
     def get_outputs(self, color):
         grouped = {}

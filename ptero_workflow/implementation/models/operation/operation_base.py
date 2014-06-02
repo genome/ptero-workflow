@@ -23,6 +23,8 @@ class Operation(Base):
         UniqueConstraint('parent_id', 'name'),
     )
 
+    VALID_EVENT_TYPES = set(['done'])
+
     id        = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
     name      = Column(Text, nullable=False)
@@ -190,5 +192,14 @@ class Operation(Base):
     def get_input(self, name, color):
         return self.get_inputs(color)[name]
 
-    def execute(self, **kwargs):
-        pass
+    def handle_event(self, event_type, data):
+        if event_type in self.VALID_EVENT_TYPES:
+            return getattr(self, event_type)(data)
+        else:
+            raise RuntimeError('Invalid event type (%s).  Allowed types: %s'
+                    % (event_type, self.VALID_EVENT_TYPES))
+
+    def done(self, data):
+        self.status = 'success'
+        s = object_session(self)
+        s.commit()
