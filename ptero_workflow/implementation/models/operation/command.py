@@ -9,7 +9,7 @@ import requests
 import simplejson
 
 
-__all__ = ['CommandOperation', 'ParallelByCommandOperation']
+__all__ = ['CommandOperation']
 
 
 class CommandOperation(OperationPetriMixin, Operation):
@@ -73,22 +73,12 @@ class CommandOperation(OperationPetriMixin, Operation):
             int(os.environ.get('PTERO_FORK_PORT', 80)),
         )
 
-    def _fork_submit_data(self, color):
+    def _fork_submit_data(self, color, command_line):
         return {
-            'command_line': self.command_line,
+            'command_line': command_line,
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(self.get_inputs(color)),
             'callbacks': {
                 'ended': self.event_url('ended'),
             },
         }
-
-
-class ParallelByCommandOperation(ParallelPetriMixin, Operation):
-    __tablename__ = 'operation_command_parallel'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'parallel-by-command',
-    }
