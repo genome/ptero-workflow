@@ -1,6 +1,6 @@
 from ..job import Job, ResponseLink
 from .operation_base import Operation
-from .mixins.petri import OperationPetriMixin
+from .mixins.command import OperationPetriMixin
 from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session

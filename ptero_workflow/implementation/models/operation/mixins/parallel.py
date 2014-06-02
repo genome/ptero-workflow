@@ -1,5 +1,5 @@
 from ...color_group import ColorGroup
-from .petri import OperationPetriMixin
+from .pass_through import OperationPetriMixin
 from sqlalchemy import Column, Text
 from sqlalchemy.orm.session import object_session
 import requests

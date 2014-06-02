@@ -1,5 +1,5 @@
 from .operation_base import Operation
-from .mixins.petri import OperationPetriMixin
+from .mixins.pass_through import OperationPetriMixin
 from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
