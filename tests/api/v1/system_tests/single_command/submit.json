@@ -2,7 +2,16 @@
     "operations": {
         "A": {
             "type": "command",
-            "command_line": ["cat"]
+            "methods": [
+                {
+                    "name": "shortcut",
+                    "command_line": ["false"]
+                },
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         }
     },
 
