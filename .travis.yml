@@ -32,6 +32,8 @@ before_script:
     - honcho start -q web,worker --port 6000 &
     - popd
 
+    - sleep 3
+
 script:
     - tox
 
