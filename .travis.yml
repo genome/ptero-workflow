@@ -12,7 +12,7 @@ env:
         - PTERO_FORK_HOST=localhost
         - PTERO_FORK_PORT=6000
 
-install: pip install tox gunicorn honcho
+install: pip install tox gunicorn git+https://github.com/nickstenning/honcho.git
 
 before_script:
     - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
@@ -21,7 +21,7 @@ before_script:
     - pip install -r requirements.txt
     - python setup.py install
     - PTERO_CONFIG_PATH=config ptero configure-rabbitmq
-    - honcho start --port 5000 &
+    - honcho start -q web,orchestrator --port 5000 &
     - popd
 
     - git clone --depth 1 https://github.com/mark-burnett/ptero-shell-command-fork.git
@@ -29,7 +29,7 @@ before_script:
     - git --no-pager show -s
     - pip install -r requirements.txt
     - python setup.py install
-    - honcho start --port 6000 &
+    - honcho start -q web,worker --port 6000 &
     - popd
 
 script:
