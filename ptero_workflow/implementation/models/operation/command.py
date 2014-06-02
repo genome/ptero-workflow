@@ -38,7 +38,8 @@ class CommandOperation(OperationPetriMixin, Operation):
         job = Job(operation=self, color=color, job_id=job_id)
         s = object_session(self)
         for name, url in response_links.iteritems():
-            s.add(ResponseLink(job=job, url=url, name=name))
+            link = ResponseLink(job=job, url=url, name=name)
+            job.response_links[name] = link
 
         s.add(job)
         s.commit()
