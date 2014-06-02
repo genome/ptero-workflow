@@ -60,12 +60,10 @@ class CommandOperation(OperationPetriMixin, Operation):
             outputs = simplejson.loads(body_data['stdout'])
             self.set_outputs(outputs, job.color)
             s.commit()
-            response = requests.put(job.response_links['success'].url)
+            return requests.put(job.response_links['success'].url)
 
         else:
-            LOG.error('job failed: %s', body_data)
-            raise RuntimeError('Job failed')
-
+            return requests.put(job.response_links['failure'].url)
 
     def _submit_to_fork(self, color):
         body_data = self._fork_submit_data(color)
