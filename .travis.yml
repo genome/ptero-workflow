@@ -21,7 +21,7 @@ before_script:
     - pip install -r requirements.txt
     - python setup.py install
     - PTERO_CONFIG_PATH=config ptero configure-rabbitmq
-    - honcho start -q web,orchestrator --port 5000 &
+    - honcho start --port 5000 > /dev/null &
     - popd
 
     - git clone --depth 1 https://github.com/mark-burnett/ptero-shell-command-fork.git
@@ -29,7 +29,7 @@ before_script:
     - git --no-pager show -s
     - pip install -r requirements.txt
     - python setup.py install
-    - honcho start -q web,worker --port 6000 &
+    - honcho start --port 6000 > /dev/null &
     - popd
 
     - sleep 3
