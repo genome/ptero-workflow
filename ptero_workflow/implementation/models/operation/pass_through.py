@@ -20,10 +20,10 @@ class PassThroughOperation(OperationPetriMixin, Operation):
 
     VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(['execute'])
 
-    def execute(self, data):
-        color = data['color']
-        group = data['group']
-        response_links = data['response_links']
+    def execute(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
 
         self.set_outputs(self.get_inputs(color), color)
         s = object_session(self)
@@ -43,10 +43,10 @@ class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
     VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union([
         'execute', 'get_split_size', 'color_group_created'])
 
-    def execute(self, data):
-        color = data['color']
-        group = data['group']
-        response_links = data['response_links']
+    def execute(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
 
         self.set_outputs(self.get_inputs(color), color)
         s = object_session(self)

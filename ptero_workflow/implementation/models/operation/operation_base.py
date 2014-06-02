@@ -9,6 +9,7 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import logging
 import os
+import urllib
 
 
 __all__ = ['Operation']
@@ -79,12 +80,18 @@ class Operation(Base):
     def ready_place_name(self):
         return '%s-ready' % self.unique_name
 
-    def event_url(self, event):
-        return 'http://%s:%d/v1/callbacks/operations/%d/events/%s' % (
+    def event_url(self, event, **params):
+        if params:
+            query_string = '?%s' % urllib.urlencode(params)
+        else:
+            query_string = ''
+
+        return 'http://%s:%d/v1/callbacks/operations/%d/events/%s%s' % (
             os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
             int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
             self.id,
             event,
+            query_string,
         )
 
     def get_petri_transitions(self):
@@ -192,14 +199,14 @@ class Operation(Base):
     def get_input(self, name, color):
         return self.get_inputs(color)[name]
 
-    def handle_event(self, event_type, data):
+    def handle_event(self, event_type, body_data, query_string_data):
         if event_type in self.VALID_EVENT_TYPES:
-            return getattr(self, event_type)(data)
+            return getattr(self, event_type)(body_data, query_string_data)
         else:
             raise RuntimeError('Invalid event type (%s).  Allowed types: %s'
                     % (event_type, self.VALID_EVENT_TYPES))
 
-    def done(self, data):
+    def done(self, body_data, query_string_data):
         self.status = 'success'
         s = object_session(self)
         s.commit()

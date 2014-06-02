@@ -33,9 +33,9 @@ class ParallelPetriMixin(OperationPetriMixin):
     def joined_place_name(self):
         return '%s-joined' % self.unique_name
 
-    def get_split_size(self, data):
-        color = data['color']
-        response_links = data['response_links']
+    def get_split_size(self, body_data, query_string_data):
+        color = body_data['color']
+        response_links = body_data['response_links']
 
         source_data = self.get_input_op_and_name(self.parallel_by)
         valid_color_list = self._valid_color_list(color)
@@ -45,9 +45,9 @@ class ParallelPetriMixin(OperationPetriMixin):
                 headers={'Content-Type': 'application/json'})
         return response
 
-    def color_group_created(self, data):
+    def color_group_created(self, body_data, query_string_data):
         workflow = self.workflow
-        group = data['group']
+        group = body_data['group']
 
         cg = ColorGroup.create(workflow, group)
         s = object_session(self)

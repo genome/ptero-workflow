@@ -71,9 +71,9 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, operation_id, event_type,  data):
+    def event(self, operation_id, event_type, body_data, query_string_data):
         operation = self.session.query(models.Operation).get(operation_id)
-        operation.handle_event(event_type, data)
+        operation.handle_event(event_type, body_data, query_string_data)
 
     def cleanup(self):
         pass
