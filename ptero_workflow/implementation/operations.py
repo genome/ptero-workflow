@@ -5,8 +5,8 @@ from . import models
 __all__ = ['create_operation']
 
 
-def _build_model_operation(operation_data, operation):
-    _validate_model_operation_data(operation_data)
+def _build_dag_operation(operation_data, operation):
+    _validate_dag_operation_data(operation_data)
 
     for name, child_operation_data in operation_data['operations'].iteritems():
         create_operation(name=name, operation_data=child_operation_data,
@@ -45,7 +45,7 @@ def _build_command_operation(operation_data, operation):
 
 
 _OP_BUILDERS = {
-    'model': _build_model_operation,
+    'dag': _build_dag_operation,
     'parallel-by-pass-through': _build_parallel_by_operation,
     'parallel-by-command': _build_parallel_by_operation,
     'command': _build_command_operation,
@@ -56,7 +56,7 @@ def _build_operation(operation_data, operation):
         _operation_builder(operation_data, operation=operation)
 
 
-def _validate_model_operation_data(operation_data):
+def _validate_dag_operation_data(operation_data):
     if 'input connector' in operation_data['operations']:
         raise exceptions.InvalidWorkflow(
                 "'input connector' is a reserved operation name")

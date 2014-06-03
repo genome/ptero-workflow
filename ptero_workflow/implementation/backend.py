@@ -29,7 +29,7 @@ class Backend(object):
         )
 
         root_data = {
-            'type': 'model',
+            'type': 'dag',
             'operations': workflow_data['operations'],
             'links': workflow_data['links'],
         }

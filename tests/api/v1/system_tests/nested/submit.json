@@ -4,7 +4,7 @@
             "type": "pass-through"
         },
         "Inner": {
-            "type": "model",
+            "type": "dag",
             "operations": {
                 "B": {
                     "type": "pass-through"

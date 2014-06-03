@@ -83,7 +83,7 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'model',
+                'type': 'dag',
                 'operations': {
                     'A': {
                         'type': 'pass-through',
@@ -131,7 +131,7 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'model',
+                'type': 'dag',
                 'operations': {
                     'A': {
                         'type': 'pass-through',

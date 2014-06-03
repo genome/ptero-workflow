@@ -60,7 +60,7 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'model',
+                'type': 'dag',
                 'operations': {
                     'A': {
                         'type': 'pass-through',
@@ -134,7 +134,7 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'model',
+                'type': 'dag',
                 'operations': {
                     'A': {
                         'type': 'pass-through',
