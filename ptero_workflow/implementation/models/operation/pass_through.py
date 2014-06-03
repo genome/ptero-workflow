@@ -31,7 +31,8 @@ class PassThroughOperation(OperationPetriMixin, Operation):
         response = requests.put(response_links['success'])
 
 
-class ParallelByPassThroughOperation(ParallelPetriMixin, Operation):
+class ParallelByPassThroughOperation(ParallelPetriMixin, OperationPetriMixin,
+        Operation):
     __tablename__ = 'operation_pass_through_parallel'
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
