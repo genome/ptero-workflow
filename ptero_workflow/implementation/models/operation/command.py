@@ -1,21 +1,33 @@
+from ..base import Base
 from ..job import Job, ResponseLink
 from .operation_base import Operation
-from .mixins.petri import OperationPetriMixin
+from .mixins.command import OperationPetriMixin
 from .mixins.parallel import ParallelPetriMixin
-from sqlalchemy import Column, ForeignKey, Integer, Text
+from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import os
 import requests
 import simplejson
 
 
-__all__ = ['CommandOperation', 'ParallelByCommandOperation']
+__all__ = ['CommandOperation', 'Method']
 
 
-class CommandOperation(OperationPetriMixin, Operation):
-    __tablename__ = 'operation_command'
+class Method(Base):
+    __tablename__ = 'operation_command_method'
 
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+    __table_args__ = (
+        UniqueConstraint('operation_id', 'name'),
+    )
+
+    id = Column(Integer, primary_key=True)
+
+    operation_id = Column(Integer, ForeignKey('operation.id'))
+    name = Column(Text)
+
+    index = Column(Integer, nullable=False, index=True)
 
     serialized_command_line = Column(Text, nullable=False)
 
@@ -28,38 +40,59 @@ class CommandOperation(OperationPetriMixin, Operation):
         self.serialized_command_line = simplejson.dumps(new_value)
 
 
+class CommandOperation(OperationPetriMixin, Operation):
+    __tablename__ = 'operation_command'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    methods = relationship('Method', backref='operation',
+            collection_class=attribute_mapped_collection('name'),
+            cascade='all, delete-orphan')
+
+    method_list = relationship('Method', order_by=Method.index)
+
     __mapper_args__ = {
         'polymorphic_identity': 'command',
     }
 
-    def execute(self, color, group, response_links):
-        job_id = self._submit_to_fork(color)
+    VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(['execute', 'ended'])
 
-        job = Job(operation=self, color=color, job_id=job_id)
+    def execute(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
+
+        method_name = query_string_data['method']
+        method = self.methods[method_name]
+
+        job_id = self._submit_to_fork(color, method.command_line)
+
+        job = Job(operation=self, method=method, color=color, job_id=job_id)
         s = object_session(self)
         for name, url in response_links.iteritems():
-            s.add(ResponseLink(job=job, url=url, name=name))
+            link = ResponseLink(job=job, url=url, name=name)
+            job.response_links[name] = link
 
         s.add(job)
         s.commit()
 
-    def ended(self, job_id, **kwargs):
+    def ended(self, body_data, query_string_data):
+        job_id = body_data.pop('job_id')
+
         s = object_session(self)
         job = s.query(Job).filter_by(operation=self, job_id=job_id).one()
 
-        if kwargs['exit_code'] == 0:
-            outputs = simplejson.loads(kwargs['stdout'])
+        if body_data['exit_code'] == 0:
+            outputs = simplejson.loads(body_data['stdout'])
             self.set_outputs(outputs, job.color)
             s.commit()
-            response = requests.put(job.response_links['success'].url)
+            return requests.put(job.response_links['success'].url)
 
         else:
-            LOG.error('job failed: %s', kwargs)
-            raise RuntimeError('Job failed')
+            return requests.put(job.response_links['failure'].url)
 
-
-    def _submit_to_fork(self, color):
-        body_data = self._fork_submit_data(color)
+    def _submit_to_fork(self, color, command_line):
+        body_data = self._fork_submit_data(color, command_line)
         response = requests.post(self._fork_submit_url,
                 data=simplejson.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
@@ -72,22 +105,12 @@ class CommandOperation(OperationPetriMixin, Operation):
             int(os.environ.get('PTERO_FORK_PORT', 80)),
         )
 
-    def _fork_submit_data(self, color):
+    def _fork_submit_data(self, color, command_line):
         return {
-            'command_line': self.command_line,
+            'command_line': command_line,
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(self.get_inputs(color)),
             'callbacks': {
                 'ended': self.event_url('ended'),
             },
         }
-
-
-class ParallelByCommandOperation(ParallelPetriMixin, Operation):
-    __tablename__ = 'operation_command_parallel'
-
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'parallel-by-command',
-    }

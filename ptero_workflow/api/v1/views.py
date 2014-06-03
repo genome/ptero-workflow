@@ -56,8 +56,10 @@ def _report_url(workflow_id, report_type):
 class OperationEventCallback(Resource):
     def put(self, operation_id, event_type):
         try:
-            request_data = request.get_json()
-            g.backend.event(operation_id, event_type, **request_data)
+            body_data = request.get_json()
+            query_string_data = request.args
+            g.backend.event(operation_id, event_type, body_data,
+                    query_string_data)
             return ''
 
         except:

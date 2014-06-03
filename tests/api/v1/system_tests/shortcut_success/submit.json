@@ -5,11 +5,11 @@
             "methods": [
                 {
                     "name": "shortcut",
-                    "command_line": ["false"]
+                    "command_line": ["cat"]
                 },
                 {
                     "name": "execute",
-                    "command_line": ["cat"]
+                    "command_line": ["false"]
                 }
             ]
         }

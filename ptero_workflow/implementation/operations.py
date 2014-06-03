@@ -36,7 +36,12 @@ def _build_parallel_by_operation(operation_data, operation):
 
 
 def _build_command_operation(operation_data, operation):
-    operation.command_line = operation_data['command_line']
+    for index, data in enumerate(operation_data['methods']):
+        method_name = data['name']
+        method = models.Method(operation=operation,
+                name=method_name, index=index)
+        method.command_line = data['command_line']
+        operation.methods[method_name] = method
 
 
 _OP_BUILDERS = {
