@@ -1,0 +1,38 @@
+{
+    "operations": {
+        "A": {
+            "type": "converge",
+            "input_order": ["param_bar", "param_foo"],
+            "output_name": "converged_output"
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_foo",
+            "destination_property": "param_foo"
+        },
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_bar",
+            "destination_property": "param_bar"
+        },
+
+        {
+            "source": "A",
+            "destination": "output connector",
+            "source_property": "converged_output",
+            "destination_property": "out_a"
+        }
+    ],
+
+    "inputs": {
+        "in_foo": "foo",
+        "in_bar": "bar"
+    },
+
+    "environment": {}
+}

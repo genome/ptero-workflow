@@ -45,7 +45,13 @@ def _build_command_operation(operation_data, operation):
         operation.methods[method_name] = method
 
 
+def _build_converge_operation(operation_data, operation):
+    operation.input_order = operation_data['input_order']
+    operation.output_name = operation_data['output_name']
+
+
 _OP_BUILDERS = {
+    'converge': _build_converge_operation,
     'dag': _build_dag_operation,
     'parallel-by-command': _build_parallel_by_command,
     'command': _build_command_operation,
