@@ -52,3 +52,24 @@ class CommandOperation(OperationPetriMixin, Operation):
     }
 
     VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(['execute', 'ended'])
+
+
+class ParallelByCommandOperation(ParallelPetriMixin, OperationPetriMixin,
+        Operation):
+
+    __tablename__ = 'operation_command_parallel'
+
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+
+    methods = relationship('Method',
+            collection_class=attribute_mapped_collection('name'),
+            cascade='all, delete-orphan')
+
+    method_list = relationship('Method', order_by=Method.index)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'parallel-by-command',
+    }
+
+    VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(
+            ['color_group_created', 'execute', 'ended', 'get_split_size'])

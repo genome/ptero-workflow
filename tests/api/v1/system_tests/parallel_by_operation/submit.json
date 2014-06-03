@@ -1,7 +1,13 @@
 {
     "operations": {
         "A": {
-            "type": "parallel-by-pass-through",
+            "type": "parallel-by-command",
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ],
             "parallel_by": "parallel_param"
         }
     },
