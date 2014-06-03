@@ -41,7 +41,7 @@ class CommandOperation(OperationPetriMixin, Operation):
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
 
-    methods = relationship('Method', backref='operation',
+    methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
