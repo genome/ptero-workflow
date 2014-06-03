@@ -1,13 +1,25 @@
 {
     "operations": {
         "A": {
-            "type": "pass-through"
+            "type": "command",
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         },
         "Inner": {
             "type": "dag",
             "operations": {
                 "B": {
-                    "type": "pass-through"
+                    "type": "command",
+                    "methods": [
+                        {
+                            "name": "execute",
+                            "command_line": ["cat"]
+                        }
+                    ]
                 }
             },
             "links": [
@@ -26,7 +38,13 @@
             ]
         },
         "C": {
-            "type": "pass-through"
+            "type": "command",
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         }
     },
 
