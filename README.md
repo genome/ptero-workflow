@@ -48,7 +48,7 @@ the [fork](https://github.com/mark-burnett/ptero-shell-command-fork) service:
     git clone https://github.com/mark-burnett/ptero-shell-command-fork.git
     pushd ptero-shell-command-fork
     pip install -r requirements.txt
-    honcho start -p PTERO_FORK_PORT > fork-service-logs
+    honcho start -p $PTERO_FORK_PORT > fork-service-logs
     popd
 
 Now, you can run the tests using tox:
