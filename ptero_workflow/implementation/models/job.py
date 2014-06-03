@@ -17,7 +17,7 @@ class Job(Base):
     __tablename__ = 'job'
 
     __table_args__ = (
-        UniqueConstraint('operation_id', 'method_id'),
+        UniqueConstraint('operation_id', 'method_id', 'color'),
     )
 
     id = Column(Integer, primary_key=True)
