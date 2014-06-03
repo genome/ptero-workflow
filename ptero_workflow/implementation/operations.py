@@ -31,10 +31,6 @@ def _build_dag_operation(operation_data, operation):
         )
 
 
-def _build_parallel_by_operation(operation_data, operation):
-    operation.parallel_by = operation_data['parallel_by']
-
-
 def _build_parallel_by_command(operation_data, operation):
     operation.parallel_by = operation_data['parallel_by']
     _build_command_operation(operation_data, operation)
@@ -51,7 +47,6 @@ def _build_command_operation(operation_data, operation):
 
 _OP_BUILDERS = {
     'dag': _build_dag_operation,
-    'parallel-by-pass-through': _build_parallel_by_operation,
     'parallel-by-command': _build_parallel_by_command,
     'command': _build_command_operation,
 }
