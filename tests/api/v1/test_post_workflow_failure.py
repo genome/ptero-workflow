@@ -24,10 +24,22 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'input connector': {
-                'type': 'pass-through',
+                "type": "command",
+                "methods": [
+                    {
+                        "name": "execute",
+                        "command_line": ["cat"]
+                    }
+                ]
             },
             'A': {
-                'type': 'pass-through',
+                "type": "command",
+                "methods": [
+                    {
+                        "name": "execute",
+                        "command_line": ["cat"]
+                    }
+                ]
             },
         },
         'links': [
@@ -54,10 +66,22 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'pass-through',
+                "type": "command",
+                "methods": [
+                    {
+                        "name": "execute",
+                        "command_line": ["cat"]
+                    }
+                ]
             },
             'output connector': {
-                'type': 'pass-through',
+                "type": "command",
+                "methods": [
+                    {
+                        "name": "execute",
+                        "command_line": ["cat"]
+                    }
+                ]
             },
         },
         'links': [
@@ -86,10 +110,22 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
                 'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'pass-through',
+                        "type": "command",
+                        "methods": [
+                            {
+                                "name": "execute",
+                                "command_line": ["cat"]
+                            }
+                        ]
                     },
                     'input connector': {
-                        'type': 'pass-through',
+                        "type": "command",
+                        "methods": [
+                            {
+                                "name": "execute",
+                                "command_line": ["cat"]
+                            }
+                        ]
                     },
                 },
                 'links': [
@@ -134,10 +170,22 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
                 'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'pass-through',
+                        "type": "command",
+                        "methods": [
+                            {
+                                "name": "execute",
+                                "command_line": ["cat"]
+                            }
+                        ]
                     },
                     'output connector': {
-                        'type': 'pass-through',
+                        "type": "command",
+                        "methods": [
+                            {
+                                "name": "execute",
+                                "command_line": ["cat"]
+                            }
+                        ]
                     },
                 },
                 'links': [
