@@ -1,0 +1,38 @@
+{
+    "operations": {
+        "A": {
+            "type": "command",
+            "methods": [
+                {
+                    "name": "shortcut",
+                    "command_line": ["cat"]
+                },
+                {
+                    "name": "execute",
+                    "command_line": ["false"]
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "source_property": "in_a",
+            "destination_property": "param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "source_property": "param",
+            "destination_property": "out_a"
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens"
+    },
+
+    "environment": {}
+}
