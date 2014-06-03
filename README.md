@@ -26,7 +26,35 @@ command](https://github.com/mark-burnett/ptero-shell-command-fork) service.
 
 ## Testing
 
-To run tests:
+The tests for this service depend on a running petri and forking shell command
+service.  To run the tests, first install some tools:
 
-    pip install tox
+    pip install honcho gunicorn tox
+
+Next, set the environment variables that are used to generate callback urls:
+
+    export PTERO_PETRI_PORT=5000
+    export PTERO_FORK_PORT=6000
+
+Then setup the [petri](https://github.com/mark-burnett/ptero-petri) service and
+the [fork](https://github.com/mark-burnett/ptero-shell-command-fork) service:
+
+    git clone https://github.com/mark-burnett/ptero-petri.git
+    pushd ptero-petri
+    pip install -r requirements.txt
+    honcho start -p $PTERO_PETRI_PORT > petri-service-logs
+    popd
+
+    git clone https://github.com/mark-burnett/ptero-shell-command-fork.git
+    pushd ptero-shell-command-fork
+    pip install -r requirements.txt
+    honcho start -p PTERO_FORK_PORT > fork-service-logs
+    popd
+
+Now, you can run the tests using tox:
+
     tox
+
+To see a coverage report after successfully running the tests:
+
+    coverage report
