@@ -72,7 +72,20 @@ def _validate_dag_operation_data(operation_data):
                 "'output connector' is a reserved operation name")
 
 def _get_operation_type(operation_data):
-    return operation_data['type'].lower()
+    if 'type' in operation_data:
+        return operation_data['type'].lower()
+
+    elif 'methods' in operation_data:
+        if 'parallel_by' in operation_data:
+            return 'parallel-by-command'
+        else:
+            return 'command'
+
+    elif 'operations' in operation_data:
+        return 'dag'
+
+    else:
+        raise RuntimeError('Unable to determine operation type')
 
 
 def create_operation(name, operation_data, parent=None, workflow=None):
