@@ -1,7 +1,6 @@
 {
     "operations": {
         "A": {
-            "type": "command",
             "methods": [
                 {
                     "name": "shortcut",

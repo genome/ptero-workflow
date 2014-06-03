@@ -1,7 +1,6 @@
 {
     "operations": {
         "A": {
-            "type": "command",
             "methods": [
                 {
                     "name": "execute",
@@ -10,10 +9,8 @@
             ]
         },
         "Inner": {
-            "type": "dag",
             "operations": {
                 "B": {
-                    "type": "command",
                     "methods": [
                         {
                             "name": "execute",
@@ -38,7 +35,6 @@
             ]
         },
         "C": {
-            "type": "command",
             "methods": [
                 {
                     "name": "execute",

@@ -1,7 +1,6 @@
 {
     "operations": {
         "A": {
-            "type": "parallel-by-command",
             "methods": [
                 {
                     "name": "execute",
