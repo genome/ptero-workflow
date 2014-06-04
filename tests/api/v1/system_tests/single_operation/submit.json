@@ -1,7 +1,12 @@
 {
     "operations": {
         "A": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         }
     },
 

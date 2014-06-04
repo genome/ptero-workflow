@@ -1,13 +1,22 @@
 {
     "operations": {
         "A": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         },
         "Inner": {
-            "type": "model",
             "operations": {
                 "B": {
-                    "type": "pass-through"
+                    "methods": [
+                        {
+                            "name": "execute",
+                            "command_line": ["cat"]
+                        }
+                    ]
                 }
             },
             "links": [
@@ -26,7 +35,12 @@
             ]
         },
         "C": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         }
     },
 

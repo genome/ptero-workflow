@@ -5,8 +5,8 @@ from . import models
 __all__ = ['create_operation']
 
 
-def _build_model_operation(operation_data, operation):
-    _validate_model_operation_data(operation_data)
+def _build_dag_operation(operation_data, operation):
+    _validate_dag_operation_data(operation_data)
 
     for name, child_operation_data in operation_data['operations'].iteritems():
         create_operation(name=name, operation_data=child_operation_data,
@@ -31,23 +31,23 @@ def _build_model_operation(operation_data, operation):
         )
 
 
-def _build_parallel_by_operation(operation_data, operation):
+def _build_parallel_by_command(operation_data, operation):
     operation.parallel_by = operation_data['parallel_by']
+    _build_command_operation(operation_data, operation)
 
 
 def _build_command_operation(operation_data, operation):
     for index, data in enumerate(operation_data['methods']):
         method_name = data['name']
-        method = models.Method(operation=operation,
+        method = models.Method(operation_id=operation.id,
                 name=method_name, index=index)
         method.command_line = data['command_line']
         operation.methods[method_name] = method
 
 
 _OP_BUILDERS = {
-    'model': _build_model_operation,
-    'parallel-by-pass-through': _build_parallel_by_operation,
-    'parallel-by-command': _build_parallel_by_operation,
+    'dag': _build_dag_operation,
+    'parallel-by-command': _build_parallel_by_command,
     'command': _build_command_operation,
 }
 def _build_operation(operation_data, operation):
@@ -56,7 +56,7 @@ def _build_operation(operation_data, operation):
         _operation_builder(operation_data, operation=operation)
 
 
-def _validate_model_operation_data(operation_data):
+def _validate_dag_operation_data(operation_data):
     if 'input connector' in operation_data['operations']:
         raise exceptions.InvalidWorkflow(
                 "'input connector' is a reserved operation name")
@@ -66,7 +66,20 @@ def _validate_model_operation_data(operation_data):
                 "'output connector' is a reserved operation name")
 
 def _get_operation_type(operation_data):
-    return operation_data['type'].lower()
+    if 'type' in operation_data:
+        return operation_data['type'].lower()
+
+    elif 'methods' in operation_data:
+        if 'parallel_by' in operation_data:
+            return 'parallel-by-command'
+        else:
+            return 'command'
+
+    elif 'operations' in operation_data:
+        return 'dag'
+
+    else:
+        raise RuntimeError('Unable to determine operation type')
 
 
 def create_operation(name, operation_data, parent=None, workflow=None):

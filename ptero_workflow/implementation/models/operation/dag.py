@@ -2,16 +2,16 @@ from .operation_base import Operation
 from sqlalchemy import Column, ForeignKey, Integer
 
 
-__all__ = ['ModelOperation']
+__all__ = ['DAGOperation']
 
 
-class ModelOperation(Operation):
-    __tablename__ = 'operation_model'
+class DAGOperation(Operation):
+    __tablename__ = 'operation_dag'
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'model',
+        'polymorphic_identity': 'dag',
     }
 
     @property

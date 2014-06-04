@@ -1,16 +1,36 @@
 {
     "operations": {
         "A": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         },
         "B": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         },
         "C": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         },
         "D": {
-            "type": "pass-through"
+            "methods": [
+                {
+                    "name": "execute",
+                    "command_line": ["cat"]
+                }
+            ]
         }
     },
 

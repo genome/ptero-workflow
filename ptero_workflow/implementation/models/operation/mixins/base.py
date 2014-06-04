@@ -1,12 +1,4 @@
-class OperationPetriMixin(object):
-    @property
-    def response_wait_place_name(self):
-        return '%s-response-wait' % self.unique_name
-
-    @property
-    def response_callback_place_name(self):
-        return '%s-response-callback' % self.unique_name
-
+class BasePetriMixin(object):
     def get_petri_transitions(self):
         transitions = []
 
@@ -43,24 +35,4 @@ class OperationPetriMixin(object):
         return action_done_place
 
     def _attach_action(self, transitions, action_ready_place):
-        # send notification
-        transitions.append({
-            'inputs': [action_ready_place],
-            'outputs': [self.response_wait_place_name],
-            'action': {
-                'type': 'notify',
-                'url': self.event_url('execute'),
-                'response_places': {
-                    'success': self.response_callback_place_name,
-                },
-            }
-        })
-
-        # wait for response
-        transitions.append({
-            'inputs': [self.response_wait_place_name,
-                self.response_callback_place_name],
-            'outputs': [self.success_place_name],
-        })
-
-        return self.success_place_name
+        raise RuntimeError('%s is abstract' % self.__class__.__name__)

@@ -1,12 +1,11 @@
 from ...color_group import ColorGroup
-from .pass_through import OperationPetriMixin
 from sqlalchemy import Column, Text
 from sqlalchemy.orm.session import object_session
 import requests
 import simplejson
 
 
-class ParallelPetriMixin(OperationPetriMixin):
+class ParallelPetriMixin(object):
     parallel_by = Column(Text, nullable=False)
 
     @property

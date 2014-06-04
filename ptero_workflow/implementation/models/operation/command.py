@@ -1,14 +1,10 @@
 from ..base import Base
-from ..job import Job, ResponseLink
 from .operation_base import Operation
 from .mixins.command import OperationPetriMixin
 from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from sqlalchemy.orm.session import object_session
-import os
-import requests
 import simplejson
 
 
@@ -45,7 +41,7 @@ class CommandOperation(OperationPetriMixin, Operation):
 
     id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
 
-    methods = relationship('Method', backref='operation',
+    methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
@@ -57,60 +53,23 @@ class CommandOperation(OperationPetriMixin, Operation):
 
     VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(['execute', 'ended'])
 
-    def execute(self, body_data, query_string_data):
-        color = body_data['color']
-        group = body_data['group']
-        response_links = body_data['response_links']
 
-        method_name = query_string_data['method']
-        method = self.methods[method_name]
+class ParallelByCommandOperation(ParallelPetriMixin, OperationPetriMixin,
+        Operation):
 
-        job_id = self._submit_to_fork(color, method.command_line)
+    __tablename__ = 'operation_command_parallel'
 
-        job = Job(operation=self, method=method, color=color, job_id=job_id)
-        s = object_session(self)
-        for name, url in response_links.iteritems():
-            link = ResponseLink(job=job, url=url, name=name)
-            job.response_links[name] = link
+    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
 
-        s.add(job)
-        s.commit()
+    methods = relationship('Method',
+            collection_class=attribute_mapped_collection('name'),
+            cascade='all, delete-orphan')
 
-    def ended(self, body_data, query_string_data):
-        job_id = body_data.pop('job_id')
+    method_list = relationship('Method', order_by=Method.index)
 
-        s = object_session(self)
-        job = s.query(Job).filter_by(operation=self, job_id=job_id).one()
+    __mapper_args__ = {
+        'polymorphic_identity': 'parallel-by-command',
+    }
 
-        if body_data['exit_code'] == 0:
-            outputs = simplejson.loads(body_data['stdout'])
-            self.set_outputs(outputs, job.color)
-            s.commit()
-            return requests.put(job.response_links['success'].url)
-
-        else:
-            return requests.put(job.response_links['failure'].url)
-
-    def _submit_to_fork(self, color, command_line):
-        body_data = self._fork_submit_data(color, command_line)
-        response = requests.post(self._fork_submit_url,
-                data=simplejson.dumps(body_data),
-                headers={'Content-Type': 'application/json'})
-        return response.json()['job_id']
-
-    @property
-    def _fork_submit_url(self):
-        return 'http://%s:%d/v1/jobs' % (
-            os.environ.get('PTERO_FORK_HOST', 'localhost'),
-            int(os.environ.get('PTERO_FORK_PORT', 80)),
-        )
-
-    def _fork_submit_data(self, color, command_line):
-        return {
-            'command_line': command_line,
-            'user': os.environ.get('USER'),
-            'stdin': simplejson.dumps(self.get_inputs(color)),
-            'callbacks': {
-                'ended': self.event_url('ended'),
-            },
-        }
+    VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(
+            ['color_group_created', 'execute', 'ended', 'get_split_size'])

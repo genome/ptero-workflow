@@ -33,7 +33,13 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'pass-through',
+                "type": "command",
+                "methods": [
+                    {
+                        "name": "execute",
+                        "command_line": ["cat"]
+                    }
+                ]
             },
         },
         'links': [
@@ -60,10 +66,16 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'model',
+                'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'pass-through',
+                        "type": "command",
+                        "methods": [
+                            {
+                                "name": "execute",
+                                "command_line": ["cat"]
+                            }
+                        ]
                     },
                 },
                 'links': [
@@ -106,7 +118,13 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'pass-through',
+                "type": "command",
+                "methods": [
+                    {
+                        "name": "execute",
+                        "command_line": ["cat"]
+                    }
+                ]
             },
         },
         'links': [
@@ -134,10 +152,16 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'model',
+                'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'pass-through',
+                        "type": "command",
+                        "methods": [
+                            {
+                                "name": "execute",
+                                "command_line": ["cat"]
+                            }
+                        ]
                     },
                 },
                 'links': [
