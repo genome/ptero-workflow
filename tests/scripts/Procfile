@@ -1,3 +1,3 @@
 fork: cd $PTERO_FORK_HOME; honcho start -f tests/scripts/Procfile -c worker=4
 petri: cd $PTERO_PETRI_HOME; honcho start -f tests/scripts/Procfile -c orchestrator=2
-web: PTERO_WORKFLOW_DB_STRING=sqlite:///var/workflow.sqlite coverage run ptero_workflow/api/wsgi.py --port $PTERO_WORKFLOW_PORT
+web: PTERO_WORKFLOW_DB_STRING=sqlite:///var/workflow.sqlite tests/scripts/sigterm_wrapper coverage run ptero_workflow/api/wsgi.py --port $PTERO_WORKFLOW_PORT
