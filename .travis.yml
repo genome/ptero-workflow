@@ -1,38 +1,16 @@
 language: python
 python: "2.7"
 
-services:
-    - rabbitmq
-    - redis
-
 env:
     global:
-        - PTERO_PETRI_HOST=localhost
-        - PTERO_PETRI_PORT=5000
-        - PTERO_FORK_HOST=localhost
-        - PTERO_FORK_PORT=6000
+        - PTERO_PETRI_HOME=ptero-petri
+        - PTERO_FORK_HOME=ptero-shell-command-fork
 
-install: pip install tox gunicorn git+https://github.com/nickstenning/honcho.git
+install: pip install tox
 
 before_script:
     - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
-    - pushd ptero-petri
-    - git --no-pager show -s
-    - pip install -r requirements.txt
-    - python setup.py install
-    - PTERO_CONFIG_PATH=config ptero configure-rabbitmq
-    - honcho start --port 5000 > /dev/null &
-    - popd
-
     - git clone --depth 1 https://github.com/mark-burnett/ptero-shell-command-fork.git
-    - pushd ptero-shell-command-fork
-    - git --no-pager show -s
-    - pip install -r requirements.txt
-    - python setup.py install
-    - honcho start --port 6000 > /dev/null &
-    - popd
-
-    - sleep 3
 
 script:
     - tox
