@@ -25,9 +25,9 @@ _RETRY_DELAY = 0.15
 class TestCaseMixin(object):
     __metaclass__ = abc.ABCMeta
 
-    @abc.abstractproperty
+    @property
     def api_port(self):
-        pass
+        return int(os.environ['PTERO_WORKFLOW_PORT'])
 
     @abc.abstractproperty
     def directory(self):
@@ -36,15 +36,6 @@ class TestCaseMixin(object):
     @abc.abstractproperty
     def test_name(self):
         pass
-
-
-    def setUp(self):
-        super(TestCaseMixin, self).setUp()
-        self._start_devserver()
-
-    def tearDown(self):
-        super(TestCaseMixin, self).tearDown()
-        self._stop_devserver()
 
 
     def test_got_expected_result(self):
@@ -65,6 +56,10 @@ class TestCaseMixin(object):
             if self._workflow_complete(workflow_url):
                 return
             time.sleep(_POLLING_DELAY)
+
+    @property
+    def _max_wait_time(self):
+        return 20
 
     def _verify_result(self, workflow_url):
         actual_result = self._get_actual_result(workflow_url)
@@ -112,47 +107,6 @@ class TestCaseMixin(object):
         return response.json()
 
 
-    def _start_devserver(self):
-        cmd = [
-                self._devserver_path,
-                '--max-run-time', str(2 * self._max_wait_time),
-                '--port', str(self.api_port),
-                '--logdir', str(self._logdir),
-                '--cover',
-        ]
-        if int(os.environ.get('PTERO_TEST_WEBSERVER_DEBUG', 0)) == 1:
-            cmd.append('--debug')
-
-        env = self._setup_database_environment()
-        self._devserver = subprocess.Popen(cmd, close_fds=True, env=env)
-        self._wait_for_devserver()
-
-    def _setup_database_environment(self):
-        self._remove_existing_database_file()
-
-        env = os.environ.data
-        env['PTERO_WORKFLOW_DB_STRING'] = self._db_string
-        env['PTERO_WORKFLOW_HOST'] = 'localhost'
-        env['PTERO_WORKFLOW_PORT'] = str(self.api_port)
-        return env
-
-    def _remove_existing_database_file(self):
-        try:
-            os.remove(self._db_path)
-        except OSError as e:
-            if e.errno != errno.ENOENT:
-                raise
-
-    def _wait_for_devserver(self):
-        time.sleep(5)
-
-    def _stop_devserver(self):
-        _stop_subprocess(self._devserver)
-
-    @property
-    def _devserver_path(self):
-        return os.path.join(self._repository_root_path, 'devserver')
-
     @property
     def _logdir(self):
         return os.path.join(self._repository_root_path, 'logs', self.test_name)
@@ -161,29 +115,6 @@ class TestCaseMixin(object):
     def _repository_root_path(self):
         return os.path.abspath(os.path.join(os.path.dirname(__file__),
                 '..', '..', '..', '..'))
-
-    @property
-    def _max_wait_time(self):
-        return 20
-
-    @property
-    def _db_string(self):
-        return 'sqlite:///%s' % self._db_path
-
-    @property
-    def _db_path(self):
-        return os.path.abspath(os.path.join(self._logdir, 'db.sqlite'))
-
-
-def _stop_subprocess(process):
-    try:
-        process.send_signal(signal.SIGINT)
-        time.sleep(_TERMINATE_WAIT_TIME)
-        process.kill()
-        time.sleep(_TERMINATE_WAIT_TIME)
-    except OSError as e:
-        if e.errno != errno.ESRCH:  # ESRCH: no such pid
-            raise
 
 
 def _retry(func, *args, **kwargs):
