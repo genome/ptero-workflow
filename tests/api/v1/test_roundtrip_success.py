@@ -2,9 +2,6 @@ from ..base import BaseAPITest
 import abc
 
 
-URL = '/v1/workflows'
-
-
 class RoundTripSuccess(object):
     __metaclass__ = abc.ABCMeta
 
@@ -14,7 +11,7 @@ class RoundTripSuccess(object):
 
     def setUp(self):
         super(RoundTripSuccess, self).setUp()
-        self.response = self.post(URL, self.post_data)
+        self.response = self.post(self.post_url, self.post_data)
 
     def test_should_return_201(self):
         self.assertEqual(201, self.response.status_code)

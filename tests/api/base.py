@@ -1,4 +1,5 @@
 from ptero_workflow.api import application
+import requests
 import simplejson
 import os
 import unittest
@@ -7,32 +8,33 @@ __all__ = ['BaseAPITest']
 
 
 class BaseAPITest(unittest.TestCase):
-    def create_wsgi_app(self):
-        return application.create_app(purge=True)
-
     def setUp(self):
-        self.app = self.create_wsgi_app()
-        self.client = self.app.test_client()
+        self.api_host = os.environ['PTERO_WORKFLOW_HOST']
+        self.api_port = int(os.environ['PTERO_WORKFLOW_PORT'])
+
+    @property
+    def post_url(self):
+        return 'http://%s:%s/v1/workflows' % (self.api_host, self.api_port)
 
     def get(self, url, **kwargs):
-        return _deserialize_response(self.client.get(url, query_string=kwargs))
+        return _deserialize_response(requests.get(url, params=kwargs))
 
     def patch(self, url, data):
-        return _deserialize_response(self.client.patch(url,
-            content_type='application/json', data=simplejson.dumps(data)))
+        return _deserialize_response(requests.patch(url,
+            headers={'content-type': 'application/json'},
+            data=simplejson.dumps(data)))
 
     def post(self, url, data):
-        return _deserialize_response(self.client.post(url,
-            content_type='application/json', data=simplejson.dumps(data)))
+        return _deserialize_response(requests.post(url,
+            headers={'content-type': 'application/json'},
+            data=simplejson.dumps(data)))
 
     def put(self, url, data):
-        return _deserialize_response(self.client.put(url,
-            content_type='application/json', data=simplejson.dumps(data)))
+        return _deserialize_response(requests.put(url,
+            headers={'content-type': 'application/json'},
+            data=simplejson.dumps(data)))
 
 
 def _deserialize_response(response):
-    try:
-        response.DATA = simplejson.loads(response.data)
-    except simplejson.JSONDecodeError:
-        pass
+    response.DATA = response.json()
     return response
