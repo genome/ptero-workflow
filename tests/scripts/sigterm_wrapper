@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import os
+import signal
+import subprocess
+import sys
+import time
+
+
+def command_line():
+    return sys.argv[1:]
+
+
+LOOP_PERIOD = 0.05
+
+sys.stderr.write('Converting SIGTERM to SIGINT for %s\n' % command_line())
+child_process = subprocess.Popen(command_line())
+
+
+def term_handler(signum, frame):
+    sys.stderr.write('Sending SIGINT to wrapped coverage process')
+    child_process.send_signal(signal.SIGINT)
+
+    sys.exit(1)
+
+signal.signal(signal.SIGTERM, term_handler)
+
+
+while True:
+    time.sleep(LOOP_PERIOD)
+    if child_process.poll() is not None:
+        break

@@ -25,7 +25,6 @@ def _create_and_attach_test_case(target_module, test_case_directory,
 
 def _create_test_case(test_case_directory, test_case_name):
     class_dict = {
-        'api_port': _get_available_port(),
         'directory': os.path.join(test_case_directory, test_case_name),
         'test_name': test_case_name,
     }
@@ -35,12 +34,3 @@ def _create_test_case(test_case_directory, test_case_name):
 
 def _attach_test_case(target_module, test_case):
     setattr(target_module, test_case.__name__, test_case)
-
-
-def _get_available_port():
-    s = socket.socket()
-    s.bind(('127.0.0.1', 0))
-    port = s.getsockname()[1]
-    s.close()
-
-    return port

@@ -2,9 +2,6 @@ from ..base import BaseAPITest
 import abc
 
 
-URL = '/v1/workflows'
-
-
 class PostWorkflowFailure(object):
     __metaclass__ = abc.ABCMeta
 
@@ -14,7 +11,8 @@ class PostWorkflowFailure(object):
 
     def setUp(self):
         super(PostWorkflowFailure, self).setUp()
-        self.response = self.post(URL, self.post_data)
+        self.response = self.post(self.post_url, self.post_data)
+
 
     def test_should_return_400(self):
         self.assertEqual(400, self.response.status_code)
