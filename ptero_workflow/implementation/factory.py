@@ -15,13 +15,7 @@ class Factory(object):
 
     def create_backend(self):
         self._initialize()
-        return backend.Backend(self._get_session())
-
-    def _get_session(self):
-        if self._Session is None:
-            self._initialize_session()
-
-        return self._Session()
+        return backend.Backend(self._Session())
 
     def _initialize(self):
         # Lazy initialize to be pre-fork friendly.
