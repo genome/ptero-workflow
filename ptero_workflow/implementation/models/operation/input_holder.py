@@ -13,12 +13,3 @@ class InputHolderOperation(Operation):
     __mapper_args__ = {
         'polymorphic_identity': '__input_holder',
     }
-
-    def get_inputs(self, color):
-        raise RuntimeError()
-
-    def get_input(self, name, color):
-        raise RuntimeError()
-
-    def get_petri_transitions(self):
-        return []
