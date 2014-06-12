@@ -17,14 +17,6 @@ class Factory(object):
         self._initialize()
         return backend.Backend(self._get_session())
 
-    def purge(self):
-        self._initialize()
-        s = self._get_session()
-        s.query(models.Link).delete()
-        s.query(models.Operation).delete()
-        s.query(models.Workflow).delete()
-        s.commit()
-
     def _get_session(self):
         if self._Session is None:
             self._initialize_session()
