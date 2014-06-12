@@ -18,18 +18,6 @@ class InputConnectorOperation(Operation):
         op, name = self.parent.get_input_op_and_name(output_param_name)
         return op.get_source_op_and_name(name)
 
-    def get_output(self, name, color):
-        return self.get_inputs(color).get(name)
-
-    def get_outputs(self, color):
-        return self.get_inputs(color)
-
-    def get_inputs(self, color):
-        return self.parent.get_inputs(color)
-
-    def get_input(self, name, color):
-        return self.parent.get_input(name, color)
-
     def get_petri_transitions(self):
         return [
             {
