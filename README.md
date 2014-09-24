@@ -21,7 +21,7 @@ The API is currently described
 [here](https://github.com/genome/ptero-apis/blob/master/workflow.md).
 The other existing components are: the [petri
 core](https://github.com/genome/ptero-petri) service and a [forking shell
-command](https://github.com/genome/ptero-shell-command-fork) service.
+command](https://github.com/genome/ptero-shell-command) service.
 
 
 ## Testing
