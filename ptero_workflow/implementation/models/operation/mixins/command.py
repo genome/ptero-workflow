@@ -75,7 +75,7 @@ class OperationPetriMixin(BasePetriMixin):
         method_name = query_string_data['method']
         method = self.methods[method_name]
 
-        job_id = self._submit_to_fork(color, method.command_line)
+        job_id = self._submit_to_shell_command(color, method.command_line)
 
         job = Job(operation=self, method=method, color=color, job_id=job_id)
         s = object_session(self)
@@ -101,21 +101,21 @@ class OperationPetriMixin(BasePetriMixin):
         else:
             return requests.put(job.response_links['failure'].url)
 
-    def _submit_to_fork(self, color, command_line):
-        body_data = self._fork_submit_data(color, command_line)
-        response = requests.post(self._fork_submit_url,
+    def _submit_to_shell_command(self, color, command_line):
+        body_data = self._shell_command_submit_data(color, command_line)
+        response = requests.post(self._shell_command_submit_url,
                 data=simplejson.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
         return response.json()['job_id']
 
     @property
-    def _fork_submit_url(self):
+    def _shell_command_submit_url(self):
         return 'http://%s:%d/v1/jobs' % (
-            os.environ.get('PTERO_FORK_HOST', 'localhost'),
-            int(os.environ.get('PTERO_FORK_PORT', 80)),
+            os.environ['PTERO_SHELL_COMMAND_HOST'],
+            int(os.environ['PTERO_SHELL_COMMAND_PORT']),
         )
 
-    def _fork_submit_data(self, color, command_line):
+    def _shell_command_submit_data(self, color, command_line):
         return {
             'command_line': command_line,
             'user': os.environ.get('USER'),
