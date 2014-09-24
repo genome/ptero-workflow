@@ -37,7 +37,7 @@ Next, set the environment variables that are used to generate callback urls:
     export PTERO_FORK_PORT=6000
 
 Then setup the [petri](https://github.com/genome/ptero-petri) service and
-the [fork](https://github.com/genome/ptero-shell-command-fork) service:
+the [fork](https://github.com/genome/ptero-shell-command) service:
 
     git clone https://github.com/genome/ptero-petri.git
     pushd ptero-petri
