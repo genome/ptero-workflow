@@ -4,14 +4,14 @@ python: "2.7"
 env:
     global:
         - PTERO_PETRI_HOME=ptero-petri
-        - PTERO_FORK_HOME=ptero-shell-command-fork
+        - PTERO_FORK_HOME=ptero-shell-command
 
 install: pip install tox
 
 before_script:
     - sudo rabbitmq-plugins disable rabbitmq_management
-    - git clone --depth 1 https://github.com/mark-burnett/ptero-petri.git
-    - git clone --depth 1 https://github.com/mark-burnett/ptero-shell-command-fork.git
+    - git clone --depth 1 https://github.com/genome/ptero-petri.git
+    - git clone --depth 1 https://github.com/genome/ptero-shell-command.git
 
 script:
     - tox
