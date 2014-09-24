@@ -1,6 +1,6 @@
 # PTero Workflow Service
-[![Build Status](https://travis-ci.org/mark-burnett/ptero-workflow.svg?branch=master)](https://travis-ci.org/mark-burnett/ptero-workflow)
-[![Coverage Status](https://img.shields.io/coveralls/mark-burnett/ptero-workflow.svg)](https://coveralls.io/r/mark-burnett/ptero-workflow)
+[![Build Status](https://travis-ci.org/genome/ptero-workflow.svg?branch=master)](https://travis-ci.org/genome/ptero-workflow)
+[![Coverage Status](https://img.shields.io/coveralls/genome/ptero-workflow.svg)](https://coveralls.io/r/genome/ptero-workflow)
 
 This project provides the client facing API for the PTero Workflow system.
 This system is designed to be a highly scalable replacement of the [legacy
