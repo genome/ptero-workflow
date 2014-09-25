@@ -42,13 +42,13 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'source_property': 'in_a',
-                'destination_property': 'param',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'source_property': 'result',
-                'destination_property': 'out_a',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
             },
         ],
         'inputs': {
@@ -82,13 +82,13 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'source_property': 'in_a',
-                'destination_property': 'param',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'source_property': 'result',
-                'destination_property': 'out_a',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
             },
         ],
         'inputs': {
@@ -123,13 +123,13 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'source_property': 'inner_input',
-                        'destination_property': 'param',
+                        'sourceProperty': 'inner_input',
+                        'destinationProperty': 'param',
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
-                        'source_property': 'result',
-                        'destination_property': 'inner_output',
+                        'sourceProperty': 'result',
+                        'destinationProperty': 'inner_output',
                     },
                 ],
             },
@@ -139,13 +139,13 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'source_property': 'outer_input',
-                'destination_property': 'inner_input',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'source_property': 'inner_output',
-                'destination_property': 'outer_output',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
             },
         ],
         'inputs': {
@@ -180,13 +180,13 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'source_property': 'inner_input',
-                        'destination_property': 'param',
+                        'sourceProperty': 'inner_input',
+                        'destinationProperty': 'param',
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
-                        'source_property': 'result',
-                        'destination_property': 'inner_output',
+                        'sourceProperty': 'result',
+                        'destinationProperty': 'inner_output',
                     },
                 ],
             },
@@ -196,13 +196,13 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'source_property': 'outer_input',
-                'destination_property': 'inner_input',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'source_property': 'inner_output',
-                'destination_property': 'outer_output',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
             },
         ],
         'inputs': {

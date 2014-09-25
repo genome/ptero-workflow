@@ -24,10 +24,10 @@ def _build_dag_operation(operation_data, operation):
         destination = operation.children[edge_data['destination']]
         models.Edge(
             destination_operation=destination,
-            destination_property=edge_data['destination_property'],
+            destination_property=edge_data['destinationProperty'],
             parallel_by=edge_data.get('parallel_by', False),
             source_operation=source,
-            source_property=edge_data['source_property'],
+            source_property=edge_data['sourceProperty'],
         )
 
 

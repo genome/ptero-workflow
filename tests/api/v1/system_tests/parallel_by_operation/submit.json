@@ -15,27 +15,27 @@
         {
             "source": "input connector",
             "destination": "A",
-            "source_property": "in_constant",
-            "destination_property": "constant_param"
+            "sourceProperty": "in_constant",
+            "destinationProperty": "constant_param"
         },
         {
             "source": "A",
             "destination": "output connector",
-            "source_property": "constant_param",
-            "destination_property": "out_constant"
+            "sourceProperty": "constant_param",
+            "destinationProperty": "out_constant"
         },
 
         {
             "source": "input connector",
             "destination": "A",
-            "source_property": "in_parallel",
-            "destination_property": "parallel_param"
+            "sourceProperty": "in_parallel",
+            "destinationProperty": "parallel_param"
         },
         {
             "source": "A",
             "destination": "output connector",
-            "source_property": "parallel_param",
-            "destination_property": "out_parallel"
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "out_parallel"
         }
     ],
 

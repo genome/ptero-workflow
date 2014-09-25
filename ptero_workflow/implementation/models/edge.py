@@ -40,8 +40,8 @@ class Edge(Base):
         data = {
             'source': self.source_operation.name,
             'destination': self.destination_operation.name,
-            'source_property': self.source_property,
-            'destination_property': self.destination_property,
+            'sourceProperty': self.source_property,
+            'destinationProperty': self.destination_property,
         }
 
         if self.parallel_by:
