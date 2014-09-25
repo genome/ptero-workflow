@@ -1,11 +1,6 @@
 language: python
 python: "2.7"
 
-env:
-    global:
-        - PTERO_PETRI_HOME=ptero-petri
-        - PTERO_FORK_HOME=ptero-shell-command
-
 install: pip install tox
 
 before_script:

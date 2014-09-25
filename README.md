@@ -29,27 +29,19 @@ command](https://github.com/genome/ptero-shell-command) service.
 The tests for this service depend on a running petri and forking shell command
 service.  To run the tests, first install some tools:
 
-    pip install honcho gunicorn tox
+    pip install tox
 
-Next, set the environment variables that are used to generate callback urls:
-
-    export PTERO_PETRI_PORT=5000
-    export PTERO_FORK_PORT=6000
-
-Then setup the [petri](https://github.com/genome/ptero-petri) service and
-the [fork](https://github.com/genome/ptero-shell-command) service:
+Then setup the [petri](https://github.com/genome/ptero-petri) service and the
+[shell-command](https://github.com/genome/ptero-shell-command) service. In the
+parent directory:
 
     git clone https://github.com/genome/ptero-petri.git
-    pushd ptero-petri
-    pip install -r requirements.txt
-    honcho start -p $PTERO_PETRI_PORT > petri-service-logs
-    popd
-
     git clone https://github.com/genome/ptero-shell-command.git
-    pushd ptero-shell-command
-    pip install -r requirements.txt
-    honcho start -p $PTERO_FORK_PORT > fork-service-logs
-    popd
+
+And in the ptero-workflow directory:
+
+    ln -s ../ptero-petri
+    ln -s ../ptero-shell-command
 
 Now, you can run the tests using tox:
 
