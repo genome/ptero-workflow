@@ -32,8 +32,8 @@ service.  To run the tests, first install some tools:
     pip install tox
 
 Then setup the [petri](https://github.com/genome/ptero-petri) service and the
-[fork](https://github.com/genome/ptero-shell-command) service. In the parent
-directory:
+[shell-command](https://github.com/genome/ptero-shell-command) service. In the
+parent directory:
 
     git clone https://github.com/genome/ptero-petri.git
     git clone https://github.com/genome/ptero-shell-command.git
