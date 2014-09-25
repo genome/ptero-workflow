@@ -19,27 +19,27 @@ class Edge(Base):
 
     id = Column(Integer, primary_key=True)
 
-    source_id      = Column(Integer, ForeignKey('operation.id'), nullable=False)
-    destination_id = Column(Integer, ForeignKey('operation.id'), nullable=False)
+    source_id      = Column(Integer, ForeignKey('node.id'), nullable=False)
+    destination_id = Column(Integer, ForeignKey('node.id'), nullable=False)
 
     source_property      = Column(Text, nullable=False)
     destination_property = Column(Text, nullable=False)
 
     parallel_by = Column(Boolean, nullable=False, default=False)
 
-    source_operation = relationship('Operation',
+    source_node = relationship('Node',
             backref=backref('output_edges'),
             foreign_keys=[source_id])
 
-    destination_operation = relationship('Operation',
+    destination_node = relationship('Node',
             backref=backref('input_edges'),
             foreign_keys=[destination_id])
 
     @property
     def as_dict(self):
         data = {
-            'source': self.source_operation.name,
-            'destination': self.destination_operation.name,
+            'source': self.source_node.name,
+            'destination': self.destination_node.name,
             'sourceProperty': self.source_property,
             'destinationProperty': self.destination_property,
         }

@@ -14,14 +14,14 @@ class BasePetriMixin(object):
 
     def _attach_input_deps(self, transitions):
         transitions.append({
-            'inputs': [o.success_place_pair_name(self) for o in self.input_ops],
+            'inputs': [o.success_place_pair_name(self) for o in self.input_nodes],
             'outputs': [self.ready_place_name],
         })
 
         return self.ready_place_name
 
     def _attach_output_deps(self, transitions, internal_success_place):
-        success_outputs = [self.success_place_pair_name(o) for o in self.output_ops]
+        success_outputs = [self.success_place_pair_name(o) for o in self.output_nodes]
         success_outputs.append(self.success_place_pair_name(self.parent))
         transitions.append({
             'inputs': [internal_success_place],

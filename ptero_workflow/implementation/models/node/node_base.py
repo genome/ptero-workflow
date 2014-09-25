@@ -12,14 +12,14 @@ import os
 import urllib
 
 
-__all__ = ['Operation']
+__all__ = ['Node']
 
 
 LOG = logging.getLogger(__file__)
 
 
-class Operation(Base):
-    __tablename__ = 'operation'
+class Node(Base):
+    __tablename__ = 'node'
     __table_args__ = (
         UniqueConstraint('parent_id', 'name'),
     )
@@ -27,13 +27,13 @@ class Operation(Base):
     VALID_EVENT_TYPES = set(['done'])
 
     id        = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
+    parent_id = Column(Integer, ForeignKey('node.id'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
     workflow_id = Column(Integer, ForeignKey('workflow.id'), nullable=False)
     status = Column(Text)
 
-    children = relationship('Operation',
+    children = relationship('Node',
             backref=backref('parent', uselist=False, remote_side=[id]),
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
@@ -67,14 +67,14 @@ class Operation(Base):
 
     @property
     def unique_name(self):
-        return '-'.join(['op', str(self.id), self.name.replace(' ', '_')])
+        return '-'.join(['node', str(self.id), self.name.replace(' ', '_')])
 
     @property
     def success_place_name(self):
         return '%s-success' % self.unique_name
 
-    def success_place_pair_name(self, op):
-        return '%s-success-for-%s' % (self.unique_name, op.unique_name)
+    def success_place_pair_name(self, node):
+        return '%s-success-for-%s' % (self.unique_name, node.unique_name)
 
     @property
     def ready_place_name(self):
@@ -86,7 +86,7 @@ class Operation(Base):
         else:
             query_string = ''
 
-        return 'http://%s:%d/v1/callbacks/operations/%d/events/%s%s' % (
+        return 'http://%s:%d/v1/callbacks/nodes/%d/events/%s%s' % (
             os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
             int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
             self.id,
@@ -95,24 +95,24 @@ class Operation(Base):
         )
 
     def get_petri_transitions(self):
-        raise RuntimeError('Operation is abstract')
+        raise RuntimeError('Node is abstract')
 
     @property
-    def input_ops(self):
+    def input_nodes(self):
         source_ids = set([l.source_id for l in self.input_edges])
         if source_ids:
             s = object_session(self)
-            return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
+            return s.query(Node).filter(Node.id.in_(source_ids)).all()
         else:
             return []
 
     @property
-    def output_ops(self):
+    def output_nodes(self):
         destination_ids = set([l.destination_id for l in self.output_edges])
         if destination_ids:
             s = object_session(self)
-            return s.query(Operation).filter(
-                    Operation.id.in_(destination_ids)).all()
+            return s.query(Node).filter(
+                    Node.id.in_(destination_ids)).all()
         else:
             return []
 
@@ -131,10 +131,10 @@ class Operation(Base):
     def get_inputs(self, color):
         valid_colors = self._valid_color_list(color)
 
-        source_operations = self._source_op_data()
+        source_nodes = self._source_node_data()
 
         inputs = {}
-        for property_name, source_data in source_operations.iteritems():
+        for property_name, source_data in source_nodes.iteritems():
             output_holder = self._fetch_input(color, valid_colors, source_data)
             inputs[property_name] = self._convert_output(property_name,
                     output_holder, color)
@@ -162,40 +162,40 @@ class Operation(Base):
         return s.query(ColorGroup).filter_by(workflow=self.workflow).filter(
                 ColorGroup.begin <= color, ColorGroup.end > color).one()
 
-    def _source_op_data(self):
-        source_ops = {}
+    def _source_node_data(self):
+        source_nodes = {}
         for edge in self.input_edges:
-            source_ops[edge.destination_property] =\
-                    edge.source_operation.get_source_op_and_name(
+            source_nodes[edge.destination_property] =\
+                    edge.source_node.get_source_node_and_name(
                             edge.source_property)
 
-        return source_ops
+        return source_nodes
 
-    def get_source_op_and_name(self, output_param_name):
+    def get_source_node_and_name(self, output_param_name):
         return self, output_param_name
 
-    def get_input_op_and_name(self, input_param_name):
+    def get_input_node_and_name(self, input_param_name):
         for edge in self.input_edges:
             if edge.destination_property == input_param_name:
-                return edge.source_operation.get_source_op_and_name(
+                return edge.source_node.get_source_node_and_name(
                         edge.source_property)
-        raise ValueError('Could not determine input op and name from (%s)'
+        raise ValueError('Could not determine input node and name from (%s)'
                 % input_param_name)
 
     def get_input_sources(self):
         input_sources = {}
         for edge in self.input_edges:
             input_sources[edge.destination_property] =\
-                    edge.source_operation.get_source_op_and_name(
+                    edge.source_node.get_source_node_and_name(
                             edge.source_property)
         return input_sources
 
     def _fetch_input(self, color, valid_color_list, source_data):
-        (operation, property_name) = source_data
+        (node, property_name) = source_data
 
         s = object_session(self)
         return s.query(result.Result
-                ).filter_by(operation=operation, name=property_name
+                ).filter_by(node=node, name=property_name
                 ).filter(result.Result.color.in_(valid_color_list)).one()
 
     def get_input(self, name, color):

@@ -6,7 +6,7 @@ import requests
 import simplejson
 
 
-class OperationPetriMixin(BasePetriMixin):
+class NodePetriMixin(BasePetriMixin):
     def _method_place_name(self, method, kind):
         return '%s-%s-%s' % (self.unique_name, method, kind)
 
@@ -77,7 +77,7 @@ class OperationPetriMixin(BasePetriMixin):
 
         job_id = self._submit_to_shell_command(color, method.command_line)
 
-        job = Job(operation=self, method=method, color=color, job_id=job_id)
+        job = Job(node=self, method=method, color=color, job_id=job_id)
         s = object_session(self)
         for name, url in response_links.iteritems():
             link = ResponseLink(job=job, url=url, name=name)
@@ -90,7 +90,7 @@ class OperationPetriMixin(BasePetriMixin):
         job_id = body_data.pop('job_id')
 
         s = object_session(self)
-        job = s.query(Job).filter_by(operation=self, job_id=job_id).one()
+        job = s.query(Job).filter_by(node=self, job_id=job_id).one()
 
         if body_data['exit_code'] == 0:
             outputs = simplejson.loads(body_data['stdout'])

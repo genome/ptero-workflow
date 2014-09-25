@@ -16,18 +16,18 @@ LOG = logging.getLogger(__file__)
 class Result(Base):
     __tablename__ = 'result'
     __table_args__ = (
-        UniqueConstraint('operation_id', 'name', 'color'),
+        UniqueConstraint('node_id', 'name', 'color'),
     )
 
     id           = Column(Integer, primary_key=True)
 
-    operation_id = Column(Integer, ForeignKey('operation.id'), nullable=True)
-    name         = Column(Text, nullable=False, index=True)
-    color        = Column(Integer, nullable=False, index=True)
+    node_id = Column(Integer, ForeignKey('node.id'), nullable=True)
+    name    = Column(Text, nullable=False, index=True)
+    color   = Column(Integer, nullable=False, index=True)
 
     type         = Column(Text, nullable=False)
 
-    operation = relationship('Operation', backref='results')
+    node = relationship('Node', backref='results')
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -89,8 +89,8 @@ class Array(Result):
         return entry.data
 
     @classmethod
-    def create(cls, operation, name, data, color):
-        self = cls(operation=operation, name=name, color=color)
+    def create(cls, node, name, data, color):
+        self = cls(node=node, name=name, color=color)
         for index, item in enumerate(data):
             entry = ArrayEntry(index=index)
             entry.data = item
@@ -98,10 +98,10 @@ class Array(Result):
         return self
 
 
-def create_result(operation, name, data, color):
+def create_result(node, name, data, color):
     if isinstance(data, list):
-        return Array.create(operation=operation, name=name, data=data,
+        return Array.create(node=node, name=name, data=data,
                 color=color)
 
     else:
-        return Scalar(operation=operation, name=name, data=data, color=color)
+        return Scalar(node=node, name=name, data=data, color=color)

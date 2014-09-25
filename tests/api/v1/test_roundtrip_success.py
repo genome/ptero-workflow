@@ -21,14 +21,14 @@ class RoundTripSuccess(object):
 
     def test_get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
-        key_names = ['operations', 'edges', 'inputs', 'environment']
+        key_names = ['nodes', 'edges', 'inputs', 'environment']
         for key in key_names:
             self.assertItemsEqual(self.post_data[key], get_response.DATA[key])
 
 
-class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'A': {
                 'methods': [
                     {
@@ -58,11 +58,11 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'operations': {
+                'nodes': {
                     'A': {
                         'methods': [
                             {
@@ -108,9 +108,9 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class ParallelByWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'A': {
                 'methods': [
                     {
@@ -141,11 +141,11 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class ParallelByNestedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'operations': {
+                'nodes': {
                     'A': {
                         'methods': [
                             {

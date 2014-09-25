@@ -17,18 +17,18 @@ class Job(Base):
     __tablename__ = 'job'
 
     __table_args__ = (
-        UniqueConstraint('operation_id', 'method_id', 'color'),
+        UniqueConstraint('node_id', 'method_id', 'color'),
     )
 
     id = Column(Integer, primary_key=True)
 
     job_id = Column(Text, index=True, nullable=False)
-    operation_id = Column(Integer, ForeignKey('operation.id'), nullable=False)
-    method_id = Column(Integer, ForeignKey('operation_command_method.id'),
+    node_id = Column(Integer, ForeignKey('node.id'), nullable=False)
+    method_id = Column(Integer, ForeignKey('method.id'),
             nullable=False)
     color = Column(Integer, nullable=False)
 
-    operation = relationship('Operation', backref='jobs')
+    node = relationship('Node', backref='jobs')
     method = relationship('Method')
 
     response_links = relationship(ResponseLink, backref='job',

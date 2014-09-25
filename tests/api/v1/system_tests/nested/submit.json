@@ -1,5 +1,5 @@
 {
-    "operations": {
+    "nodes": {
         "A": {
             "methods": [
                 {
@@ -9,7 +9,7 @@
             ]
         },
         "Inner": {
-            "operations": {
+            "nodes": {
                 "B": {
                     "methods": [
                         {

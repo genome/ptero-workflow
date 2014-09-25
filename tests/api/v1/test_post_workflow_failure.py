@@ -18,9 +18,9 @@ class PostWorkflowFailure(object):
         self.assertEqual(400, self.response.status_code)
 
 
-class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'input connector': {
                 'methods': [
                     {
@@ -58,9 +58,9 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     }
 
 
-class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'A': {
                 'methods': [
                     {
@@ -97,11 +97,11 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
         'environment': {},
     }
 
-class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'operations': {
+                'nodes': {
                     'A': {
                         'methods': [
                             {
@@ -154,11 +154,11 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
         'environment': {},
     }
 
-class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'operations': {
+                'nodes': {
                     'A': {
                         'methods': [
                             {

@@ -1,7 +1,6 @@
 {
-    "operations": {
+    "nodes": {
         "A": {
-            "type": "command",
             "methods": [
                 {
                     "name": "shortcut",

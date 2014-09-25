@@ -1,6 +1,6 @@
 from ..base import Base
-from .operation_base import Operation
-from .mixins.command import OperationPetriMixin
+from .node_base import Node
+from .mixins.command import NodePetriMixin
 from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
@@ -8,19 +8,19 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 import simplejson
 
 
-__all__ = ['CommandOperation', 'Method']
+__all__ = ['Command', 'Method']
 
 
 class Method(Base):
-    __tablename__ = 'operation_command_method'
+    __tablename__ = 'method'
 
     __table_args__ = (
-        UniqueConstraint('operation_id', 'name'),
+        UniqueConstraint('node_id', 'name'),
     )
 
     id = Column(Integer, primary_key=True)
 
-    operation_id = Column(Integer, ForeignKey('operation.id'))
+    node_id = Column(Integer, ForeignKey('node.id'))
     name = Column(Text)
 
     index = Column(Integer, nullable=False, index=True)
@@ -36,10 +36,10 @@ class Method(Base):
         self.serialized_command_line = simplejson.dumps(new_value)
 
 
-class CommandOperation(OperationPetriMixin, Operation):
-    __tablename__ = 'operation_command'
+class Command(NodePetriMixin, Node):
+    __tablename__ = 'command'
 
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('node.id'), primary_key=True)
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
@@ -51,15 +51,15 @@ class CommandOperation(OperationPetriMixin, Operation):
         'polymorphic_identity': 'command',
     }
 
-    VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(['execute', 'ended'])
+    VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(['execute', 'ended'])
 
 
-class ParallelByCommandOperation(ParallelPetriMixin, OperationPetriMixin,
-        Operation):
+class ParallelByCommand(ParallelPetriMixin, NodePetriMixin,
+        Node):
 
-    __tablename__ = 'operation_command_parallel'
+    __tablename__ = 'parallel_by_command'
 
-    id = Column(Integer, ForeignKey('operation.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('node.id'), primary_key=True)
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
@@ -71,5 +71,5 @@ class ParallelByCommandOperation(ParallelPetriMixin, OperationPetriMixin,
         'polymorphic_identity': 'parallel-by-command',
     }
 
-    VALID_EVENT_TYPES = Operation.VALID_EVENT_TYPES.union(
+    VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(
             ['color_group_created', 'execute', 'ended', 'get_split_size'])
