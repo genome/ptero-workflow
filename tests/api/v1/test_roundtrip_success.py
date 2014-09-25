@@ -21,7 +21,7 @@ class RoundTripSuccess(object):
 
     def test_get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
-        key_names = ['operations', 'links', 'inputs', 'environment']
+        key_names = ['operations', 'edges', 'inputs', 'environment']
         for key in key_names:
             self.assertItemsEqual(self.post_data[key], get_response.DATA[key])
 
@@ -38,7 +38,7 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -72,7 +72,7 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
@@ -88,7 +88,7 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
@@ -120,7 +120,7 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -155,7 +155,7 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
@@ -172,7 +172,7 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',

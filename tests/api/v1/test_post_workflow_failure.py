@@ -38,7 +38,7 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -78,7 +78,7 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -119,7 +119,7 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
@@ -135,7 +135,7 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
@@ -176,7 +176,7 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
@@ -192,7 +192,7 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',

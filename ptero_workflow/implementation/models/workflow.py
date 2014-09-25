@@ -35,11 +35,11 @@ class Workflow(Base):
         return self.root_operation.ready_place_name
 
     @property
-    def links(self):
+    def edges(self):
         results = []
 
         for name,op in self.operations.iteritems():
-            results.extend(op.input_links)
+            results.extend(op.input_edges)
 
         return results
 
@@ -51,7 +51,7 @@ class Workflow(Base):
     def as_dict(self):
         ops = {name: op.as_dict for name,op in self.operations.iteritems()
                 if name not in ['input connector', 'output connector']}
-        links = [l.as_dict for l in self.links]
+        edges = [l.as_dict for l in self.edges]
 
         try:
             outputs = self.root_operation.get_outputs(color=0)
@@ -60,7 +60,7 @@ class Workflow(Base):
 
         data = {
             'operations': ops,
-            'links': links,
+            'edges': edges,
             'inputs': self.root_operation.get_inputs(color=0),
             'outputs': outputs,
             'environment': simplejson.loads(self.environment),

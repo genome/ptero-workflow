@@ -31,7 +31,7 @@ class Backend(object):
         root_data = {
             'type': 'dag',
             'operations': workflow_data['operations'],
-            'links': workflow_data['links'],
+            'edges': workflow_data['edges'],
         }
 
         workflow.root_operation = operations.create_operation('root',

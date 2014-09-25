@@ -34,7 +34,7 @@
         }
     },
 
-    "links": [
+    "edges": [
         {
             "source": "input connector",
             "destination": "A",

@@ -99,7 +99,7 @@ class Operation(Base):
 
     @property
     def input_ops(self):
-        source_ids = set([l.source_id for l in self.input_links])
+        source_ids = set([l.source_id for l in self.input_edges])
         if source_ids:
             s = object_session(self)
             return s.query(Operation).filter(Operation.id.in_(source_ids)).all()
@@ -108,7 +108,7 @@ class Operation(Base):
 
     @property
     def output_ops(self):
-        destination_ids = set([l.destination_id for l in self.output_links])
+        destination_ids = set([l.destination_id for l in self.output_edges])
         if destination_ids:
             s = object_session(self)
             return s.query(Operation).filter(
@@ -164,10 +164,10 @@ class Operation(Base):
 
     def _source_op_data(self):
         source_ops = {}
-        for link in self.input_links:
-            source_ops[link.destination_property] =\
-                    link.source_operation.get_source_op_and_name(
-                            link.source_property)
+        for edge in self.input_edges:
+            source_ops[edge.destination_property] =\
+                    edge.source_operation.get_source_op_and_name(
+                            edge.source_property)
 
         return source_ops
 
@@ -175,19 +175,19 @@ class Operation(Base):
         return self, output_param_name
 
     def get_input_op_and_name(self, input_param_name):
-        for link in self.input_links:
-            if link.destination_property == input_param_name:
-                return link.source_operation.get_source_op_and_name(
-                        link.source_property)
+        for edge in self.input_edges:
+            if edge.destination_property == input_param_name:
+                return edge.source_operation.get_source_op_and_name(
+                        edge.source_property)
         raise ValueError('Could not determine input op and name from (%s)'
                 % input_param_name)
 
     def get_input_sources(self):
         input_sources = {}
-        for link in self.input_links:
-            input_sources[link.destination_property] =\
-                    link.source_operation.get_source_op_and_name(
-                            link.source_property)
+        for edge in self.input_edges:
+            input_sources[edge.destination_property] =\
+                    edge.source_operation.get_source_op_and_name(
+                            edge.source_property)
         return input_sources
 
     def _fetch_input(self, color, valid_color_list, source_data):

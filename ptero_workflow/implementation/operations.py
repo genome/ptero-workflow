@@ -19,15 +19,15 @@ def _build_dag_operation(operation_data, operation):
             operation_data={'type': 'output connector'}, parent=operation,
             workflow=operation.workflow)
 
-    for link_data in operation_data['links']:
-        source = operation.children[link_data['source']]
-        destination = operation.children[link_data['destination']]
-        models.Link(
+    for edge_data in operation_data['edges']:
+        source = operation.children[edge_data['source']]
+        destination = operation.children[edge_data['destination']]
+        models.Edge(
             destination_operation=destination,
-            destination_property=link_data['destination_property'],
-            parallel_by=link_data.get('parallel_by', False),
+            destination_property=edge_data['destination_property'],
+            parallel_by=edge_data.get('parallel_by', False),
             source_operation=source,
-            source_property=link_data['source_property'],
+            source_property=edge_data['source_property'],
         )
 
 
@@ -99,6 +99,6 @@ def create_input_holder(root, inputs, color, workflow=None):
             workflow=workflow)
     operation.set_outputs(inputs, color=color)
     for i in inputs.iterkeys():
-        models.Link(source_operation=operation, destination_operation=root,
+        models.Edge(source_operation=operation, destination_operation=root,
                 source_property=i, destination_property=i)
     return operation

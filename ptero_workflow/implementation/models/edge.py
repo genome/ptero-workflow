@@ -5,14 +5,14 @@ from sqlalchemy.orm import backref, relationship
 import logging
 
 
-__all__ = ['Link']
+__all__ = ['Edge']
 
 
 LOG = logging.getLogger(__file__)
 
 
-class Link(Base):
-    __tablename__ = 'link'
+class Edge(Base):
+    __tablename__ = 'edge'
     __table_args__ = (
         UniqueConstraint('destination_id', 'destination_property'),
     )
@@ -28,11 +28,11 @@ class Link(Base):
     parallel_by = Column(Boolean, nullable=False, default=False)
 
     source_operation = relationship('Operation',
-            backref=backref('output_links'),
+            backref=backref('output_edges'),
             foreign_keys=[source_id])
 
     destination_operation = relationship('Operation',
-            backref=backref('input_links'),
+            backref=backref('input_edges'),
             foreign_keys=[destination_id])
 
     @property
