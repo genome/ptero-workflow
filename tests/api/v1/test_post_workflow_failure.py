@@ -22,7 +22,6 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'input connector': {
-                'type': 'command',
                 'methods': [
                     {
                         'name': 'execute',
@@ -31,7 +30,6 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
                 ]
             },
             'A': {
-                'type': 'command',
                 'methods': [
                     {
                         'name': 'execute',
@@ -64,7 +62,6 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'command',
                 'methods': [
                     {
                         'name': 'execute',
@@ -73,7 +70,6 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
                 ]
             },
             'output connector': {
-                'type': 'command',
                 'methods': [
                     {
                         'name': 'execute',
@@ -105,10 +101,8 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'command',
                         'methods': [
                             {
                                 'name': 'execute',
@@ -117,7 +111,6 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
                         ]
                     },
                     'input connector': {
-                        'type': 'command',
                         'methods': [
                             {
                                 'name': 'execute',
@@ -165,10 +158,8 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'command',
                         'methods': [
                             {
                                 'name': 'execute',
@@ -177,7 +168,6 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
                         ]
                     },
                     'output connector': {
-                        'type': 'command',
                         'methods': [
                             {
                                 'name': 'execute',

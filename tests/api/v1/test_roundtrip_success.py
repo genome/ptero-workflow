@@ -30,7 +30,6 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'command',
                 'methods': [
                     {
                         'name': 'execute',
@@ -63,10 +62,8 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'command',
                         'methods': [
                             {
                                 'name': 'execute',
@@ -115,7 +112,6 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                'type': 'command',
                 'methods': [
                     {
                         'name': 'execute',
@@ -149,10 +145,8 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'Inner': {
-                'type': 'dag',
                 'operations': {
                     'A': {
-                        'type': 'command',
                         'methods': [
                             {
                                 'name': 'execute',
