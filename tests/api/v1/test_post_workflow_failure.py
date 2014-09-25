@@ -22,20 +22,20 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'input connector': {
-                "type": "command",
-                "methods": [
+                'type': 'command',
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
             'A': {
-                "type": "command",
-                "methods": [
+                'type': 'command',
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
@@ -64,20 +64,20 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                "type": "command",
-                "methods": [
+                'type': 'command',
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
             'output connector': {
-                "type": "command",
-                "methods": [
+                'type': 'command',
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
@@ -108,20 +108,20 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
                 'type': 'dag',
                 'operations': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'type': 'command',
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                     'input connector': {
-                        "type": "command",
-                        "methods": [
+                        'type': 'command',
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
@@ -168,20 +168,20 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
                 'type': 'dag',
                 'operations': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'type': 'command',
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                     'output connector': {
-                        "type": "command",
-                        "methods": [
+                        'type': 'command',
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },

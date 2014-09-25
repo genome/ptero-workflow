@@ -30,11 +30,11 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                "type": "command",
-                "methods": [
+                'type': 'command',
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
@@ -66,11 +66,11 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
                 'type': 'dag',
                 'operations': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'type': 'command',
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
@@ -115,11 +115,11 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'operations': {
             'A': {
-                "type": "command",
-                "methods": [
+                'type': 'command',
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
@@ -152,11 +152,11 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
                 'type': 'dag',
                 'operations': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'type': 'command',
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
