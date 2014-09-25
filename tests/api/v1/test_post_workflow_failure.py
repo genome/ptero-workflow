@@ -156,7 +156,7 @@ class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITes
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }
@@ -216,7 +216,7 @@ class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITe
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }

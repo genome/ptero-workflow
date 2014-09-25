@@ -105,7 +105,7 @@ class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }
@@ -193,7 +193,7 @@ class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }
