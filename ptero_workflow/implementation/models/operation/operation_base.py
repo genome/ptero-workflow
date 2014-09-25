@@ -179,6 +179,8 @@ class Operation(Base):
             if link.destination_property == input_param_name:
                 return link.source_operation.get_source_op_and_name(
                         link.source_property)
+        raise ValueError('Could not determine input op and name from (%s)'
+                % input_param_name)
 
     def get_input_sources(self):
         input_sources = {}
