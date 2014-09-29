@@ -7,7 +7,7 @@
                     "command_line": ["cat"]
                 }
             ],
-            "parallel_by": "parallel_param"
+            "parallelBy": "parallel_param"
         }
     },
 

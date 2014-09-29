@@ -31,7 +31,7 @@ def _build_dag(node_data, node):
 
 
 def _build_parallel_by_command(node_data, node):
-    node.parallel_by = node_data['parallel_by']
+    node.parallel_by = node_data['parallelBy']
     _build_command(node_data, node)
 
 
@@ -72,7 +72,7 @@ def _get_node_type(node_data):
             raise RuntimeError('Only input/output connector are '
                     'allowed explicit type, not (%s)' % node_data['type'])
     elif 'methods' in node_data:
-        if 'parallel_by' in node_data:
+        if 'parallelBy' in node_data:
             return 'parallel-by-command'
         else:
             return 'command'
