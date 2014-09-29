@@ -1,5 +1,5 @@
 from . import models
-from . import operations
+from . import nodes
 from . import translator
 import os
 import simplejson
@@ -29,19 +29,18 @@ class Backend(object):
         )
 
         root_data = {
-            'type': 'dag',
-            'operations': workflow_data['operations'],
-            'links': workflow_data['links'],
+            'nodes': workflow_data['nodes'],
+            'edges': workflow_data['edges'],
         }
 
-        workflow.root_operation = operations.create_operation('root',
+        workflow.root_node = nodes.create_node('root',
                 root_data, workflow=workflow)
 
         root_color_group = models.ColorGroup(workflow=workflow, index=0,
                 begin=0, end=1)
 
-        workflow.input_holder_operation = operations.create_input_holder(
-                workflow.root_operation, workflow_data['inputs'], color=0,
+        workflow.input_holder_node = nodes.create_input_holder(
+                workflow.root_node, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
         self.session.add(workflow)
@@ -71,10 +70,10 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, operation_id, event_type, body_data, query_string_data):
-        operation = self.session.query(models.Operation
-                ).filter_by(id=operation_id).one()
-        operation.handle_event(event_type, body_data, query_string_data)
+    def event(self, node_id, event_type, body_data, query_string_data):
+        node = self.session.query(models.Node
+                ).filter_by(id=node_id).one()
+        node.handle_event(event_type, body_data, query_string_data)
 
     def cleanup(self):
         pass

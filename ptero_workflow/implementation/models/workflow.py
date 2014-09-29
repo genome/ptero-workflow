@@ -19,52 +19,52 @@ class Workflow(Base):
 
     net_key = Column(Text, unique=True)
 
-    root_operation_id = Column(Integer, ForeignKey('operation.id',
-        use_alter=True, name='fk_workflow_root_operation'))
-    input_holder_operation_id = Column(Integer, ForeignKey('operation.id',
-        use_alter=True, name='fk_input_holder_operation'))
+    root_node_id = Column(Integer, ForeignKey('node.id',
+        use_alter=True, name='fk_workflow_root_node'))
+    input_holder_id = Column(Integer, ForeignKey('input_holder.id',
+        use_alter=True, name='fk_input_holder'))
 
 
-    root_operation = relationship('Operation', post_update=True,
-            foreign_keys=[root_operation_id])
-    input_holder_operation = relationship('InputHolderOperation',
-            post_update=True, foreign_keys=[input_holder_operation_id])
+    root_node = relationship('Node', post_update=True,
+            foreign_keys=[root_node_id])
+    input_holder = relationship('InputHolder',
+            post_update=True, foreign_keys=[input_holder_id])
 
     @property
     def start_place_name(self):
-        return self.root_operation.ready_place_name
+        return self.root_node.ready_place_name
 
     @property
-    def links(self):
+    def edges(self):
         results = []
 
-        for name,op in self.operations.iteritems():
-            results.extend(op.input_links)
+        for name,node in self.nodes.iteritems():
+            results.extend(node.input_edges)
 
         return results
 
     @property
-    def operations(self):
-        return self.root_operation.children
+    def nodes(self):
+        return self.root_node.children
 
     @property
     def as_dict(self):
-        ops = {name: op.as_dict for name,op in self.operations.iteritems()
+        nodes = {name: node.as_dict for name,node in self.nodes.iteritems()
                 if name not in ['input connector', 'output connector']}
-        links = [l.as_dict for l in self.links]
+        edges = [l.as_dict for l in self.edges]
 
         try:
-            outputs = self.root_operation.get_outputs(color=0)
+            outputs = self.root_node.get_outputs(color=0)
         except:
             outputs = None
 
         data = {
-            'operations': ops,
-            'links': links,
-            'inputs': self.root_operation.get_inputs(color=0),
+            'nodes': nodes,
+            'edges': edges,
+            'inputs': self.root_node.get_inputs(color=0),
             'outputs': outputs,
             'environment': simplejson.loads(self.environment),
         }
-        if self.root_operation.status is not None:
-            data['status'] = self.root_operation.status
+        if self.root_node.status is not None:
+            data['status'] = self.root_node.status
         return data

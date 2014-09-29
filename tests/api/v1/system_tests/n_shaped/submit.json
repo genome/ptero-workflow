@@ -1,5 +1,5 @@
 {
-    "operations": {
+    "nodes": {
         "A": {
             "methods": [
                 {
@@ -34,62 +34,62 @@
         }
     },
 
-    "links": [
+    "edges": [
         {
             "source": "input connector",
             "destination": "A",
-            "source_property": "in_a_1",
-            "destination_property": "param_1"
+            "sourceProperty": "in_a_1",
+            "destinationProperty": "param_1"
         },
         {
             "source": "input connector",
             "destination": "A",
-            "source_property": "in_a_2",
-            "destination_property": "param_2"
+            "sourceProperty": "in_a_2",
+            "destinationProperty": "param_2"
         },
         {
             "source": "input connector",
             "destination": "B",
-            "source_property": "in_b",
-            "destination_property": "param"
+            "sourceProperty": "in_b",
+            "destinationProperty": "param"
         },
 
         {
             "source": "A",
             "destination": "C",
-            "source_property": "param_1",
-            "destination_property": "param"
+            "sourceProperty": "param_1",
+            "destinationProperty": "param"
         },
         {
             "source": "A",
             "destination": "D",
-            "source_property": "param_2",
-            "destination_property": "param_1"
+            "sourceProperty": "param_2",
+            "destinationProperty": "param_1"
         },
         {
             "source": "B",
             "destination": "D",
-            "source_property": "param",
-            "destination_property": "param_2"
+            "sourceProperty": "param",
+            "destinationProperty": "param_2"
         },
 
         {
             "source": "C",
             "destination": "output connector",
-            "source_property": "param",
-            "destination_property": "out_c"
+            "sourceProperty": "param",
+            "destinationProperty": "out_c"
         },
         {
             "source": "D",
             "destination": "output connector",
-            "source_property": "param_1",
-            "destination_property": "out_d_1"
+            "sourceProperty": "param_1",
+            "destinationProperty": "out_d_1"
         },
         {
             "source": "D",
             "destination": "output connector",
-            "source_property": "param_2",
-            "destination_property": "out_d_2"
+            "sourceProperty": "param_2",
+            "destinationProperty": "out_d_2"
         }
     ],
 

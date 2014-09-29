@@ -36,7 +36,7 @@ class ParallelPetriMixin(object):
         color = body_data['color']
         response_links = body_data['response_links']
 
-        source_data = self.get_input_op_and_name(self.parallel_by)
+        source_data = self.get_input_node_and_name(self.parallel_by)
         valid_color_list = self._valid_color_list(color)
         output = self._fetch_input(color, valid_color_list, source_data)
         response = requests.put(response_links['send_data'],

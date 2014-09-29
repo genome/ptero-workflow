@@ -18,39 +18,37 @@ class PostWorkflowFailure(object):
         self.assertEqual(400, self.response.status_code)
 
 
-class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'input connector': {
-                "type": "command",
-                "methods": [
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
             'A': {
-                "type": "command",
-                "methods": [
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'source_property': 'in_a',
-                'destination_property': 'param',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'source_property': 'result',
-                'destination_property': 'out_a',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
             },
         ],
         'inputs': {
@@ -60,39 +58,37 @@ class InputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
     }
 
 
-class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'A': {
-                "type": "command",
-                "methods": [
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
             'output connector': {
-                "type": "command",
-                "methods": [
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'source_property': 'in_a',
-                'destination_property': 'param',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'source_property': 'result',
-                'destination_property': 'out_a',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
             },
         ],
         'inputs': {
@@ -101,122 +97,116 @@ class OutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
         'environment': {},
     }
 
-class NestedInputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'type': 'dag',
-                'operations': {
+                'nodes': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                     'input connector': {
-                        "type": "command",
-                        "methods": [
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'source_property': 'inner_input',
-                        'destination_property': 'param',
+                        'sourceProperty': 'inner_input',
+                        'destinationProperty': 'param',
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
-                        'source_property': 'result',
-                        'destination_property': 'inner_output',
+                        'sourceProperty': 'result',
+                        'destinationProperty': 'inner_output',
                     },
                 ],
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'source_property': 'outer_input',
-                'destination_property': 'inner_input',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'source_property': 'inner_output',
-                'destination_property': 'outer_output',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }
 
-class NestedOutputConnectorIsInvalidOperationName(PostWorkflowFailure, BaseAPITest):
+class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'type': 'dag',
-                'operations': {
+                'nodes': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                     'output connector': {
-                        "type": "command",
-                        "methods": [
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'source_property': 'inner_input',
-                        'destination_property': 'param',
+                        'sourceProperty': 'inner_input',
+                        'destinationProperty': 'param',
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
-                        'source_property': 'result',
-                        'destination_property': 'inner_output',
+                        'sourceProperty': 'result',
+                        'destinationProperty': 'inner_output',
                     },
                 ],
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'source_property': 'outer_input',
-                'destination_property': 'inner_input',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'source_property': 'inner_output',
-                'destination_property': 'outer_output',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }

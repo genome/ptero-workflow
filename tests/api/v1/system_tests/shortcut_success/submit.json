@@ -1,7 +1,6 @@
 {
-    "operations": {
+    "nodes": {
         "A": {
-            "type": "command",
             "methods": [
                 {
                     "name": "shortcut",
@@ -15,18 +14,18 @@
         }
     },
 
-    "links": [
+    "edges": [
         {
             "source": "input connector",
             "destination": "A",
-            "source_property": "in_a",
-            "destination_property": "param"
+            "sourceProperty": "in_a",
+            "destinationProperty": "param"
         },
         {
             "source": "A",
             "destination": "output connector",
-            "source_property": "param",
-            "destination_property": "out_a"
+            "sourceProperty": "param",
+            "destinationProperty": "out_a"
         }
     ],
 

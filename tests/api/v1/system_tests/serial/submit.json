@@ -1,5 +1,5 @@
 {
-    "operations": {
+    "nodes": {
         "A": {
             "methods": [
                 {
@@ -26,30 +26,30 @@
         }
     },
 
-    "links": [
+    "edges": [
         {
             "source": "input connector",
             "destination": "A",
-            "source_property": "in_val",
-            "destination_property": "param"
+            "sourceProperty": "in_val",
+            "destinationProperty": "param"
         },
         {
             "source": "A",
             "destination": "B",
-            "source_property": "param",
-            "destination_property": "param"
+            "sourceProperty": "param",
+            "destinationProperty": "param"
         },
         {
             "source": "B",
             "destination": "C",
-            "source_property": "param",
-            "destination_property": "param"
+            "sourceProperty": "param",
+            "destinationProperty": "param"
         },
         {
             "source": "C",
             "destination": "output connector",
-            "source_property": "param",
-            "destination_property": "out_val"
+            "sourceProperty": "param",
+            "destinationProperty": "out_val"
         }
     ],
 

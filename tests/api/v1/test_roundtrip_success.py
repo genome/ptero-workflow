@@ -21,35 +21,34 @@ class RoundTripSuccess(object):
 
     def test_get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
-        key_names = ['operations', 'links', 'inputs', 'environment']
+        key_names = ['nodes', 'edges', 'inputs', 'environment']
         for key in key_names:
             self.assertItemsEqual(self.post_data[key], get_response.DATA[key])
 
 
-class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'A': {
-                "type": "command",
-                "methods": [
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'source_property': 'in_a',
-                'destination_property': 'param',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'source_property': 'result',
-                'destination_property': 'out_a',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
             },
         ],
         'inputs': {
@@ -59,83 +58,80 @@ class SingleOperationWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class NestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'type': 'dag',
-                'operations': {
+                'nodes': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'source_property': 'inner_input',
-                        'destination_property': 'param',
+                        'sourceProperty': 'inner_input',
+                        'destinationProperty': 'param',
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
-                        'source_property': 'result',
-                        'destination_property': 'inner_output',
+                        'sourceProperty': 'result',
+                        'destinationProperty': 'inner_output',
                     },
                 ],
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'source_property': 'outer_input',
-                'destination_property': 'inner_input',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'source_property': 'inner_output',
-                'destination_property': 'outer_output',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }
 
 
-class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'A': {
-                "type": "command",
-                "methods": [
+                'methods': [
                     {
-                        "name": "execute",
-                        "command_line": ["cat"]
+                        'name': 'execute',
+                        'command_line': ['cat']
                     }
                 ]
             },
         },
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'source_property': 'in_a',
-                'destination_property': 'param',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
                 'parallel_by': True,
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'source_property': 'result',
-                'destination_property': 'out_a',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
             },
         ],
         'inputs': {
@@ -145,55 +141,53 @@ class ParallelByOperationWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class ParallelByNestedOperationWorkflow(RoundTripSuccess, BaseAPITest):
+class NestedParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'operations': {
+        'nodes': {
             'Inner': {
-                'type': 'dag',
-                'operations': {
+                'nodes': {
                     'A': {
-                        "type": "command",
-                        "methods": [
+                        'methods': [
                             {
-                                "name": "execute",
-                                "command_line": ["cat"]
+                                'name': 'execute',
+                                'command_line': ['cat']
                             }
                         ]
                     },
                 },
-                'links': [
+                'edges': [
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'source_property': 'inner_input',
-                        'destination_property': 'param',
+                        'sourceProperty': 'inner_input',
+                        'destinationProperty': 'param',
                         'parallel_by': True,
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
-                        'source_property': 'result',
-                        'destination_property': 'inner_output',
+                        'sourceProperty': 'result',
+                        'destinationProperty': 'inner_output',
                     },
                 ],
             },
         },
 
-        'links': [
+        'edges': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'source_property': 'outer_input',
-                'destination_property': 'inner_input',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
                 'parallel_by': True,
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'source_property': 'inner_output',
-                'destination_property': 'outer_output',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
             },
         ],
         'inputs': {
-            'in_a': 'kittens',
+            'outer_input': 'kittens',
         },
         'environment': {},
     }

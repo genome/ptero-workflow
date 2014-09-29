@@ -53,12 +53,12 @@ def _report_url(workflow_id, report_type):
     return '%s?%s' % (base_url, urllib.urlencode({'workflow_id': workflow_id}))
 
 
-class OperationEventCallback(Resource):
-    def put(self, operation_id, event_type):
+class NodeEventCallback(Resource):
+    def put(self, node_id, event_type):
         try:
             body_data = request.get_json()
             query_string_data = request.args
-            g.backend.event(operation_id, event_type, body_data,
+            g.backend.event(node_id, event_type, body_data,
                     query_string_data)
             return ''
 
