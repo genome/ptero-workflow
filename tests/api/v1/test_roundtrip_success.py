@@ -126,7 +126,6 @@ class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
                 'destination': 'A',
                 'sourceProperty': 'in_a',
                 'destinationProperty': 'param',
-                'parallel_by': True,
             }, {
                 'source': 'A',
                 'destination': 'output connector',
@@ -161,7 +160,6 @@ class NestedParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
                         'destination': 'A',
                         'sourceProperty': 'inner_input',
                         'destinationProperty': 'param',
-                        'parallel_by': True,
                     }, {
                         'source': 'A',
                         'destination': 'output connector',
@@ -178,7 +176,6 @@ class NestedParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
                 'destination': 'Inner',
                 'sourceProperty': 'outer_input',
                 'destinationProperty': 'inner_input',
-                'parallel_by': True,
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',

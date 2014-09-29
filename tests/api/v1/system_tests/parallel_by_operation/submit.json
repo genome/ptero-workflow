@@ -7,7 +7,7 @@
                     "command_line": ["cat"]
                 }
             ],
-            "parallel_by": "parallel_param"
+            "parallelBy": "parallel_param"
         }
     },
 
@@ -41,7 +41,7 @@
 
     "inputs": {
         "in_constant": "kittens",
-        "in_parallel": ["Simba", "Tabby", "Emelio"]
+        "in_parallel": ["Simba", "Tabby", "Emilio"]
     },
 
     "environment": {}
