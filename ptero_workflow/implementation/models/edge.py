@@ -43,8 +43,4 @@ class Edge(Base):
             'sourceProperty': self.source_property,
             'destinationProperty': self.destination_property,
         }
-
-        if self.parallel_by:
-            data['parallel_by'] = True
-
         return data

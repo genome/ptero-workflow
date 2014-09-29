@@ -25,7 +25,6 @@ def _build_dag(node_data, node):
         models.Edge(
             destination_node=destination,
             destination_property=edge_data['destinationProperty'],
-            parallel_by=edge_data.get('parallel_by', False),
             source_node=source,
             source_property=edge_data['sourceProperty'],
         )
