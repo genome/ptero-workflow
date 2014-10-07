@@ -76,4 +76,4 @@ class Backend(object):
         node.handle_event(event_type, body_data, query_string_data)
 
     def cleanup(self):
-        pass
+        self.session.rollback()
