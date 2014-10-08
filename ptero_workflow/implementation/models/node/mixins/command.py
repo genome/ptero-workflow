@@ -117,7 +117,7 @@ class NodePetriMixin(BasePetriMixin):
 
     def _shell_command_submit_data(self, color, command_line):
         return {
-            'command_line': command_line,
+            'commandLine': command_line,
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(self.get_inputs(color)),
             'callbacks': {

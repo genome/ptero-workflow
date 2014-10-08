@@ -23,7 +23,7 @@ def wait_time():
     if os.environ.get('TRAVIS'):
         return 15
     else:
-        return 5
+        return 15
 
 def this_dir():
     return os.path.dirname(__file__)
