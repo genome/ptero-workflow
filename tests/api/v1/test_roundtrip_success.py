@@ -108,7 +108,7 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
+class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'nodes': {
             'A': {
@@ -140,7 +140,7 @@ class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class NestedParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
+class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'nodes': {
             'Inner': {

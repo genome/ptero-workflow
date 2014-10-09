@@ -30,12 +30,12 @@ def _build_dag(node_data, node):
         )
 
 
-def _build_parallel_by_command(node_data, node):
+def _build_parallel_by_task(node_data, node):
     node.parallel_by = node_data['parallelBy']
-    _build_command(node_data, node)
+    _build_task(node_data, node)
 
 
-def _build_command(node_data, node):
+def _build_task(node_data, node):
     for index, data in enumerate(node_data['methods']):
         method_name = data['name']
         method = models.Method(node_id=node.id,
@@ -46,8 +46,8 @@ def _build_command(node_data, node):
 
 _NODE_BUILDERS = {
     'dag': _build_dag,
-    'parallel-by-command': _build_parallel_by_command,
-    'command': _build_command,
+    'parallel-by-task': _build_parallel_by_task,
+    'task': _build_task,
 }
 def _build_node(node_data, node):
     _node_builder = _NODE_BUILDERS.get(node.type)
@@ -73,9 +73,9 @@ def _get_node_type(node_data):
                     'allowed explicit type, not (%s)' % node_data['type'])
     elif 'methods' in node_data:
         if 'parallelBy' in node_data:
-            return 'parallel-by-command'
+            return 'parallel-by-task'
         else:
-            return 'command'
+            return 'task'
 
     elif 'nodes' in node_data:
         return 'dag'
