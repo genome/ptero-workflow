@@ -33,7 +33,7 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'command_line': ['cat']
+                        'commandLine': ['cat']
                     }
                 ]
             },
@@ -67,7 +67,7 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'command_line': ['cat']
+                                'commandLine': ['cat']
                             }
                         ]
                     },
@@ -115,7 +115,7 @@ class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'command_line': ['cat']
+                        'commandLine': ['cat']
                     }
                 ]
             },
@@ -149,7 +149,7 @@ class NestedParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'command_line': ['cat']
+                                'commandLine': ['cat']
                             }
                         ]
                     },

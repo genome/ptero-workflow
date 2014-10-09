@@ -40,7 +40,7 @@ def _build_command(node_data, node):
         method_name = data['name']
         method = models.Method(node_id=node.id,
                 name=method_name, index=index)
-        method.command_line = data['command_line']
+        method.command_line = data['commandLine']
         node.methods[method_name] = method
 
 

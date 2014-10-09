@@ -87,12 +87,12 @@ class NodePetriMixin(BasePetriMixin):
         s.commit()
 
     def ended(self, body_data, query_string_data):
-        job_id = body_data.pop('job_id')
+        job_id = body_data.pop('jobId')
 
         s = object_session(self)
         job = s.query(Job).filter_by(node=self, job_id=job_id).one()
 
-        if body_data['exit_code'] == 0:
+        if body_data['exitCode'] == 0:
             outputs = simplejson.loads(body_data['stdout'])
             self.set_outputs(outputs, job.color)
             s.commit()
@@ -106,7 +106,7 @@ class NodePetriMixin(BasePetriMixin):
         response = requests.post(self._shell_command_submit_url,
                 data=simplejson.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
-        return response.json()['job_id']
+        return response.json()['jobId']
 
     @property
     def _shell_command_submit_url(self):
@@ -117,7 +117,7 @@ class NodePetriMixin(BasePetriMixin):
 
     def _shell_command_submit_data(self, color, command_line):
         return {
-            'command_line': command_line,
+            'commandLine': command_line,
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(self.get_inputs(color)),
             'callbacks': {

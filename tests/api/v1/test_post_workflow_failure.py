@@ -25,7 +25,7 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'command_line': ['cat']
+                        'commandLine': ['cat']
                     }
                 ]
             },
@@ -33,7 +33,7 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'command_line': ['cat']
+                        'commandLine': ['cat']
                     }
                 ]
             },
@@ -65,7 +65,7 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'command_line': ['cat']
+                        'commandLine': ['cat']
                     }
                 ]
             },
@@ -73,7 +73,7 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'command_line': ['cat']
+                        'commandLine': ['cat']
                     }
                 ]
             },
@@ -106,7 +106,7 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'command_line': ['cat']
+                                'commandLine': ['cat']
                             }
                         ]
                     },
@@ -114,7 +114,7 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'command_line': ['cat']
+                                'commandLine': ['cat']
                             }
                         ]
                     },
@@ -163,7 +163,7 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'command_line': ['cat']
+                                'commandLine': ['cat']
                             }
                         ]
                     },
@@ -171,7 +171,7 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'command_line': ['cat']
+                                'commandLine': ['cat']
                             }
                         ]
                     },
