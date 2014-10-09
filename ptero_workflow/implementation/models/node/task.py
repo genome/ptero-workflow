@@ -5,35 +5,11 @@ from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-import simplejson
+from .method import Method
 
 
-__all__ = ['Task', 'Method']
+__all__ = ['Task']
 
-
-class Method(Base):
-    __tablename__ = 'method'
-
-    __table_args__ = (
-        UniqueConstraint('node_id', 'name'),
-    )
-
-    id = Column(Integer, primary_key=True)
-
-    node_id = Column(Integer, ForeignKey('node.id'))
-    name = Column(Text)
-
-    index = Column(Integer, nullable=False, index=True)
-
-    serialized_command_line = Column(Text, nullable=False)
-
-    @property
-    def command_line(self):
-        return simplejson.loads(self.serialized_command_line)
-
-    @command_line.setter
-    def command_line(self, new_value):
-        self.serialized_command_line = simplejson.dumps(new_value)
 
 
 class Task(NodePetriMixin, Node):
