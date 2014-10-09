@@ -1,4 +1,5 @@
 from ..base import Base
+from ..json_type import JSON
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 import simplejson
 
@@ -18,12 +19,8 @@ class Method(Base):
 
     index = Column(Integer, nullable=False, index=True)
 
-    serialized_command_line = Column(Text, nullable=False)
+    parameters = Column(JSON, nullable=False)
 
     @property
     def command_line(self):
-        return simplejson.loads(self.serialized_command_line)
-
-    @command_line.setter
-    def command_line(self, new_value):
-        self.serialized_command_line = simplejson.dumps(new_value)
+        return self.parameters['commandLine']
