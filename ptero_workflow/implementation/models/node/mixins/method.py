@@ -1,3 +1,9 @@
+from ...job import Job, ResponseLink
+from sqlalchemy.orm.session import object_session
+import os
+import requests
+import simplejson
+
 class MethodPetriMixin(object):
     def _place_name(self, kind):
         return self.task._method_place_name(self.name, kind)
@@ -37,3 +43,38 @@ class MethodPetriMixin(object):
 
         return success_place_name, failure_place_name
 
+    def execute(self, color, group, response_links):
+        job_id = self._submit_to_shell_command(color, self.command_line)
+
+        job = Job(node=self.task, method=self, color=color, job_id=job_id)
+        s = object_session(self)
+        for name, url in response_links.iteritems():
+            link = ResponseLink(job=job, url=url, name=name)
+            job.response_links[name] = link
+
+        s.add(job)
+        s.commit()
+
+    def _submit_to_shell_command(self, color, command_line):
+        body_data = self._shell_command_submit_data(color, command_line)
+        response = requests.post(self._shell_command_submit_url,
+                data=simplejson.dumps(body_data),
+                headers={'Content-Type': 'application/json'})
+        return response.json()['jobId']
+
+    @property
+    def _shell_command_submit_url(self):
+        return 'http://%s:%d/v1/jobs' % (
+            os.environ['PTERO_SHELL_COMMAND_HOST'],
+            int(os.environ['PTERO_SHELL_COMMAND_PORT']),
+        )
+
+    def _shell_command_submit_data(self, color, command_line):
+        return {
+            'commandLine': command_line,
+            'user': os.environ.get('USER'),
+            'stdin': simplejson.dumps(self.task.get_inputs(color)),
+            'callbacks': {
+                'ended': self.task.event_url('ended'),
+            },
+        }

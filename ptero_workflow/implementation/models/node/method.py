@@ -2,7 +2,6 @@ from ..base import Base
 from ..json_type import JSON
 from .mixins.method import MethodPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
-import simplejson
 
 __all__ = ['Method']
 

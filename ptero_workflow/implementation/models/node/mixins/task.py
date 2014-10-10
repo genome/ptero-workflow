@@ -1,6 +1,5 @@
-from ...job import Job, ResponseLink
+from ...job import Job
 from sqlalchemy.orm.session import object_session
-import os
 import requests
 import simplejson
 
@@ -68,17 +67,7 @@ class TaskPetriMixin(object):
 
         method_name = query_string_data['method']
         method = self.methods[method_name]
-
-        job_id = self._submit_to_shell_command(color, method.command_line)
-
-        job = Job(node=self, method=method, color=color, job_id=job_id)
-        s = object_session(self)
-        for name, url in response_links.iteritems():
-            link = ResponseLink(job=job, url=url, name=name)
-            job.response_links[name] = link
-
-        s.add(job)
-        s.commit()
+        method.execute(color, group, response_links)
 
     def ended(self, body_data, query_string_data):
         job_id = body_data.pop('jobId')
@@ -94,27 +83,3 @@ class TaskPetriMixin(object):
 
         else:
             return requests.put(job.response_links['failure'].url)
-
-    def _submit_to_shell_command(self, color, command_line):
-        body_data = self._shell_command_submit_data(color, command_line)
-        response = requests.post(self._shell_command_submit_url,
-                data=simplejson.dumps(body_data),
-                headers={'Content-Type': 'application/json'})
-        return response.json()['jobId']
-
-    @property
-    def _shell_command_submit_url(self):
-        return 'http://%s:%d/v1/jobs' % (
-            os.environ['PTERO_SHELL_COMMAND_HOST'],
-            int(os.environ['PTERO_SHELL_COMMAND_PORT']),
-        )
-
-    def _shell_command_submit_data(self, color, command_line):
-        return {
-            'commandLine': command_line,
-            'user': os.environ.get('USER'),
-            'stdin': simplejson.dumps(self.get_inputs(color)),
-            'callbacks': {
-                'ended': self.event_url('ended'),
-            },
-        }
