@@ -6,7 +6,7 @@ import requests
 import simplejson
 
 
-class NodePetriMixin(BasePetriMixin):
+class TaskPetriMixin(BasePetriMixin):
     def _method_place_name(self, method, kind):
         return '%s-%s-%s' % (self.unique_name, method, kind)
 

@@ -1,6 +1,6 @@
 from ..base import Base
 from .node_base import Node
-from .mixins.task import NodePetriMixin
+from .mixins.task import TaskPetriMixin
 from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
@@ -12,7 +12,7 @@ __all__ = ['Task']
 
 
 
-class Task(NodePetriMixin, Node):
+class Task(TaskPetriMixin, Node):
     __tablename__ = 'task'
 
     id = Column(Integer, ForeignKey('node.id'), primary_key=True)
@@ -30,7 +30,7 @@ class Task(NodePetriMixin, Node):
     VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(['execute', 'ended'])
 
 
-class ParallelByTask(ParallelPetriMixin, NodePetriMixin,
+class ParallelByTask(ParallelPetriMixin, TaskPetriMixin,
         Node):
 
     __tablename__ = 'parallel_by_task'
