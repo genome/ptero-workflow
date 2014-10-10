@@ -48,8 +48,8 @@ class TaskPetriMixin(object):
         input_place_name = action_ready_place
         success_places = []
         for method in self.method_list:
-            success_place, failure_place = self._attach_method(transitions,
-                    method, input_place_name)
+            success_place, failure_place = method._attach(transitions,
+                    input_place_name)
             input_place_name = failure_place
             success_places.append(success_place)
 
@@ -60,46 +60,6 @@ class TaskPetriMixin(object):
             })
 
         return self.success_place_name
-
-    def _attach_method(self, transitions, method, input_place_name):
-        success_place_name = self._method_place_name(
-                method.name, 'success')
-        failure_place_name = self._method_place_name(
-                method.name, 'failure')
-
-        wait_place_name = self._method_place_name(
-                method.name, 'wait')
-
-        success_callback_place_name = self._method_place_name(
-                method.name, 'success-callback')
-        failure_callback_place_name = self._method_place_name(
-                method.name, 'failure-callback')
-
-        transitions.append({
-            'inputs': [input_place_name],
-            'outputs': [wait_place_name],
-            'action': {
-                'type': 'notify',
-                'url': self.event_url('execute', method=method.name),
-                'response_places': {
-                    'success': success_callback_place_name,
-                    'failure': failure_callback_place_name,
-                },
-            }
-        })
-
-        transitions.extend([
-            {
-                'inputs': [wait_place_name, success_callback_place_name],
-                'outputs': [success_place_name],
-            },
-            {
-                'inputs': [wait_place_name, failure_callback_place_name],
-                'outputs': [failure_place_name],
-            }
-        ])
-
-        return success_place_name, failure_place_name
 
     def execute(self, body_data, query_string_data):
         color = body_data['color']

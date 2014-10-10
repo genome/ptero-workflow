@@ -1,11 +1,12 @@
 from ..base import Base
 from ..json_type import JSON
+from .mixins.method import MethodPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 import simplejson
 
 __all__ = ['Method']
 
-class Method(Base):
+class Method(MethodPetriMixin, Base):
     __tablename__ = 'method'
 
     __table_args__ = (

@@ -19,7 +19,7 @@ class Task(TaskPetriMixin, Node):
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
+            backref='task', cascade='all, delete-orphan')
 
     method_list = relationship('Method', order_by=Method.index)
 
