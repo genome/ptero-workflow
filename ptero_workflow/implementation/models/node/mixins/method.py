@@ -1,17 +1,15 @@
 class MethodPetriMixin(object):
+    def _place_name(self, kind):
+        return self.task._method_place_name(self.name, kind)
+
     def _attach(self, transitions, input_place_name):
-        success_place_name = self.task._method_place_name(
-                self.name, 'success')
-        failure_place_name = self.task._method_place_name(
-                self.name, 'failure')
+        success_place_name = self._place_name('success')
+        failure_place_name = self._place_name('failure')
 
-        wait_place_name = self.task._method_place_name(
-                self.name, 'wait')
+        wait_place_name = self._place_name('wait')
 
-        success_callback_place_name = self.task._method_place_name(
-                self.name, 'success-callback')
-        failure_callback_place_name = self.task._method_place_name(
-                self.name, 'failure-callback')
+        success_callback_place_name = self._place_name('success-callback')
+        failure_callback_place_name = self._place_name('failure-callback')
 
         transitions.append({
             'inputs': [input_place_name],
