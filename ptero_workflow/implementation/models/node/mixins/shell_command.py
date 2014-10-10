@@ -4,7 +4,7 @@ import os
 import requests
 import simplejson
 
-class MethodPetriMixin(object):
+class ShellCommandPetriMixin(object):
     def _place_name(self, kind):
         return self.task._method_place_name(self.name, kind)
 

@@ -5,7 +5,7 @@ from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 
 __all__ = ['Method']
 
-class Method(MethodPetriMixin, Base):
+class Method(Base):
     __tablename__ = 'method'
 
     __table_args__ = (
@@ -21,6 +21,8 @@ class Method(MethodPetriMixin, Base):
 
     parameters = Column(JSON, nullable=False)
 
-    @property
-    def command_line(self):
-        return self.parameters['commandLine']
+    service = Column(Text, nullable=False)
+    __mapper_args__ = {
+        'polymorphic_on': 'service',
+    }
+

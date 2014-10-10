@@ -38,7 +38,7 @@ def _build_parallel_by_task(node_data, node):
 def _build_task(node_data, node):
     for index, data in enumerate(node_data['methods']):
         method_name = data['name']
-        method = models.Method(node_id=node.id,
+        method = models.Method(node_id=node.id, service='shell_command',
                 name=method_name, index=index)
         method.parameters = {'commandLine':data['commandLine']}
         node.methods[method_name] = method
