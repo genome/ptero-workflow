@@ -1,11 +1,12 @@
 from ...color_group import ColorGroup
+from .task import TaskPetriMixin
 from sqlalchemy import Column, Text
 from sqlalchemy.orm.session import object_session
 import requests
 import simplejson
 
 
-class ParallelPetriMixin(object):
+class ParallelPetriMixin(TaskPetriMixin):
     parallel_by = Column(Text, nullable=False)
 
     @property

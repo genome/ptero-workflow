@@ -30,8 +30,7 @@ class Task(TaskPetriMixin, Node):
     VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(['execute', 'ended'])
 
 
-class ParallelByTask(ParallelPetriMixin, TaskPetriMixin,
-        Node):
+class ParallelByTask(ParallelPetriMixin, Node):
 
     __tablename__ = 'parallel_by_task'
 
