@@ -4,6 +4,7 @@
             "methods": [
                 {
                     "name": "execute",
+                    "service": "ShellCommand",
                     "commandLine": ["cat"]
                 }
             ]

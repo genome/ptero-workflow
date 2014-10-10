@@ -12,7 +12,7 @@ class ShellCommand(ShellCommandPetriMixin, Method):
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'shell_command',
+        'polymorphic_identity': 'ShellCommand',
     }
 
     @property

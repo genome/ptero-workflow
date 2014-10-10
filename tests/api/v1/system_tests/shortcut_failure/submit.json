@@ -4,10 +4,12 @@
             "methods": [
                 {
                     "name": "shortcut",
+                    "service": "ShellCommand",
                     "commandLine": ["false"]
                 },
                 {
                     "name": "execute",
+                    "service": "ShellCommand",
                     "commandLine": ["cat"]
                 }
             ]
