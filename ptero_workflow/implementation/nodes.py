@@ -41,10 +41,10 @@ def _build_task(node_data, node):
         method = models.Method(
                 name=method_name,
                 service=data['service'],
+                parameters=data['parameters'],
                 node_id=node.id,
                 index=index
         )
-        method.parameters = {'commandLine':data['commandLine']}
         node.methods[method_name] = method
 
 

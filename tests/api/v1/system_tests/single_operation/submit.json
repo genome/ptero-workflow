@@ -5,7 +5,9 @@
                 {
                     "name": "execute",
                     "service": "ShellCommand",
-                    "commandLine": ["cat"]
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         }

@@ -5,7 +5,9 @@
                 {
                     "name": "execute",
                     "service": "ShellCommand",
-                    "commandLine": ["cat"]
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         },
@@ -16,7 +18,9 @@
                         {
                             "name": "execute",
                             "service": "ShellCommand",
-                            "commandLine": ["cat"]
+                            "parameters": {
+                                "commandLine": ["cat"]
+                            }
                         }
                     ]
                 }
@@ -41,7 +45,9 @@
                 {
                     "name": "execute",
                     "service": "ShellCommand",
-                    "commandLine": ["cat"]
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         }

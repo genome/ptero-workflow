@@ -34,7 +34,9 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
                     {
                         'name': 'execute',
                         'service': 'ShellCommand',
-                        'commandLine': ['cat']
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -69,7 +71,9 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
                             {
                                 'name': 'execute',
                                 'service': 'ShellCommand',
-                                'commandLine': ['cat']
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -118,7 +122,9 @@ class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                     {
                         'name': 'execute',
                         'service': 'ShellCommand',
-                        'commandLine': ['cat']
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -153,7 +159,9 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                             {
                                 'name': 'execute',
                                 'service': 'ShellCommand',
-                                'commandLine': ['cat']
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },

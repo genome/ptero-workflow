@@ -26,7 +26,9 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                     {
                         'name': 'execute',
                         'service': 'ShellCommand',
-                        'commandLine': ['cat']
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -35,7 +37,9 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                     {
                         'name': 'execute',
                         'service': 'ShellCommand',
-                        'commandLine': ['cat']
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -68,7 +72,9 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                     {
                         'name': 'execute',
                         'service': 'ShellCommand',
-                        'commandLine': ['cat']
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -77,7 +83,9 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                     {
                         'name': 'execute',
                         'service': 'ShellCommand',
-                        'commandLine': ['cat']
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -111,7 +119,9 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                             {
                                 'name': 'execute',
                                 'service': 'ShellCommand',
-                                'commandLine': ['cat']
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -120,7 +130,9 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                             {
                                 'name': 'execute',
                                 'service': 'ShellCommand',
-                                'commandLine': ['cat']
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -170,7 +182,9 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                             {
                                 'name': 'execute',
                                 'service': 'ShellCommand',
-                                'commandLine': ['cat']
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -179,7 +193,9 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                             {
                                 'name': 'execute',
                                 'service': 'ShellCommand',
-                                'commandLine': ['cat']
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },

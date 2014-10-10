@@ -5,12 +5,16 @@
                 {
                     "name": "shortcut",
                     "service": "ShellCommand",
-                    "commandLine": ["cat"]
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 },
                 {
                     "name": "execute",
                     "service": "ShellCommand",
-                    "commandLine": ["false"]
+                    "parameters": {
+                        "commandLine": ["false"]
+                    }
                 }
             ]
         }
