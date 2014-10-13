@@ -38,7 +38,7 @@ def _build_parallel_by_task(node_data, node):
 def _build_task(node_data, node):
     for index, data in enumerate(node_data['methods']):
         method_name = data['name']
-        method = models.Method(
+        method = models.new_method(
                 name=method_name,
                 service=data['service'],
                 parameters=data['parameters'],
