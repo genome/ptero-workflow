@@ -18,7 +18,3 @@ after_success:
 after_script:
     - ps -efl > var/log/ps.out
     - bash -c 'for f in var/log/*; do echo; echo "============================================"; echo $f; echo "============================================"; cat $f; done'
-
-branches:
-    only:
-        - master
