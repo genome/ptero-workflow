@@ -1,11 +1,13 @@
 from ..base import Base
+from ..color_group import ColorGroup
 from .node_base import Node
 from .mixins.task import TaskPetriMixin
-from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from .method import Method
+from sqlalchemy.orm.session import object_session
+import requests
+import simplejson
 
 
 __all__ = ['Task']
@@ -21,7 +23,7 @@ class Task(TaskPetriMixin, Node):
             collection_class=attribute_mapped_collection('name'),
             backref='task', cascade='all, delete-orphan')
 
-    method_list = relationship('Method', order_by=Method.index)
+    method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
         'polymorphic_identity': 'task',
@@ -30,17 +32,18 @@ class Task(TaskPetriMixin, Node):
     VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(['execute', 'ended'])
 
 
-class ParallelByTask(ParallelPetriMixin, Node):
+class ParallelByTask(TaskPetriMixin, Node):
 
     __tablename__ = 'parallel_by_task'
 
     id = Column(Integer, ForeignKey('node.id'), primary_key=True)
+    parallel_by = Column(Text, nullable=False)
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
-    method_list = relationship('Method', order_by=Method.index)
+    method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
         'polymorphic_identity': 'parallel-by-task',
@@ -48,3 +51,123 @@ class ParallelByTask(ParallelPetriMixin, Node):
 
     VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(
             ['color_group_created', 'execute', 'ended', 'get_split_size'])
+
+    @property
+    def split_size_wait_place_name(self):
+        return '%s-split-size-wait' % self.unique_name
+
+    @property
+    def split_size_place_name(self):
+        return '%s-split-size' % self.unique_name
+
+    @property
+    def create_color_group_place_name(self):
+        return '%s-create-color-group-place' % self.unique_name
+
+    @property
+    def color_group_created_place_name(self):
+        return '%s-color-group-created-place' % self.unique_name
+
+    @property
+    def split_place_name(self):
+        return '%s-split' % self.unique_name
+
+    @property
+    def joined_place_name(self):
+        return '%s-joined' % self.unique_name
+
+    def get_split_size(self, body_data, query_string_data):
+        color = body_data['color']
+        response_links = body_data['response_links']
+
+        source_data = self.get_input_node_and_name(self.parallel_by)
+        valid_color_list = self._valid_color_list(color)
+        output = self._fetch_input(color, valid_color_list, source_data)
+        response = requests.put(response_links['send_data'],
+                data=simplejson.dumps({'color_group_size': output.size}),
+                headers={'Content-Type': 'application/json'})
+        return response
+
+    def color_group_created(self, body_data, query_string_data):
+        workflow = self.workflow
+        group = body_data['group']
+
+        cg = ColorGroup.create(workflow, group)
+        s = object_session(self)
+        s.add(cg)
+        s.commit()
+        return cg
+
+    def get_outputs(self, color):
+        grouped = {}
+        for o in self.results:
+            if o.name not in grouped:
+                grouped[o.name] = []
+            grouped[o.name].append(o)
+
+        results = {}
+        for name, outputs in grouped.iteritems():
+            results[name] = [o.data
+                    for o in sorted(outputs, key=lambda x: x.color)]
+        return results
+
+    def _attach_split(self, transitions, ready_place):
+        transitions.extend([
+            {
+                'inputs': [ready_place],
+                'outputs': [self.split_size_wait_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.event_url('get_split_size'),
+                    'requested_data': ['color_group_size'],
+                    'response_places': {
+                        'send_data': self.split_size_place_name,
+                    },
+                },
+            },
+
+            {
+                'inputs': [self.split_size_wait_place_name,
+                    self.split_size_place_name],
+                'outputs': [self.create_color_group_place_name],
+            },
+
+            # XXX add color group creation ack callback
+            {
+                'inputs': [self.create_color_group_place_name],
+                'outputs': [self.color_group_created_place_name],
+                'action': {
+                    'type': 'create-color-group',
+                    'url': self.event_url('color_group_created'),
+                },
+            },
+
+            {
+                'inputs': [self.color_group_created_place_name],
+                'outputs': [self.split_place_name],
+                'action': {
+                    'type': 'split',
+                },
+            },
+        ])
+
+        return self.split_place_name
+
+    def _attach_join(self, transitions, action_done_place):
+        transitions.append({
+            'inputs': action_done_place,
+            'outputs': self.joined_place_name,
+            'type': 'barrier',
+            'action': {
+                'type': 'join',
+            }
+        })
+        return self.joined_place_name
+
+    def _convert_output(self, property_name, output_holder, color):
+        if property_name == self.parallel_by:
+            cg = self._get_color_group(color)
+            index = color - cg.begin
+            return output_holder.get_element(index)
+        else:
+            return output_holder.data
