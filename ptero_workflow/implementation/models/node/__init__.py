@@ -1,6 +1,5 @@
 from .node_base import *
 from .task import *
-from .method import *
 from .dag import *
 from .output_connector import *
 from .input_connector import *

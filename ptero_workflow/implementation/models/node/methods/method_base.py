@@ -1,8 +1,10 @@
-from ..base import Base
-from ..json_type import JSON
+from ...base import Base
+from ...json_type import JSON
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 
+
 __all__ = ['Method']
+
 
 class Method(Base):
     __tablename__ = 'method'

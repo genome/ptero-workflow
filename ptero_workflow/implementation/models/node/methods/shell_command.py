@@ -1,4 +1,4 @@
-from ..method import Method
+from .method_base import Method
 from ..mixins.shell_command import ShellCommandPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer
 

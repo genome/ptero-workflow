@@ -5,7 +5,6 @@ from .mixins.parallel import ParallelPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
-from .method import Method
 
 
 __all__ = ['Task']
@@ -21,7 +20,7 @@ class Task(TaskPetriMixin, Node):
             collection_class=attribute_mapped_collection('name'),
             backref='task', cascade='all, delete-orphan')
 
-    method_list = relationship('Method', order_by=Method.index)
+    method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
         'polymorphic_identity': 'task',
@@ -40,7 +39,7 @@ class ParallelByTask(ParallelPetriMixin, Node):
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
-    method_list = relationship('Method', order_by=Method.index)
+    method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
         'polymorphic_identity': 'parallel-by-task',
