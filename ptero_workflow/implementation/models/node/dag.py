@@ -52,7 +52,7 @@ class DAG(Node):
             'outputs': [self.success_place_name],
             'action': {
                 'type': 'notify',
-                'url': self.event_url('done'),
+                'url': self.callback_url('done'),
             },
         })
 

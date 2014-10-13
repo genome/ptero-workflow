@@ -29,7 +29,7 @@ class Task(TaskPetriMixin, Node):
         'polymorphic_identity': 'task',
     }
 
-    VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(['execute', 'ended'])
+    VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(['execute', 'ended'])
 
 
 class ParallelByTask(TaskPetriMixin, Node):
@@ -49,7 +49,7 @@ class ParallelByTask(TaskPetriMixin, Node):
         'polymorphic_identity': 'parallel-by-task',
     }
 
-    VALID_EVENT_TYPES = Node.VALID_EVENT_TYPES.union(
+    VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(
             ['color_group_created', 'execute', 'ended', 'get_split_size'])
 
     @property
@@ -118,7 +118,7 @@ class ParallelByTask(TaskPetriMixin, Node):
                 'outputs': [self.split_size_wait_place_name],
                 'action': {
                     'type': 'notify',
-                    'url': self.event_url('get_split_size'),
+                    'url': self.callback_url('get_split_size'),
                     'requested_data': ['color_group_size'],
                     'response_places': {
                         'send_data': self.split_size_place_name,
@@ -138,7 +138,7 @@ class ParallelByTask(TaskPetriMixin, Node):
                 'outputs': [self.color_group_created_place_name],
                 'action': {
                     'type': 'create-color-group',
-                    'url': self.event_url('color_group_created'),
+                    'url': self.callback_url('color_group_created'),
                 },
             },
 

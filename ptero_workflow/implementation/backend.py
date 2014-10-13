@@ -70,10 +70,10 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, node_id, event_type, body_data, query_string_data):
+    def handle_callback(self, node_id, callback_type, body_data, query_string_data):
         node = self.session.query(models.Node
                 ).filter_by(id=node_id).one()
-        node.handle_event(event_type, body_data, query_string_data)
+        node.handle_callback(callback_type, body_data, query_string_data)
 
     def cleanup(self):
         self.session.rollback()

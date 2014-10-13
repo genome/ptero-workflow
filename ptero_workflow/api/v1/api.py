@@ -12,9 +12,9 @@ api.add_resource(views.WorkflowListView, '/workflows', endpoint='workflow-list')
 api.add_resource(views.WorkflowDetailView,
     '/workflows/<int:workflow_id>', endpoint='workflow-detail')
 
-api.add_resource(views.NodeEventCallback,
-    '/callbacks/nodes/<int:node_id>/events/<string:event_type>',
-    endpoint='event-callback')
+api.add_resource(views.NodeCallback,
+    '/callbacks/nodes/<int:node_id>/callbacks/<string:callback_type>',
+    endpoint='node-callback')
 
 api.add_resource(views.ReportDetailView, '/reports/<string:report_type>',
         endpoint='report')

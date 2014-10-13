@@ -24,7 +24,7 @@ class Node(Base):
         UniqueConstraint('parent_id', 'name'),
     )
 
-    VALID_EVENT_TYPES = set(['done'])
+    VALID_CALLBACK_TYPES = set(['done'])
 
     id        = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('node.id'), nullable=True)
@@ -80,17 +80,17 @@ class Node(Base):
     def ready_place_name(self):
         return '%s-ready' % self.unique_name
 
-    def event_url(self, event, **params):
+    def callback_url(self, callback_type, **params):
         if params:
             query_string = '?%s' % urllib.urlencode(params)
         else:
             query_string = ''
 
-        return 'http://%s:%d/v1/callbacks/nodes/%d/events/%s%s' % (
+        return 'http://%s:%d/v1/callbacks/nodes/%d/callbacks/%s%s' % (
             os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
             int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
             self.id,
-            event,
+            callback_type,
             query_string,
         )
 
@@ -201,12 +201,12 @@ class Node(Base):
     def get_input(self, name, color):
         return self.get_inputs(color)[name]
 
-    def handle_event(self, event_type, body_data, query_string_data):
-        if event_type in self.VALID_EVENT_TYPES:
-            return getattr(self, event_type)(body_data, query_string_data)
+    def handle_callback(self, callback_type, body_data, query_string_data):
+        if callback_type in self.VALID_CALLBACK_TYPES:
+            return getattr(self, callback_type)(body_data, query_string_data)
         else:
-            raise RuntimeError('Invalid event type (%s).  Allowed types: %s'
-                    % (event_type, self.VALID_EVENT_TYPES))
+            raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
+                    % (callback_type, self.VALID_CALLBACK_TYPES))
 
     def done(self, body_data, query_string_data):
         self.status = 'success'
