@@ -4,7 +4,10 @@
             "methods": [
                 {
                     "name": "execute",
-                    "commandLine": ["cat"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         },
@@ -14,7 +17,10 @@
                     "methods": [
                         {
                             "name": "execute",
-                            "commandLine": ["cat"]
+                            "service": "ShellCommand",
+                            "parameters": {
+                                "commandLine": ["cat"]
+                            }
                         }
                     ]
                 }
@@ -38,7 +44,10 @@
             "methods": [
                 {
                     "name": "execute",
-                    "commandLine": ["cat"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         }

@@ -25,7 +25,10 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'commandLine': ['cat']
+                        'service': 'ShellCommand',
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -33,7 +36,10 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'commandLine': ['cat']
+                        'service': 'ShellCommand',
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -65,7 +71,10 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'commandLine': ['cat']
+                        'service': 'ShellCommand',
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -73,7 +82,10 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'commandLine': ['cat']
+                        'service': 'ShellCommand',
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -106,7 +118,10 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'commandLine': ['cat']
+                                'service': 'ShellCommand',
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -114,7 +129,10 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'commandLine': ['cat']
+                                'service': 'ShellCommand',
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -163,7 +181,10 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'commandLine': ['cat']
+                                'service': 'ShellCommand',
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -171,7 +192,10 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'commandLine': ['cat']
+                                'service': 'ShellCommand',
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },

@@ -4,7 +4,10 @@
             "methods": [
                 {
                     "name": "execute",
-                    "commandLine": ["cat"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ],
             "parallelBy": "parallel_param"
