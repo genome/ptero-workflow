@@ -59,18 +59,3 @@ class TaskPetriMixin(object):
             })
 
         return self.success_place_name
-
-    def ended(self, body_data, query_string_data):
-        job_id = body_data.pop('jobId')
-
-        s = object_session(self)
-        job = s.query(Job).filter_by(node=self, job_id=job_id).one()
-
-        if body_data['exitCode'] == 0:
-            outputs = simplejson.loads(body_data['stdout'])
-            self.set_outputs(outputs, job.color)
-            s.commit()
-            return requests.put(job.response_links['success'].url)
-
-        else:
-            return requests.put(job.response_links['failure'].url)
