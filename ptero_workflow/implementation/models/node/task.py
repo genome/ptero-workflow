@@ -1,5 +1,4 @@
 from ..base import Base
-from ..color_group import ColorGroup
 from .node_base import Node
 from .mixins.task import TaskPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
@@ -11,7 +10,6 @@ import simplejson
 
 
 __all__ = ['Task']
-
 
 
 class Task(TaskPetriMixin, Node):
@@ -50,7 +48,7 @@ class ParallelByTask(TaskPetriMixin, Node):
     }
 
     VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(
-            ['color_group_created', 'execute', 'ended', 'get_split_size'])
+            ['execute', 'ended', 'get_split_size'])
 
     @property
     def split_size_wait_place_name(self):
@@ -59,10 +57,6 @@ class ParallelByTask(TaskPetriMixin, Node):
     @property
     def split_size_place_name(self):
         return '%s-split-size' % self.unique_name
-
-    @property
-    def create_color_group_place_name(self):
-        return '%s-create-color-group-place' % self.unique_name
 
     @property
     def color_group_created_place_name(self):
@@ -78,25 +72,17 @@ class ParallelByTask(TaskPetriMixin, Node):
 
     def get_split_size(self, body_data, query_string_data):
         color = body_data['color']
+        group = body_data['group']
         response_links = body_data['response_links']
 
+        colors = group.get('color_lineage', []) + [color]
+
         source_data = self.get_input_node_and_name(self.parallel_by)
-        valid_color_list = self._valid_color_list(color)
-        output = self._fetch_input(color, valid_color_list, source_data)
+        output = self._fetch_input(colors, source_data)
         response = requests.put(response_links['send_data'],
                 data=simplejson.dumps({'color_group_size': output.size}),
                 headers={'Content-Type': 'application/json'})
         return response
-
-    def color_group_created(self, body_data, query_string_data):
-        workflow = self.workflow
-        group = body_data['group']
-
-        cg = ColorGroup.create(workflow, group)
-        s = object_session(self)
-        s.add(cg)
-        s.commit()
-        return cg
 
     def get_outputs(self, color):
         grouped = {}
@@ -129,16 +115,9 @@ class ParallelByTask(TaskPetriMixin, Node):
             {
                 'inputs': [self.split_size_wait_place_name,
                     self.split_size_place_name],
-                'outputs': [self.create_color_group_place_name],
-            },
-
-            # XXX add color group creation ack callback
-            {
-                'inputs': [self.create_color_group_place_name],
                 'outputs': [self.color_group_created_place_name],
                 'action': {
                     'type': 'create-color-group',
-                    'url': self.callback_url('color_group_created'),
                 },
             },
 
@@ -164,10 +143,8 @@ class ParallelByTask(TaskPetriMixin, Node):
         })
         return self.joined_place_name
 
-    def _convert_output(self, property_name, output_holder, color):
+    def _convert_output(self, property_name, output_holder, parallel_index):
         if property_name == self.parallel_by:
-            cg = self._get_color_group(color)
-            index = color - cg.begin
-            return output_holder.get_element(index)
+            return output_holder.get_element(parallel_index)
         else:
             return output_holder.data

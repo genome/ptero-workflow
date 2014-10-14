@@ -36,15 +36,11 @@ class Backend(object):
         workflow.root_node = nodes.create_node('root',
                 root_data, workflow=workflow)
 
-        root_color_group = models.ColorGroup(workflow=workflow, index=0,
-                begin=0, end=1)
-
         workflow.input_holder_node = nodes.create_input_holder(
                 workflow.root_node, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
         self.session.add(workflow)
-        self.session.add(root_color_group)
         self.session.commit()
 
         return workflow
