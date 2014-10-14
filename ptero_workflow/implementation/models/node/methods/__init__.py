@@ -1,4 +1,4 @@
-import method_base
+from .method_base import *
 from .shell_command import *
 
 METHOD_SUBCLASSES = [ShellCommand]

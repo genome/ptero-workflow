@@ -19,6 +19,9 @@ class ShellCommand(Method):
         'polymorphic_identity': 'ShellCommand',
     }
 
+    VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
+            ['ended', 'execute'])
+
     @property
     def command_line(self):
         return self.parameters['commandLine']
@@ -40,7 +43,7 @@ class ShellCommand(Method):
             'outputs': [wait_place_name],
             'action': {
                 'type': 'notify',
-                'url': self.task.callback_url('execute', method=self.name),
+                'url': self.callback_url('execute'),
                 'response_places': {
                     'success': success_callback_place_name,
                     'failure': failure_callback_place_name,
@@ -61,7 +64,11 @@ class ShellCommand(Method):
 
         return success_place_name, failure_place_name
 
-    def execute(self, color, group, response_links):
+    def execute(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
+
         colors = group.get('color_lineage', []) + [color]
         parallel_index = color - group['begin']
 
@@ -76,6 +83,21 @@ class ShellCommand(Method):
 
         s.add(job)
         s.commit()
+
+    def ended(self, body_data, query_string_data):
+        job_id = body_data.pop('jobId')
+
+        s = object_session(self)
+        job = s.query(Job).filter_by(node=self.task, job_id=job_id).one()
+
+        if body_data['exitCode'] == 0:
+            outputs = simplejson.loads(body_data['stdout'])
+            self.task.set_outputs(outputs, job.color)
+            s.commit()
+            return requests.put(job.response_links['success'].url)
+
+        else:
+            return requests.put(job.response_links['failure'].url)
 
     def _submit_to_shell_command(self, colors, parallel_index, command_line):
         body_data = self._shell_command_submit_data(colors, parallel_index,
@@ -99,6 +121,6 @@ class ShellCommand(Method):
             'stdin': simplejson.dumps(
                 self.task.get_inputs(colors, parallel_index)),
             'callbacks': {
-                'ended': self.task.callback_url('ended'),
+                'ended': self.callback_url('ended'),
             },
         }

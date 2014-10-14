@@ -19,15 +19,13 @@ class Task(TaskPetriMixin, Node):
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
-            backref='task', cascade='all, delete-orphan')
+            cascade='all, delete-orphan')
 
     method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
         'polymorphic_identity': 'task',
     }
-
-    VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(['execute', 'ended'])
 
 
 class ParallelByTask(TaskPetriMixin, Node):
@@ -47,8 +45,7 @@ class ParallelByTask(TaskPetriMixin, Node):
         'polymorphic_identity': 'parallel-by-task',
     }
 
-    VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(
-            ['execute', 'ended', 'get_split_size'])
+    VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(['get_split_size'])
 
     @property
     def split_size_wait_place_name(self):

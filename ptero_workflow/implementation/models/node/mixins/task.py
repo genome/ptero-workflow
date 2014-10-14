@@ -1,4 +1,3 @@
-from ...job import Job
 from sqlalchemy.orm.session import object_session
 import requests
 import simplejson
@@ -59,27 +58,3 @@ class TaskPetriMixin(object):
             })
 
         return self.success_place_name
-
-    def execute(self, body_data, query_string_data):
-        color = body_data['color']
-        group = body_data['group']
-        response_links = body_data['response_links']
-
-        method_name = query_string_data['method']
-        method = self.methods[method_name]
-        method.execute(color, group, response_links)
-
-    def ended(self, body_data, query_string_data):
-        job_id = body_data.pop('jobId')
-
-        s = object_session(self)
-        job = s.query(Job).filter_by(node=self, job_id=job_id).one()
-
-        if body_data['exitCode'] == 0:
-            outputs = simplejson.loads(body_data['stdout'])
-            self.set_outputs(outputs, job.color)
-            s.commit()
-            return requests.put(job.response_links['success'].url)
-
-        else:
-            return requests.put(job.response_links['failure'].url)
