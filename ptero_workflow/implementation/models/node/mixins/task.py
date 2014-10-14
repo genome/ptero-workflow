@@ -60,15 +60,6 @@ class TaskPetriMixin(object):
 
         return self.success_place_name
 
-    def execute(self, body_data, query_string_data):
-        color = body_data['color']
-        group = body_data['group']
-        response_links = body_data['response_links']
-
-        method_name = query_string_data['method']
-        method = self.methods[method_name]
-        method.execute(color, group, response_links)
-
     def ended(self, body_data, query_string_data):
         job_id = body_data.pop('jobId')
 

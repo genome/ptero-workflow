@@ -40,7 +40,7 @@ class ShellCommand(Method):
             'outputs': [wait_place_name],
             'action': {
                 'type': 'notify',
-                'url': self.task.callback_url('execute', method=self.name),
+                'url': self.callback_url('execute'),
                 'response_places': {
                     'success': success_callback_place_name,
                     'failure': failure_callback_place_name,
@@ -61,7 +61,11 @@ class ShellCommand(Method):
 
         return success_place_name, failure_place_name
 
-    def execute(self, color, group, response_links):
+    def execute(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
+
         colors = group.get('color_lineage', []) + [color]
         parallel_index = color - group['begin']
 
