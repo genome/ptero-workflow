@@ -1,6 +1,5 @@
 from ..base import Base
 from .node_base import Node
-from .mixins.task import TaskPetriMixin
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -12,10 +11,11 @@ import simplejson
 __all__ = ['Task']
 
 
-class Task(TaskPetriMixin, Node):
+class Task(Node):
     __tablename__ = 'task'
 
     id = Column(Integer, ForeignKey('node.id'), primary_key=True)
+    parallel_by = Column(Text, nullable=True)
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
@@ -27,25 +27,59 @@ class Task(TaskPetriMixin, Node):
         'polymorphic_identity': 'task',
     }
 
-
-class ParallelByTask(TaskPetriMixin, Node):
-
-    __tablename__ = 'parallel_by_task'
-
-    id = Column(Integer, ForeignKey('node.id'), primary_key=True)
-    parallel_by = Column(Text, nullable=False)
-
-    methods = relationship('Method',
-            collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
-
-    method_list = relationship('Method', order_by='Method.index')
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'parallel-by-task',
-    }
-
     VALID_CALLBACK_TYPES = Node.VALID_CALLBACK_TYPES.union(['get_split_size'])
+
+    def get_petri_transitions(self):
+        transitions = []
+
+        input_deps_place = self._attach_input_deps(transitions)
+
+        if self.parallel_by is None:
+            join_place = self._attach_action(transitions, input_deps_place)
+        else:
+            split_place = self._attach_split(transitions, input_deps_place)
+            action_place = self._attach_action(transitions, split_place)
+            join_place = self._attach_join(transitions, action_place)
+
+        self._attach_output_deps(transitions, join_place)
+
+        return transitions
+
+    def _attach_input_deps(self, transitions):
+        transitions.append({
+            'inputs': [o.success_place_pair_name(self) for o in self.input_nodes],
+            'outputs': [self.ready_place_name],
+        })
+
+        return self.ready_place_name
+
+    def _attach_output_deps(self, transitions, internal_success_place):
+        success_outputs = [self.success_place_pair_name(o) for o in self.output_nodes]
+        success_outputs.append(self.success_place_pair_name(self.parent))
+        transitions.append({
+            'inputs': [internal_success_place],
+            'outputs': success_outputs,
+        })
+
+    def _method_place_name(self, method, kind):
+        return '%s-%s-%s' % (self.unique_name, method, kind)
+
+    def _attach_action(self, transitions, action_ready_place):
+        input_place_name = action_ready_place
+        success_places = []
+        for method in self.method_list:
+            success_place, failure_place = method._attach(transitions,
+                    input_place_name)
+            input_place_name = failure_place
+            success_places.append(success_place)
+
+        for sp in success_places:
+            transitions.append({
+                'inputs': [sp],
+                'outputs': [self.success_place_name],
+            })
+
+        return self.success_place_name
 
     @property
     def split_size_wait_place_name(self):
@@ -82,17 +116,20 @@ class ParallelByTask(TaskPetriMixin, Node):
         return response
 
     def get_outputs(self, color):
-        grouped = {}
-        for o in self.results:
-            if o.name not in grouped:
-                grouped[o.name] = []
-            grouped[o.name].append(o)
+        if self.parallel_by is None:
+            return {o.name: o.data for o in self.results}
+        else:
+            grouped = {}
+            for o in self.results:
+                if o.name not in grouped:
+                    grouped[o.name] = []
+                grouped[o.name].append(o)
 
-        results = {}
-        for name, outputs in grouped.iteritems():
-            results[name] = [o.data
-                    for o in sorted(outputs, key=lambda x: x.color)]
-        return results
+            results = {}
+            for name, outputs in grouped.iteritems():
+                results[name] = [o.data
+                        for o in sorted(outputs, key=lambda x: x.color)]
+            return results
 
     def _attach_split(self, transitions, ready_place):
         transitions.extend([

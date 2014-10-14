@@ -30,12 +30,10 @@ def _build_dag(node_data, node):
         )
 
 
-def _build_parallel_by_task(node_data, node):
-    node.parallel_by = node_data['parallelBy']
-    _build_task(node_data, node)
-
-
 def _build_task(node_data, node):
+    if 'parallelBy' in node_data:
+        node.parallel_by = node_data['parallelBy']
+
     for index, data in enumerate(node_data['methods']):
         method_name = data['name']
         method = models.new_method(
@@ -50,7 +48,6 @@ def _build_task(node_data, node):
 
 _NODE_BUILDERS = {
     'dag': _build_dag,
-    'parallel-by-task': _build_parallel_by_task,
     'task': _build_task,
 }
 def _build_node(node_data, node):
@@ -76,10 +73,7 @@ def _get_node_type(node_data):
             raise RuntimeError('Only input/output connector are '
                     'allowed explicit type, not (%s)' % node_data['type'])
     elif 'methods' in node_data:
-        if 'parallelBy' in node_data:
-            return 'parallel-by-task'
-        else:
-            return 'task'
+        return 'task'
 
     elif 'nodes' in node_data:
         return 'dag'
