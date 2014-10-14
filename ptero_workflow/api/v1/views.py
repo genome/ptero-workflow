@@ -63,8 +63,8 @@ class NodeCallback(Resource):
             return ''
 
         except:
-            LOG.exception('Unexpected exception responding to callback (%s) on node (%s)',
-                    callback_type, node_id)
+            LOG.exception('Unexpected exception responding to callback '
+                    '(%s) on node (%s)', callback_type, node_id)
             raise
 
 
