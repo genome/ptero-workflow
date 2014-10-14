@@ -35,3 +35,17 @@ class Method(Base):
         else:
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
+
+    def callback_url(self, callback_type, **params):
+        if params:
+            query_string = '?%s' % urllib.urlencode(params)
+        else:
+            query_string = ''
+
+        return 'http://%s:%d/v1/callbacks/methods/%d/callbacks/%s%s' % (
+            os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
+            int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
+            self.id,
+            callback_type,
+            query_string,
+        )
