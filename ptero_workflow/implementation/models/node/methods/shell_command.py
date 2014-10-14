@@ -40,7 +40,7 @@ class ShellCommand(Method):
             'outputs': [wait_place_name],
             'action': {
                 'type': 'notify',
-                'url': self.task.event_url('execute', method=self.name),
+                'url': self.task.callback_url('execute', method=self.name),
                 'response_places': {
                     'success': success_callback_place_name,
                     'failure': failure_callback_place_name,
@@ -93,6 +93,6 @@ class ShellCommand(Method):
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(self.task.get_inputs(color)),
             'callbacks': {
-                'ended': self.task.event_url('ended'),
+                'ended': self.task.callback_url('ended'),
             },
         }
