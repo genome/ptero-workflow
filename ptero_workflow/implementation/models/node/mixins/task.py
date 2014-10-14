@@ -1,4 +1,3 @@
-from ...job import Job
 from sqlalchemy.orm.session import object_session
 import requests
 import simplejson
