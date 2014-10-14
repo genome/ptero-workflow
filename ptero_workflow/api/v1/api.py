@@ -16,5 +16,9 @@ api.add_resource(views.NodeCallback,
     '/callbacks/nodes/<int:node_id>/callbacks/<string:callback_type>',
     endpoint='node-callback')
 
+api.add_resource(views.MethodCallback,
+    '/callbacks/methods/<int:method_id>/callbacks/<string:callback_type>',
+    endpoint='method-callback')
+
 api.add_resource(views.ReportDetailView, '/reports/<string:report_type>',
         endpoint='report')

@@ -58,13 +58,28 @@ class NodeCallback(Resource):
         try:
             body_data = request.get_json()
             query_string_data = request.args
-            g.backend.handle_callback(node_id, callback_type, body_data,
+            g.backend.handle_node_callback(node_id, callback_type, body_data,
                     query_string_data)
             return ''
 
         except:
             LOG.exception('Unexpected exception responding to callback '
                     '(%s) on node (%s)', callback_type, node_id)
+            raise
+
+
+class MethodCallback(Resource):
+    def put(self, method_id, callback_type):
+        try:
+            body_data = request.get_json()
+            query_string_data = request.args
+            g.backend.handle_method_callback(method_id, callback_type,
+                    body_data, query_string_data)
+            return ''
+
+        except:
+            LOG.exception('Unexpected exception responding to callback '
+                    '(%s) on method (%s)', callback_type, method_id)
             raise
 
 

@@ -27,3 +27,11 @@ class Method(Base):
         'polymorphic_on': 'service',
     }
 
+    VALID_CALLBACK_TYPES = set()
+
+    def handle_callback(self, callback_type, body_data, query_string_data):
+        if callback_type in self.VALID_CALLBACK_TYPES:
+            return getattr(self, callback_type)(body_data, query_string_data)
+        else:
+            raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
+                    % (callback_type, self.VALID_CALLBACK_TYPES))
