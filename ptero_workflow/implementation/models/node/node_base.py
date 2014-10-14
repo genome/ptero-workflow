@@ -1,6 +1,5 @@
 from ..base import Base
 from .. import result
-from ..color_group import ColorGroup
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -128,39 +127,19 @@ class Node(Base):
         for name, value in outputs.iteritems():
             o = result.create_result(self, name, value, color)
 
-    def get_inputs(self, color):
-        valid_colors = self._valid_color_list(color)
-
+    def get_inputs(self, colors, parallel_index):
         source_nodes = self._source_node_data()
 
         inputs = {}
         for property_name, source_data in source_nodes.iteritems():
-            output_holder = self._fetch_input(color, valid_colors, source_data)
+            output_holder = self._fetch_input(colors, source_data)
             inputs[property_name] = self._convert_output(property_name,
-                    output_holder, color)
+                    output_holder, parallel_index)
 
         return inputs
 
-    def _convert_output(self, property_name, output_holder, color):
+    def _convert_output(self, property_name, output_holder, parallel_index):
         return output_holder.data
-
-    def _valid_color_list(self, color):
-        s = object_session(self)
-        cg = s.query(ColorGroup).filter_by(workflow=self.workflow).filter(
-            ColorGroup.begin <= color, color < ColorGroup.end
-        ).one()
-
-        color_list = [color]
-        while cg.parent_color is not None:
-            color_list.append(cg.parent_color)
-            cg = cg.parent_color_group
-
-        return color_list
-
-    def _get_color_group(self, color):
-        s = object_session(self)
-        return s.query(ColorGroup).filter_by(workflow=self.workflow).filter(
-                ColorGroup.begin <= color, ColorGroup.end > color).one()
 
     def _source_node_data(self):
         source_nodes = {}
@@ -190,16 +169,13 @@ class Node(Base):
                             edge.source_property)
         return input_sources
 
-    def _fetch_input(self, color, valid_color_list, source_data):
+    def _fetch_input(self, color_list, source_data):
         (node, property_name) = source_data
 
         s = object_session(self)
         return s.query(result.Result
                 ).filter_by(node=node, name=property_name
-                ).filter(result.Result.color.in_(valid_color_list)).one()
-
-    def get_input(self, name, color):
-        return self.get_inputs(color)[name]
+                ).filter(result.Result.color.in_(color_list)).one()
 
     def handle_callback(self, callback_type, body_data, query_string_data):
         if callback_type in self.VALID_CALLBACK_TYPES:

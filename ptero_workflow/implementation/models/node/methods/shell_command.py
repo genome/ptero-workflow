@@ -62,7 +62,11 @@ class ShellCommand(Method):
         return success_place_name, failure_place_name
 
     def execute(self, color, group, response_links):
-        job_id = self._submit_to_shell_command(color, self.command_line)
+        colors = group.get('color_lineage', []) + [color]
+        parallel_index = color - group['begin']
+
+        job_id = self._submit_to_shell_command(colors, parallel_index,
+                self.command_line)
 
         job = Job(node=self.task, method=self, color=color, job_id=job_id)
         s = object_session(self)
@@ -73,8 +77,9 @@ class ShellCommand(Method):
         s.add(job)
         s.commit()
 
-    def _submit_to_shell_command(self, color, command_line):
-        body_data = self._shell_command_submit_data(color, command_line)
+    def _submit_to_shell_command(self, colors, parallel_index, command_line):
+        body_data = self._shell_command_submit_data(colors, parallel_index,
+                command_line)
         response = requests.post(self._shell_command_submit_url,
                 data=simplejson.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
@@ -87,11 +92,12 @@ class ShellCommand(Method):
             int(os.environ['PTERO_SHELL_COMMAND_PORT']),
         )
 
-    def _shell_command_submit_data(self, color, command_line):
+    def _shell_command_submit_data(self, colors, parallel_index, command_line):
         return {
             'commandLine': command_line,
             'user': os.environ.get('USER'),
-            'stdin': simplejson.dumps(self.task.get_inputs(color)),
+            'stdin': simplejson.dumps(
+                self.task.get_inputs(colors, parallel_index)),
             'callbacks': {
                 'ended': self.task.callback_url('ended'),
             },
