@@ -1,12 +1,14 @@
 import method_base
 from .shell_command import *
 
-METHOD_SUBCLASSES = [ShellCommand]
+METHOD_SUBCLASSES = {
+        'ShellCommand': ShellCommand,
+        }
 
 def new_method(**kwargs):
     service = kwargs['service']
-    for subclass in METHOD_SUBCLASSES:
-        if subclass.__mapper_args__['polymorphic_identity'] == service:
-            return subclass(**kwargs)
-    raise TypeError("No Subclass with polymorphic_identity 'service'=%s"
-            % service)
+    if service in METHOD_SUBCLASSES:
+        return METHOD_SUBCLASSES[service](**kwargs)
+    else:
+        raise TypeError("Could not determine subclass from service (%s)" %
+                service)
