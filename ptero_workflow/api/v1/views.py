@@ -53,18 +53,18 @@ def _report_url(workflow_id, report_type):
     return '%s?%s' % (base_url, urllib.urlencode({'workflow_id': workflow_id}))
 
 
-class NodeCallback(Resource):
-    def put(self, node_id, callback_type):
+class TaskCallback(Resource):
+    def put(self, task_id, callback_type):
         try:
             body_data = request.get_json()
             query_string_data = request.args
-            g.backend.handle_node_callback(node_id, callback_type, body_data,
+            g.backend.handle_task_callback(task_id, callback_type, body_data,
                     query_string_data)
             return ''
 
         except:
             LOG.exception('Unexpected exception responding to callback '
-                    '(%s) on node (%s)', callback_type, node_id)
+                    '(%s) on task (%s)', callback_type, task_id)
             raise
 
 

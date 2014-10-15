@@ -1,5 +1,5 @@
 from ..base import Base
-from .node_base import Node
+from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -8,10 +8,10 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 __all__ = ['MethodList']
 
 
-class MethodList(Node):
+class MethodList(Task):
     __tablename__ = 'method-list'
 
-    id = Column(Integer, ForeignKey('node.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('task.id'), primary_key=True)
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),

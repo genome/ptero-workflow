@@ -1,4 +1,4 @@
-from .node_base import *
+from .task_base import *
 from .method_list import *
 from .dag import *
 from .output_connector import *

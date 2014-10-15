@@ -1,5 +1,5 @@
 from . import models
-from . import nodes
+from . import tasks
 from . import translator
 import os
 import simplejson
@@ -33,11 +33,11 @@ class Backend(object):
             'edges': workflow_data['edges'],
         }
 
-        workflow.root_node = nodes.create_node('root',
+        workflow.root_task = tasks.create_task('root',
                 root_data, workflow=workflow)
 
-        workflow.input_holder_node = nodes.create_input_holder(
-                workflow.root_node, workflow_data['inputs'], color=0,
+        workflow.input_holder_task = tasks.create_input_holder(
+                workflow.root_task, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
         self.session.add(workflow)
@@ -66,11 +66,11 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def handle_node_callback(self, node_id, callback_type, body_data,
+    def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):
-        node = self.session.query(models.Node
-                ).filter_by(id=node_id).one()
-        node.handle_callback(callback_type, body_data, query_string_data)
+        task = self.session.query(models.Task
+                ).filter_by(id=task_id).one()
+        task.handle_callback(callback_type, body_data, query_string_data)
 
     def handle_method_callback(self, method_id, callback_type, body_data,
             query_string_data):

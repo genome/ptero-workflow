@@ -75,7 +75,7 @@ class ShellCommand(Method):
         job_id = self._submit_to_shell_command(colors, parallel_index,
                 self.command_line)
 
-        job = Job(node=self.task, method=self, color=color, job_id=job_id)
+        job = Job(task=self.task, method=self, color=color, job_id=job_id)
         s = object_session(self)
         for name, url in response_links.iteritems():
             link = ResponseLink(job=job, url=url, name=name)
@@ -88,7 +88,7 @@ class ShellCommand(Method):
         job_id = body_data.pop('jobId')
 
         s = object_session(self)
-        job = s.query(Job).filter_by(node=self.task, job_id=job_id).one()
+        job = s.query(Job).filter_by(task=self.task, job_id=job_id).one()
 
         if body_data['exitCode'] == 0:
             outputs = simplejson.loads(body_data['stdout'])
