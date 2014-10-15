@@ -20,7 +20,7 @@ class PostWorkflowFailure(object):
 
 class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'input connector': {
                 'methods': [
                     {
@@ -66,7 +66,7 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
 
 class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'A': {
                 'methods': [
                     {
@@ -111,9 +111,9 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
 
 class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'Inner': {
-                'nodes': {
+                'tasks': {
                     'A': {
                         'methods': [
                             {
@@ -174,9 +174,9 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
 
 class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'Inner': {
-                'nodes': {
+                'tasks': {
                     'A': {
                         'methods': [
                             {

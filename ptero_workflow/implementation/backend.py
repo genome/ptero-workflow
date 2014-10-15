@@ -29,7 +29,7 @@ class Backend(object):
         )
 
         root_data = {
-            'nodes': workflow_data['nodes'],
+            'tasks': workflow_data['tasks'],
             'edges': workflow_data['edges'],
         }
 

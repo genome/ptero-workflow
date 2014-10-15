@@ -8,7 +8,7 @@ __all__ = ['create_task']
 def _build_dag(task_data, task):
     _validate_dag_task_data(task_data)
 
-    for name, child_task_data in task_data['nodes'].iteritems():
+    for name, child_task_data in task_data['tasks'].iteritems():
         create_task(name=name, task_data=child_task_data,
                 parent=task, workflow=task.workflow)
 
@@ -57,11 +57,11 @@ def _build_task(task_data, task):
 
 
 def _validate_dag_task_data(task_data):
-    if 'input connector' in task_data['nodes']:
+    if 'input connector' in task_data['tasks']:
         raise exceptions.InvalidWorkflow(
                 "'input connector' is a reserved task name")
 
-    if 'output connector' in task_data['nodes']:
+    if 'output connector' in task_data['tasks']:
         raise exceptions.InvalidWorkflow(
                 "'output connector' is a reserved task name")
 
@@ -75,7 +75,7 @@ def _get_task_type(task_data):
     elif 'methods' in task_data:
         return 'method-list'
 
-    elif 'nodes' in task_data:
+    elif 'tasks' in task_data:
         return 'dag'
 
     else:

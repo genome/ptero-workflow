@@ -59,7 +59,7 @@ class Workflow(Base):
             outputs = None
 
         data = {
-            'nodes': tasks,
+            'tasks': tasks,
             'edges': edges,
             'inputs': self.root_task.get_inputs(colors=[0], parallel_index=0),
             'outputs': outputs,
