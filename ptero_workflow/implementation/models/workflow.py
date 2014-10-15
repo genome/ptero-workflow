@@ -68,3 +68,6 @@ class Workflow(Base):
         if self.root_task.status is not None:
             data['status'] = self.root_task.status
         return data
+
+    def get_petri_transitions(self):
+        return self.root_task.get_petri_transitions()
