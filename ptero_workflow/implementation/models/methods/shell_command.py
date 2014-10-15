@@ -85,6 +85,16 @@ class ShellCommand(Method):
         execution.data['job_id'] = job_id
         s.commit()
 
+    def begun(self, body_data, query_string_data):
+        execution_id = query_string_data['execution_id']
+
+        s = object_session(self)
+        execution = s.query(Execution).filter_by(id=execution_id,
+                method_id=self.id).one()
+
+        execution.append_status('begun')
+        s.commit()
+
     def ended(self, body_data, query_string_data):
         execution_id = query_string_data['execution_id']
 
@@ -95,11 +105,14 @@ class ShellCommand(Method):
         if body_data['exitCode'] == 0:
             outputs = simplejson.loads(body_data['stdout'])
             self.task.set_outputs(outputs, execution.color)
+            execution.append_status('succeeded')
             s.commit()
             return requests.put(
                     execution.data['petri_response_links']['success'])
 
         else:
+            execution.append_status('failed')
+            s.commit()
             return requests.put(
                     execution.data['petri_response_links']['failure'])
 
@@ -127,6 +140,7 @@ class ShellCommand(Method):
             'stdin': simplejson.dumps(
                 self.task.get_inputs(colors, parallel_index)),
             'callbacks': {
+                'begun': self.callback_url('begun', execution_id=execution_id),
                 'ended': self.callback_url('ended', execution_id=execution_id),
             },
         }

@@ -1,7 +1,7 @@
 from .base import Base
 from .json_type import JSON
-from sqlalchemy import Column, ForeignKey, Integer
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
+from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
 
 
@@ -23,3 +23,21 @@ class Execution(Base):
     color = Column(Integer, index=True, nullable=False)
 
     data = Column(JSON)
+
+    def append_status(self, status):
+        return ExecutionStatusHistory(execution=self, status=status)
+
+
+class ExecutionStatusHistory(Base):
+    __tablename__ = 'execution_status_history'
+
+    id = Column(Integer, primary_key=True)
+    execution_id = Column(Integer, ForeignKey('execution.id'), nullable=False)
+
+    timestamp = Column(DateTime(timezone=True), default=func.now(),
+            nullable=False)
+
+    status = Column(Text, index=True, nullable=False)
+
+    execution = relationship(Execution,
+            backref=backref('status_history', order_by=timestamp))
