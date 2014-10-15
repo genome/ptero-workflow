@@ -1,5 +1,5 @@
-from ...base import Base
-from ...json_type import JSON
+from ..base import Base
+from ..json_type import JSON
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 import os

@@ -1,4 +1,4 @@
-from ...job import Job, ResponseLink
+from ..job import Job, ResponseLink
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
