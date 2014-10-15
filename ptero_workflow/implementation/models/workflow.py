@@ -30,9 +30,7 @@ class Workflow(Base):
     input_holder = relationship('InputHolder',
             post_update=True, foreign_keys=[input_holder_id])
 
-    @property
-    def start_place_name(self):
-        return self.root_task.ready_place_name
+    start_place_name = 'workflow-start-place'
 
     @property
     def edges(self):
@@ -70,4 +68,7 @@ class Workflow(Base):
         return data
 
     def get_petri_transitions(self):
-        return self.root_task.get_petri_transitions()
+        transitions = []
+        success_place, failure_place = self.root_task.attach_transitions(
+                transitions, self.start_place_name)
+        return transitions

@@ -23,13 +23,13 @@ class MethodList(Task):
         'polymorphic_identity': 'method-list',
     }
 
-    def _attach_action(self, transitions, action_ready_place):
-        input_place_name = action_ready_place
+    def attach_subclass_transitions(self, transitions, start_place):
+        last_failure_place = start_place
         success_places = []
         for method in self.method_list:
-            success_place, failure_place = method._attach(transitions,
-                    input_place_name)
-            input_place_name = failure_place
+            success_place, failure_place = method.attach_transitions(
+                    transitions, last_failure_place)
+            last_failure_place = failure_place
             success_places.append(success_place)
 
         for sp in success_places:
@@ -38,4 +38,4 @@ class MethodList(Task):
                 'outputs': [self.success_place_name],
             })
 
-        return self.success_place_name
+        return self.success_place_name, last_failure_place

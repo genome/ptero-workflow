@@ -40,46 +40,93 @@ class Task(Base):
             collection_class=attribute_mapped_collection('name'),
             cascade='all, delete-orphan')
 
+    child_list = relationship('Task')
+
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }
 
-    def get_petri_transitions(self):
-        transitions = []
-
-        input_deps_place = self._attach_input_deps(transitions)
-
+    def attach_transitions(self, transitions, start_place):
         if self.parallel_by is None:
-            join_place = self._attach_action(transitions, input_deps_place)
+            success_place, failure_place = self.attach_subclass_transitions(
+                    transitions, start_place)
+
         else:
-            split_place = self._attach_split(transitions, input_deps_place)
-            action_place = self._attach_action(transitions, split_place)
-            join_place = self._attach_join(transitions, action_place)
+            split_place = self._attach_split_transitions(
+                    transitions, start_place)
+            subclass_success_place, subclass_failure_place = \
+                    self.attach_subclass_transitions(transitions, split_place)
+            success_place, failure_place = self._attach_join_transitions(
+                    transitions, subclass_success_place, subclass_failure_place)
 
-        self._attach_output_deps(transitions, join_place)
+        return success_place, failure_place
 
-        return transitions
+    def _attach_split_transitions(self, transitions, start_place):
+        transitions.extend([
+            {
+                'inputs': [start_place],
+                'outputs': [self.split_size_wait_place_name,
+                    self.join_fail_wait_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('get_split_size'),
+                    'requested_data': ['color_group_size'],
+                    'response_places': {
+                        'send_data': self.split_size_place_name,
+                    },
+                },
+            },
 
-    def _attach_input_deps(self, transitions):
+            {
+                'inputs': [self.split_size_wait_place_name,
+                    self.split_size_place_name],
+                'outputs': [self.color_group_created_place_name],
+                'action': {
+                    'type': 'create-color-group',
+                },
+            },
+
+            {
+                'inputs': [self.color_group_created_place_name],
+                'outputs': [self.split_place_name],
+                'action': {
+                    'type': 'split',
+                },
+            },
+        ])
+
+        return self.split_place_name
+
+
+    def _attach_join_transitions(self, transitions, subclass_success_place,
+            subclass_failure_place):
         transitions.append({
-            'inputs': [o.success_place_pair_name(self) for o in self.input_tasks],
-            'outputs': [self.ready_place_name],
+            'inputs': [subclass_success_place],
+            'outputs': [self.joined_place_name],
+            'type': 'barrier',
+            'action': {
+                'type': 'join',
+            }
         })
 
-        return self.ready_place_name
+        transitions.extend([
+            {
+                'inputs': [subclass_failure_place],
+                'outputs': [self.join_fail_convert_place_name],
+                'action': {
+                    'type': 'convert-color-to-parent',
+                },
+            },
+            {
+                'inputs': [self.join_fail_convert_place_name,
+                    self.join_fail_wait_place_name],
+                'outputs': [self.join_fail_place_name],
+            },
+        ])
 
-    def _attach_action(self, transitions, action_ready_place):
-        return action_ready_place
-
-    def _attach_output_deps(self, transitions, internal_success_place):
-        success_outputs = [self.success_place_pair_name(o) for o in self.output_tasks]
-        success_outputs.append(self.success_place_pair_name(self.parent))
-        transitions.append({
-            'inputs': [internal_success_place],
-            'outputs': success_outputs,
-        })
+        return self.joined_place_name, self.join_fail_place_name
 
     @property
     def split_size_wait_place_name(self):
@@ -100,6 +147,19 @@ class Task(Base):
     @property
     def joined_place_name(self):
         return '%s-joined' % self.unique_name
+
+    @property
+    def join_fail_wait_place_name(self):
+        return '%s-join-fail-wait' % self.unique_name
+
+    @property
+    def join_fail_convert_place_name(self):
+        return '%s-join-fail-convert' % self.unique_name
+
+    @property
+    def join_fail_place_name(self):
+        return '%s-join-fail' % self.unique_name
+
 
     def get_split_size(self, body_data, query_string_data):
         color = body_data['color']
@@ -131,52 +191,6 @@ class Task(Base):
                 results[name] = [o.data
                         for o in sorted(outputs, key=lambda x: x.color)]
             return results
-
-    def _attach_split(self, transitions, ready_place):
-        transitions.extend([
-            {
-                'inputs': [ready_place],
-                'outputs': [self.split_size_wait_place_name],
-                'action': {
-                    'type': 'notify',
-                    'url': self.callback_url('get_split_size'),
-                    'requested_data': ['color_group_size'],
-                    'response_places': {
-                        'send_data': self.split_size_place_name,
-                    },
-                },
-            },
-
-            {
-                'inputs': [self.split_size_wait_place_name,
-                    self.split_size_place_name],
-                'outputs': [self.color_group_created_place_name],
-                'action': {
-                    'type': 'create-color-group',
-                },
-            },
-
-            {
-                'inputs': [self.color_group_created_place_name],
-                'outputs': [self.split_place_name],
-                'action': {
-                    'type': 'split',
-                },
-            },
-        ])
-
-        return self.split_place_name
-
-    def _attach_join(self, transitions, action_done_place):
-        transitions.append({
-            'inputs': action_done_place,
-            'outputs': self.joined_place_name,
-            'type': 'barrier',
-            'action': {
-                'type': 'join',
-            }
-        })
-        return self.joined_place_name
 
     def _convert_output(self, property_name, output_holder, parallel_index):
         if property_name == self.parallel_by:
@@ -319,3 +333,7 @@ class Task(Base):
         self.status = 'success'
         s = object_session(self)
         s.commit()
+
+    @property
+    def failure_place_name(self):
+        return '%s-failure' % self.unique_name
