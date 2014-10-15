@@ -1,4 +1,4 @@
-from ..job import Job, ResponseLink
+from ..execution import Execution
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
@@ -72,36 +72,41 @@ class ShellCommand(Method):
         colors = group.get('color_lineage', []) + [color]
         parallel_index = color - group['begin']
 
-        job_id = self._submit_to_shell_command(colors, parallel_index,
-                self.command_line)
-
-        job = Job(task=self.task, method=self, color=color, job_id=job_id)
         s = object_session(self)
-        for name, url in response_links.iteritems():
-            link = ResponseLink(job=job, url=url, name=name)
-            job.response_links[name] = link
+        execution = Execution(method=self, color=color, data={
+            'petri_response_links': response_links,
+        })
+        s.add(execution)
+        s.commit()
 
-        s.add(job)
+        job_id = self._submit_to_shell_command(colors, parallel_index,
+                self.command_line, execution.id)
+
+        execution.data['job_id'] = job_id
         s.commit()
 
     def ended(self, body_data, query_string_data):
-        job_id = body_data.pop('jobId')
+        execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        job = s.query(Job).filter_by(task=self.task, job_id=job_id).one()
+        execution = s.query(Execution).filter_by(id=execution_id,
+                method_id=self.id).one()
 
         if body_data['exitCode'] == 0:
             outputs = simplejson.loads(body_data['stdout'])
-            self.task.set_outputs(outputs, job.color)
+            self.task.set_outputs(outputs, execution.color)
             s.commit()
-            return requests.put(job.response_links['success'].url)
+            return requests.put(
+                    execution.data['petri_response_links']['success'])
 
         else:
-            return requests.put(job.response_links['failure'].url)
+            return requests.put(
+                    execution.data['petri_response_links']['failure'])
 
-    def _submit_to_shell_command(self, colors, parallel_index, command_line):
+    def _submit_to_shell_command(self, colors, parallel_index, command_line,
+            execution_id):
         body_data = self._shell_command_submit_data(colors, parallel_index,
-                command_line)
+                command_line, execution_id)
         response = requests.post(self._shell_command_submit_url,
                 data=simplejson.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
@@ -114,13 +119,14 @@ class ShellCommand(Method):
             int(os.environ['PTERO_SHELL_COMMAND_PORT']),
         )
 
-    def _shell_command_submit_data(self, colors, parallel_index, command_line):
+    def _shell_command_submit_data(self, colors, parallel_index, command_line,
+            execution_id):
         return {
             'commandLine': command_line,
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(
                 self.task.get_inputs(colors, parallel_index)),
             'callbacks': {
-                'ended': self.callback_url('ended'),
+                'ended': self.callback_url('ended', execution_id=execution_id),
             },
         }
