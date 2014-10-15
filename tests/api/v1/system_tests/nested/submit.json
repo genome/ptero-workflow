@@ -1,5 +1,5 @@
 {
-    "nodes": {
+    "tasks": {
         "A": {
             "methods": [
                 {
@@ -12,7 +12,7 @@
             ]
         },
         "Inner": {
-            "nodes": {
+            "tasks": {
                 "B": {
                     "methods": [
                         {

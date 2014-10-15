@@ -12,13 +12,13 @@ class Method(Base):
     __tablename__ = 'method'
 
     __table_args__ = (
-        UniqueConstraint('node_id', 'name'),
+        UniqueConstraint('task_id', 'name'),
     )
 
     id = Column(Integer, primary_key=True)
 
-    node_id = Column(Integer, ForeignKey('node.id'))
-    task = relationship('Node')
+    task_id = Column(Integer, ForeignKey('task.id'))
+    task = relationship('Task')
 
     name = Column(Text)
 
