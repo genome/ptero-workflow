@@ -23,9 +23,6 @@ class Task(Node):
         'polymorphic_identity': 'task',
     }
 
-    def _method_place_name(self, method, kind):
-        return '%s-%s-%s' % (self.unique_name, method, kind)
-
     def _attach_action(self, transitions, action_ready_place):
         input_place_name = action_ready_place
         success_places = []

@@ -27,7 +27,7 @@ class ShellCommand(Method):
         return self.parameters['commandLine']
 
     def _place_name(self, kind):
-        return self.task._method_place_name(self.name, kind)
+        return '%s-%s-%s' % (self.task.unique_name, self.name, kind)
 
     def _attach(self, transitions, input_place_name):
         success_place_name = self._place_name('success')
