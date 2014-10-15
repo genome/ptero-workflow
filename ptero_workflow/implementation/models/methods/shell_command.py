@@ -20,7 +20,7 @@ class ShellCommand(Method):
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
-            ['ended', 'execute'])
+            ['begun', 'ended', 'execute'])
 
     @property
     def command_line(self):
