@@ -5,11 +5,11 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
-__all__ = ['Task']
+__all__ = ['MethodList']
 
 
-class Task(Node):
-    __tablename__ = 'task'
+class MethodList(Node):
+    __tablename__ = 'method-list'
 
     id = Column(Integer, ForeignKey('node.id'), primary_key=True)
 
@@ -20,7 +20,7 @@ class Task(Node):
     method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'task',
+        'polymorphic_identity': 'method-list',
     }
 
     def _attach_action(self, transitions, action_ready_place):
