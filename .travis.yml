@@ -8,6 +8,11 @@ before_script:
     - git clone --depth 1 https://github.com/genome/ptero-petri.git
     - git clone --depth 1 https://github.com/genome/ptero-shell-command.git
 
+env:
+    global:
+        - PTERO_SHELL_COMMAND_HOME=ptero-shell-command
+        - PTERO_PETRI_HOME=ptero-petri
+
 script:
     - tox
 
