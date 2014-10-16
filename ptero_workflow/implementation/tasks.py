@@ -31,9 +31,6 @@ def _build_dag(task_data, task):
 
 
 def _build_method_list(task_data, task):
-    if 'parallelBy' in task_data:
-        task.parallel_by = task_data['parallelBy']
-
     for index, data in enumerate(task_data['methods']):
         method_name = data['name']
         method = models.new_method(
@@ -51,6 +48,9 @@ _NODE_BUILDERS = {
     'method-list': _build_method_list,
 }
 def _build_task(task_data, task):
+    if 'parallelBy' in task_data:
+        task.parallel_by = task_data['parallelBy']
+
     _task_builder = _NODE_BUILDERS.get(task.type)
     if _task_builder:
         _task_builder(task_data, task=task)

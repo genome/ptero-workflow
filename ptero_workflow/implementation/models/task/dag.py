@@ -27,6 +27,12 @@ class DAG(Task):
             child_success_place, child_failure_place = child.attach_transitions(
                     transitions, child_start_place)
 
+            if child_failure_place is not None:
+                transitions.append({
+                    'inputs': [child_failure_place],
+                    'outputs': [self._failure_collection_place_name],
+                })
+
             if child.input_tasks:
                 transitions.append({
                     'inputs': [self._edge_place_name(t, child)
@@ -41,12 +47,21 @@ class DAG(Task):
                         for t in child.output_tasks],
                 })
 
-        transitions.append({
-            'inputs': [start_place],
-            'outputs': [self._child_start_place('input connector')],
-        })
+        transitions.extend([
+            {
+                'inputs': [start_place],
+                'outputs': [self._child_start_place('input connector'),
+                    self._failure_limit_place_name],
+            },
+            {
+                'inputs': [self._failure_collection_place_name,
+                    self._failure_limit_place_name],
+                'outputs': [self.failure_place_name],
+            },
+        ])
 
-        return self._child_start_place('output connector'), None
+        return (self._child_start_place('output connector'),
+                self.failure_place_name)
 
     def _child_start_place(self, child_name):
         return '%s:%s-start' % (self.unique_name, child_name)
@@ -54,3 +69,11 @@ class DAG(Task):
     def _edge_place_name(self, source, destination):
         return '%s:%s-to-%s-edge' % (self.unique_name, source.unique_name,
                 destination.unique_name)
+
+    @property
+    def _failure_collection_place_name(self):
+        return '%s-failure-collection' % self.unique_name
+
+    @property
+    def _failure_limit_place_name(self):
+        return '%s-failure-limit' % self.unique_name
