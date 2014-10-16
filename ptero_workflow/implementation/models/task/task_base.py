@@ -116,7 +116,7 @@ class Task(Base):
                 'inputs': [subclass_failure_place],
                 'outputs': [self.join_fail_convert_place_name],
                 'action': {
-                    'type': 'convert-color-to-parent',
+                    'type': 'convert-to-parent-color',
                 },
             },
             {
