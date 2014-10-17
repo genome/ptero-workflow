@@ -70,11 +70,13 @@ class ShellCommand(Method):
         response_links = body_data['response_links']
 
         colors = group.get('color_lineage', []) + [color]
+        parent_color = _get_parent_color(colors)
         parallel_index = color - group['begin']
 
         s = object_session(self)
-        execution = Execution(method=self, color=color, data={
-            'petri_response_links': response_links,
+        execution = Execution(method=self, color=color,
+                parent_color=parent_color, data={
+                    'petri_response_links': response_links,
         })
         s.add(execution)
         s.commit()
@@ -104,7 +106,8 @@ class ShellCommand(Method):
 
         if body_data['exitCode'] == 0:
             outputs = simplejson.loads(body_data['stdout'])
-            self.task.set_outputs(outputs, execution.color)
+            self.task.set_outputs(outputs, execution.color,
+                    execution.parent_color)
             execution.append_status('succeeded')
             s.commit()
             return requests.put(
@@ -144,3 +147,10 @@ class ShellCommand(Method):
                 'ended': self.callback_url('ended', execution_id=execution_id),
             },
         }
+
+def _get_parent_color(colors):
+    if len(colors) == 1:
+        return None
+
+    else:
+        return colors[-2]

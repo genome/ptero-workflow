@@ -98,7 +98,7 @@ def create_task(name, task_data, parent=None, workflow=None):
 def create_input_holder(root, inputs, color, workflow=None):
     task = models.InputHolder(name='input_holder',
             workflow=workflow)
-    task.set_outputs(inputs, color=color)
+    task.set_outputs(inputs, color=color, parent_color=None)
     for i in inputs.iterkeys():
         models.Edge(source_task=task, destination_task=root,
                 source_property=i, destination_property=i)

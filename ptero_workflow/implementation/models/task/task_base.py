@@ -16,7 +16,7 @@ import urllib
 __all__ = ['Task']
 
 
-LOG = logging.getLogger(__file__)
+LOG = logging.getLogger(__name__)
 
 
 class Task(Base):
@@ -25,7 +25,11 @@ class Task(Base):
         UniqueConstraint('parent_id', 'name'),
     )
 
-    VALID_CALLBACK_TYPES = set(['get_split_size', 'done'])
+    VALID_CALLBACK_TYPES = set([
+        'create_array_result',
+        'get_split_size',
+        'set_status',
+    ])
 
     id        = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('task.id'), nullable=True)
@@ -50,16 +54,20 @@ class Task(Base):
 
     def attach_transitions(self, transitions, start_place):
         if self.parallel_by is None:
-            success_place, failure_place = self.attach_subclass_transitions(
-                    transitions, start_place)
+            action_success_place, action_failure_place = \
+                    self.attach_subclass_transitions(transitions, start_place)
 
         else:
             split_place = self._attach_split_transitions(
                     transitions, start_place)
             subclass_success_place, subclass_failure_place = \
                     self.attach_subclass_transitions(transitions, split_place)
-            success_place, failure_place = self._attach_join_transitions(
-                    transitions, subclass_success_place, subclass_failure_place)
+            action_success_place, action_failure_place = \
+                    self._attach_join_transitions(transitions,
+                            subclass_success_place, subclass_failure_place)
+
+        success_place, failure_place = self._attach_status_update_actions(
+                transitions, action_success_place, action_failure_place)
 
         return success_place, failure_place
 
@@ -128,6 +136,45 @@ class Task(Base):
 
         return self.joined_place_name, self.join_fail_place_name
 
+    def _attach_status_update_actions(self, transitions, action_success_place,
+            action_failure_place):
+        if action_success_place is None:
+            success_place = action_success_place
+
+        else:
+            transitions.append({
+                    'inputs': [action_success_place],
+                    'outputs': [self.update_status_success_place_name],
+                    'action': {
+                        'type': 'notify',
+                        'url': self.callback_url('set_status', status='success')
+                    }})
+            success_place = self.update_status_success_place_name
+
+
+        if action_failure_place is None:
+            failure_place = action_failure_place
+
+        else:
+            transitions.append({
+                'inputs': [action_failure_place],
+                    'outputs': [self.update_status_failure_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('set_status', status='failure')
+                }})
+            failure_place = self.update_status_failure_place_name
+
+        return success_place, failure_place
+
+    @property
+    def update_status_success_place_name(self):
+        return '%s-update-status-success' % self.unique_name
+
+    @property
+    def update_status_failure_place_name(self):
+        return '%s-update-status-failure' % self.unique_name
+
     @property
     def split_size_wait_place_name(self):
         return '%s-split-size-wait' % self.unique_name
@@ -193,6 +240,8 @@ class Task(Base):
             return results
 
     def _convert_output(self, property_name, output_holder, parallel_index):
+        LOG.debug('Converting output for: property_name="%s", parallel_by="%s"',
+                property_name, self.parallel_by)
         if property_name == self.parallel_by:
             return output_holder.get_element(parallel_index)
         else:
@@ -270,10 +319,11 @@ class Task(Base):
     def get_output(self, name, color):
         return self.get_outputs(color).get(name)
 
-    def set_outputs(self, outputs, color):
+    def set_outputs(self, outputs, color, parent_color):
         s = object_session(self)
         for name, value in outputs.iteritems():
-            o = result.create_result(self, name, value, color)
+            o = result.ConcreteResult(task=self, name=name, data=value,
+                    color=color, parent_color=parent_color)
 
     def get_inputs(self, colors, parallel_index):
         source_tasks = self._source_task_data()
@@ -283,6 +333,8 @@ class Task(Base):
             output_holder = self._fetch_input(colors, source_data)
             inputs[property_name] = self._convert_output(property_name,
                     output_holder, parallel_index)
+        LOG.debug('Got inputs for color lineage %s (parallel_index %s): %s',
+                colors, parallel_index, inputs)
 
         return inputs
 
@@ -329,8 +381,10 @@ class Task(Base):
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
-    def done(self, body_data, query_string_data):
-        self.status = 'success'
+    def set_status(self, body_data, query_string_data):
+        LOG.debug('Setting status on task %s (%s) from %s to "%s"',
+                self.id, self.name, self.status, query_string_data['status'])
+        self.status = query_string_data['status']
         s = object_session(self)
         s.commit()
 

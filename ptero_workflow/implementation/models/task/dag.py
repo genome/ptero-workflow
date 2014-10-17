@@ -27,6 +27,12 @@ class DAG(Task):
             child_success_place, child_failure_place = child.attach_transitions(
                     transitions, child_start_place)
 
+            if child.name == 'output connector':
+                transitions.append({
+                    'inputs': [child_success_place],
+                    'outputs': [self.success_place_name],
+                })
+
             if child_failure_place is not None:
                 transitions.append({
                     'inputs': [child_failure_place],
@@ -60,8 +66,7 @@ class DAG(Task):
             },
         ])
 
-        return (self._child_start_place('output connector'),
-                self.failure_place_name)
+        return (self.success_place_name, self.failure_place_name)
 
     def _child_start_place(self, child_name):
         return '%s:%s-start' % (self.unique_name, child_name)
