@@ -59,7 +59,7 @@ class Workflow(Base):
         data = {
             'tasks': tasks,
             'edges': edges,
-            'inputs': self.root_task.get_inputs(colors=[0], parallel_index=0),
+            'inputs': self.root_task.get_inputs(color_list=[0], parallel_index=0),
             'outputs': outputs,
             'environment': simplejson.loads(self.environment),
         }

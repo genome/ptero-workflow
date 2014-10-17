@@ -1,5 +1,6 @@
 from ..base import Base
-from .. import result
+from ..result import Result, Json, GenericArray
+from collections import defaultdict
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -58,8 +59,10 @@ class Task(Base):
                     transitions, start_place)
             subclass_success_place, subclass_failure_place = \
                     self.attach_subclass_transitions(transitions, split_place)
-            success_place, failure_place = self._attach_join_transitions(
+            join_success_place, failure_place = self._attach_join_transitions(
                     transitions, subclass_success_place, subclass_failure_place)
+            success_place = self._attach_make_array_results_transitions(
+                    transitions, join_success_place)
 
         return success_place, failure_place
 
@@ -128,6 +131,28 @@ class Task(Base):
 
         return self.joined_place_name, self.join_fail_place_name
 
+    def _attach_make_array_results_transitions(self, transitions,
+            split_success_place):
+        transitions.extend([
+            {
+                'inputs': [split_success_place],
+                'outputs': [self.make_array_results_wait_place],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('make_array_results'),
+                    'response_places': {
+                        'done': self.make_array_results_done_place,
+                    },
+                },
+            },
+            {
+                'inputs': [self.make_array_results_wait_place,
+                    self.make_array_results_done_place],
+                'outputs': [self.success_place_name],
+            },
+        ])
+        return self.success_place_name
+
     @property
     def split_size_wait_place_name(self):
         return '%s-split-size-wait' % self.unique_name
@@ -168,35 +193,11 @@ class Task(Base):
 
         colors = group.get('color_lineage', []) + [color]
 
-        source_data = self.get_input_task_and_name(self.parallel_by)
-        output = self._fetch_input(colors, source_data)
+        result = self.get_input_result(colors=colors, name=self.parallel_by)
         response = requests.put(response_links['send_data'],
-                data=simplejson.dumps({'color_group_size': output.size}),
+                data=simplejson.dumps({'color_group_size': result.size}),
                 headers={'Content-Type': 'application/json'})
         return response
-
-    def get_outputs(self, color):
-        if self.parallel_by is None:
-            # XXX Broken -- does not even use color.
-            return {o.name: o.data for o in self.results}
-        else:
-            grouped = {}
-            for o in self.results:
-                if o.name not in grouped:
-                    grouped[o.name] = []
-                grouped[o.name].append(o)
-
-            results = {}
-            for name, outputs in grouped.iteritems():
-                results[name] = [o.data
-                        for o in sorted(outputs, key=lambda x: x.color)]
-            return results
-
-    def _convert_output(self, property_name, output_holder, parallel_index):
-        if property_name == self.parallel_by:
-            return output_holder.get_element(parallel_index)
-        else:
-            return output_holder.data
 
     @classmethod
     def from_dict(cls, type, **kwargs):
@@ -267,61 +268,6 @@ class Task(Base):
         else:
             return []
 
-    def get_output(self, name, color):
-        return self.get_outputs(color).get(name)
-
-    def set_outputs(self, outputs, color):
-        s = object_session(self)
-        for name, value in outputs.iteritems():
-            o = result.create_result(self, name, value, color)
-
-    def get_inputs(self, colors, parallel_index):
-        source_tasks = self._source_task_data()
-
-        inputs = {}
-        for property_name, source_data in source_tasks.iteritems():
-            output_holder = self._fetch_input(colors, source_data)
-            inputs[property_name] = self._convert_output(property_name,
-                    output_holder, parallel_index)
-
-        return inputs
-
-    def _source_task_data(self):
-        source_tasks = {}
-        for edge in self.input_edges:
-            source_tasks[edge.destination_property] =\
-                    edge.source_task.get_source_task_and_name(
-                            edge.source_property)
-
-        return source_tasks
-
-    def get_source_task_and_name(self, output_param_name):
-        return self, output_param_name
-
-    def get_input_task_and_name(self, input_param_name):
-        for edge in self.input_edges:
-            if edge.destination_property == input_param_name:
-                return edge.source_task.get_source_task_and_name(
-                        edge.source_property)
-        raise ValueError('Could not determine input task and name from (%s)'
-                % input_param_name)
-
-    def get_input_sources(self):
-        input_sources = {}
-        for edge in self.input_edges:
-            input_sources[edge.destination_property] =\
-                    edge.source_task.get_source_task_and_name(
-                            edge.source_property)
-        return input_sources
-
-    def _fetch_input(self, color_list, source_data):
-        (task, property_name) = source_data
-
-        s = object_session(self)
-        return s.query(result.Result
-                ).filter_by(task=task, name=property_name
-                ).filter(result.Result.color.in_(color_list)).one()
-
     def handle_callback(self, callback_type, body_data, query_string_data):
         if callback_type in self.VALID_CALLBACK_TYPES:
             return getattr(self, callback_type)(body_data, query_string_data)
@@ -334,6 +280,70 @@ class Task(Base):
         s = object_session(self)
         s.commit()
 
+    def make_array_results(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        parent_color = group['color_lineage'][-1]
+
+        s = object_session(self)
+        results = s.query(Result).filter_by(task=self, parent_color=color
+                ).order_by('name', 'color').all()
+
+        grouped_results = defaultdict(list)
+        for result in results:
+            grouped_results[result.name].append(result)
+
+        for name, result_group in grouped_results.iteritems():
+            array_result = GenericArray(task=self, name=name, color=color,
+                    parent_color=parent_color, elements=result_group)
+            s.add(array_result)
+        s.commit()
+
+        return requests.put(
+                execution.data['petri_response_links']['done'])
+
     @property
     def failure_place_name(self):
         return '%s-failure' % self.unique_name
+
+    def get_outputs(self, color):
+        s = object_session(self)
+        results = s.query(Result).filter_by(task=self, color=color).all()
+        return {r.name:r.data for r in results}
+
+    def set_outputs(self, outputs, color, parent_color):
+        for name, value in outputs.iteritems():
+            result = Json(task=self, name=name, color=color,
+                    parent_color=parent_color, data=value)
+
+    def get_inputs(self, color_list, parallel_index):
+        if self.parallel_by is not None:
+            inputs = {r.name:r.data for r in self.get_input_results(color_list)
+                    if r.name != self.parallel_by}
+            inputs[self.parallel_by] = self.get_input_result(
+                color_list=color_list, name=self.parallel_by).get_element(parallel_index)
+        else:
+            inputs = {r.name:r.data for r in self.get_input_results(color_list)}
+        return inputs
+
+    def get_input_result(self, color_list, name):
+        s = object_session(self)
+        return s.query(Result
+                ).filter_by(task=self, name=name
+                ).filter(Result.color.in_(color_list)).one()
+
+    def get_input_results(self, color_list):
+        s = object_session(self)
+        results = s.query(Result
+                ).filter_by(task=self
+                ).filter(Result.color.in_(color_list)).all()
+
+        grouped_results = {}
+        for result in results:
+            if result.name in grouped_results:
+                raise RuntimeError("Found more than one result on task (%s:%s)"
+                        "with name (%s): OLD:%s NEW:%s" % (self.name, self.id,
+                            result.name, grouped_results[result.name], result))
+            else:
+                grouped_results[result.name] = result
+        return grouped_results

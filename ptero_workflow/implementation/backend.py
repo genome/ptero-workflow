@@ -38,7 +38,7 @@ class Backend(object):
 
         workflow.input_holder_task = tasks.create_input_holder(
                 workflow.root_task, workflow_data['inputs'], color=0,
-                workflow=workflow)
+                parent_color=0, workflow=workflow)
 
         self.session.add(workflow)
         self.session.commit()
@@ -46,6 +46,8 @@ class Backend(object):
         return workflow
 
     def _submit_net(self, petri_data):
+        with open('/vagrant/new.json', 'w') as ofile:
+            ofile.write(simplejson.dumps(petri_data, indent=2))
         response = requests.post(self._petri_submit_url,
                 data=simplejson.dumps(petri_data),
                 headers={'Content-Type': 'application/json'})

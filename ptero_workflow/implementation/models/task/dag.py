@@ -1,11 +1,11 @@
-from .task_base import Task
+from .connector_base import Connector
 from sqlalchemy import Column, ForeignKey, Integer
 
 
 __all__ = ['DAG']
 
 
-class DAG(Task):
+class DAG(Connector):
     __tablename__ = 'dag'
 
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)
@@ -14,18 +14,19 @@ class DAG(Task):
         'polymorphic_identity': 'dag',
     }
 
-    def get_outputs(self, color):
-        return self.children['output connector'].get_outputs(color)
-
-    def get_source_task_and_name(self, output_param_name):
-        oc = self.children['output connector']
-        return oc.get_source_task_and_name(output_param_name)
+    @property
+    def source(self):
+        return self.children['output connector']
 
     def attach_subclass_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._child_start_place(child.name)
             child_success_place, child_failure_place = child.attach_transitions(
                     transitions, child_start_place)
+
+            if child.name == 'output connector':
+                success_place = self.attach_make_result_pointer_transitions(
+                        transitions, child_success_place)
 
             if child_failure_place is not None:
                 transitions.append({
@@ -60,7 +61,7 @@ class DAG(Task):
             },
         ])
 
-        return (self._child_start_place('output connector'),
+        return (success_place,
                 self.failure_place_name)
 
     def _child_start_place(self, child_name):
