@@ -66,3 +66,6 @@ class Workflow(Base):
         success_place, failure_place = self.root_task.attach_transitions(
                 transitions, self.start_place_name)
         return transitions
+
+    def get_outputs(self):
+        return self.root_task.get_outputs(0)
