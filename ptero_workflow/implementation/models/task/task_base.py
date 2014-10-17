@@ -273,7 +273,8 @@ class Task(Base):
     def set_outputs(self, outputs, color):
         s = object_session(self)
         for name, value in outputs.iteritems():
-            o = result.create_result(self, name, value, color)
+            o = result.ConcreteResult(task=self, name=name, data=value,
+                    color=color)
 
     def get_inputs(self, colors, parallel_index):
         source_tasks = self._source_task_data()

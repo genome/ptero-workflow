@@ -36,26 +36,15 @@ class Result(Base):
     }
 
 
-class Scalar(Result):
-    __tablename__ = 'result_scalar'
-
-    id = Column(Integer, ForeignKey('result.id'), primary_key=True)
-    data = Column(Text)
-
-    __mapper_args__ = {
-        'polymorphic_identity': 'scalar'
-    }
-
-
-class Array(Result):
-    __tablename__ = 'result_array'
+class ConcreteResult(Result):
+    __tablename__ = 'result_concrete'
 
     id = Column(Integer, ForeignKey('result.id'), primary_key=True)
 
     data = Column(json_type.JSON)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'array'
+        'polymorphic_identity': 'concrete'
     }
 
     @property
@@ -82,11 +71,3 @@ class Array(Result):
 
         else:
             return self.data[index]
-
-
-def create_result(task, name, data, color):
-    if isinstance(data, list):
-        return Array(task=task, name=name, data=data, color=color)
-
-    else:
-        return Scalar(task=task, name=name, data=data, color=color)
