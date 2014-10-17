@@ -240,7 +240,7 @@ class Task(Base):
             return results
 
     def _convert_output(self, property_name, output_holder, parallel_index):
-        log.debug('Converting output for: property_name="%s", parallel_by="%s"',
+        LOG.debug('Converting output for: property_name="%s", parallel_by="%s"',
                 property_name, self.parallel_by)
         if property_name == self.parallel_by:
             return output_holder.get_element(parallel_index)
