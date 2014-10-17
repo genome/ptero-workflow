@@ -25,7 +25,11 @@ class Task(Base):
         UniqueConstraint('parent_id', 'name'),
     )
 
-    VALID_CALLBACK_TYPES = set(['get_split_size', 'done'])
+    VALID_CALLBACK_TYPES = set([
+        'create_array_result',
+        'get_split_size',
+        'set_status',
+    ])
 
     id        = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('task.id'), nullable=True)
@@ -50,16 +54,20 @@ class Task(Base):
 
     def attach_transitions(self, transitions, start_place):
         if self.parallel_by is None:
-            success_place, failure_place = self.attach_subclass_transitions(
-                    transitions, start_place)
+            action_success_place, action_failure_place = \
+                    self.attach_subclass_transitions(transitions, start_place)
 
         else:
             split_place = self._attach_split_transitions(
                     transitions, start_place)
             subclass_success_place, subclass_failure_place = \
                     self.attach_subclass_transitions(transitions, split_place)
-            success_place, failure_place = self._attach_join_transitions(
-                    transitions, subclass_success_place, subclass_failure_place)
+            action_success_place, action_failure_place = \
+                    self._attach_join_transitions(transitions,
+                            subclass_success_place, subclass_failure_place)
+
+        success_place, failure_place = self._attach_status_update_actions(
+                transitions, action_success_place, action_failure_place)
 
         return success_place, failure_place
 
@@ -127,6 +135,45 @@ class Task(Base):
         ])
 
         return self.joined_place_name, self.join_fail_place_name
+
+    def _attach_status_update_actions(self, transitions, action_success_place,
+            action_failure_place):
+        if action_success_place is None:
+            success_place = action_success_place
+
+        else:
+            transitions.append({
+                    'inputs': [action_success_place],
+                    'outputs': [self.update_status_success_place_name],
+                    'action': {
+                        'type': 'notify',
+                        'url': self.callback_url('set_status', status='success')
+                    }})
+            success_place = self.update_status_success_place_name
+
+
+        if action_failure_place is None:
+            failure_place = action_failure_place
+
+        else:
+            transitions.append({
+                'inputs': [action_failure_place],
+                    'outputs': [self.update_status_failure_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('set_status', status='failure')
+                }})
+            failure_place = self.update_status_failure_place_name
+
+        return success_place, failure_place
+
+    @property
+    def update_status_success_place_name(self):
+        return '%s-update-status-success' % self.unique_name
+
+    @property
+    def update_status_failure_place_name(self):
+        return '%s-update-status-failure' % self.unique_name
 
     @property
     def split_size_wait_place_name(self):
@@ -330,8 +377,8 @@ class Task(Base):
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
-    def done(self, body_data, query_string_data):
-        self.status = 'success'
+    def set_status(self, body_data, query_string_data):
+        self.status = query_string_data['status']
         s = object_session(self)
         s.commit()
 
