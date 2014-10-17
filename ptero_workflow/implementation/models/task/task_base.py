@@ -16,7 +16,7 @@ import urllib
 __all__ = ['Task']
 
 
-LOG = logging.getLogger(__file__)
+LOG = logging.getLogger(__name__)
 
 
 class Task(Base):
@@ -240,6 +240,8 @@ class Task(Base):
             return results
 
     def _convert_output(self, property_name, output_holder, parallel_index):
+        log.debug('Converting output for: property_name="%s", parallel_by="%s"',
+                property_name, self.parallel_by)
         if property_name == self.parallel_by:
             return output_holder.get_element(parallel_index)
         else:
@@ -331,6 +333,8 @@ class Task(Base):
             output_holder = self._fetch_input(colors, source_data)
             inputs[property_name] = self._convert_output(property_name,
                     output_holder, parallel_index)
+        LOG.debug('Got inputs for color lineage %s (parallel_index %s): %s',
+                colors, parallel_index, inputs)
 
         return inputs
 
@@ -378,6 +382,8 @@ class Task(Base):
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
     def set_status(self, body_data, query_string_data):
+        LOG.debug('Setting status on task %s (%s) from %s to "%s"',
+                self.id, self.name, self.status, query_string_data['status'])
         self.status = query_string_data['status']
         s = object_session(self)
         s.commit()
