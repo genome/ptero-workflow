@@ -270,11 +270,11 @@ class Task(Base):
     def get_output(self, name, color):
         return self.get_outputs(color).get(name)
 
-    def set_outputs(self, outputs, color):
+    def set_outputs(self, outputs, color, parent_color):
         s = object_session(self)
         for name, value in outputs.iteritems():
             o = result.ConcreteResult(task=self, name=name, data=value,
-                    color=color)
+                    color=color, parent_color=parent_color)
 
     def get_inputs(self, colors, parallel_index):
         source_tasks = self._source_task_data()

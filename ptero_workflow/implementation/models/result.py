@@ -26,6 +26,7 @@ class Result(Base):
     task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
     name    = Column(Text, nullable=False, index=True)
     color   = Column(Integer, nullable=False, index=True)
+    parent_color = Column(Integer, nullable=True, index=True)
 
     type         = Column(Text, nullable=False)
 

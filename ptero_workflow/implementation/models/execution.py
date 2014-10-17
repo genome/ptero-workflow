@@ -21,6 +21,7 @@ class Execution(Base):
     method = relationship('Method', backref='executions')
 
     color = Column(Integer, index=True, nullable=False)
+    parent_color = Column(Integer, index=True, nullable=True)
 
     data = Column(JSON)
 
