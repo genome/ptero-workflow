@@ -1,5 +1,7 @@
+from sqlalchemy import Integer
 from sqlalchemy.types import TypeDecorator, VARCHAR
 from sqlalchemy.dialects.postgresql import JSON as psqlJSON
+from sqlalchemy.sql.functions import GenericFunction
 import json
 import os
 
@@ -27,7 +29,13 @@ class JSONEncodedDict(TypeDecorator):
             value = json.loads(value)
         return value
 
-if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://').startswith('postgres'):
+
+if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
+        ).startswith('postgres'):
+    class json_array_length(GenericFunction):
+        type = Integer
+
     JSON = psqlJSON
+
 else:
     JSON = JSONEncodedDict(1000)
