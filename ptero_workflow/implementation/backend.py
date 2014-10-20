@@ -31,6 +31,7 @@ class Backend(object):
         root_data = {
             'tasks': workflow_data['tasks'],
             'edges': workflow_data['edges'],
+            'parallelBy': workflow_data.get('parallelBy'),
         }
 
         workflow.root_task = tasks.create_task('root',
