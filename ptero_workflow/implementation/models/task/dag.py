@@ -14,9 +14,6 @@ class DAG(Task):
         'polymorphic_identity': 'dag',
     }
 
-    def get_outputs(self, color):
-        return self.children['output connector'].get_outputs(color)
-
     def get_source_task_and_name(self, output_param_name):
         oc = self.children['output connector']
         return oc.get_source_task_and_name(output_param_name)
