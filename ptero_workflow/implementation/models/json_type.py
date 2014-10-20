@@ -1,9 +1,14 @@
 from sqlalchemy import Integer
 from sqlalchemy.types import TypeDecorator, VARCHAR
 from sqlalchemy.dialects.postgresql import JSON as psqlJSON
+from sqlalchemy.orm.session import object_session
 from sqlalchemy.sql.functions import GenericFunction
 import json
 import os
+
+
+__all__ = ['JSON', 'get_data_element']
+
 
 # This class (JSONEncodedDict) is taken from
 # http://docs.sqlalchemy.org/en/rel_0_9/core/types.html#marshal-json-strings
@@ -30,12 +35,37 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
+def get_data_element_brute_force(task, index):
+    return task.data[index]
+
+def get_data_element_postgres_extensions(task, index):
+    s = object_session(task)
+    tup = s.query(task.__class__.data[index]).filter_by(id=task.id).one()
+    return tup[0]
+
+
+def get_data_size_brute_force(task):
+    return len(task.data)
+
+
+class json_array_length(GenericFunction):
+    type = Integer
+
+def get_data_size_postgres_extensions(task):
+    s = object_session(task)
+    tup = s.query(json_array_length(task.__class__.data)
+        ).filter_by(id=task.id).one()
+    return tup[0]
+
+
 if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
         ).startswith('postgres'):
-    class json_array_length(GenericFunction):
-        type = Integer
 
     JSON = psqlJSON
+    get_data_element = get_data_element_postgres_extensions
+    get_data_size = get_data_size_postgres_extensions
 
 else:
     JSON = JSONEncodedDict(1000)
+    get_data_element = get_data_element_brute_force
+    get_data_size = get_data_size_brute_force

@@ -50,25 +50,7 @@ class ConcreteResult(Result):
 
     @property
     def size(self):
-        if self._using_postgres:
-            s = object_session(self)
-            tup = s.query(json_type.json_array_length(Array.data)
-                ).filter_by(id=self.id).one()
-            return tup[0]
-
-        else:
-            return len(self.data)
-
-    @property
-    def _using_postgres(self):
-        return os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
-                ).startswith('postgres')
+        return json_type.get_data_size(self)
 
     def get_element(self, index):
-        if self._using_postgres:
-            s = object_session(self)
-            tup = s.query(Array.data[index]).filter_by(id=self.id).one()
-            return tup[0]
-
-        else:
-            return self.data[index]
+        return json_type.get_data_element(self, index)
