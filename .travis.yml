@@ -1,17 +1,22 @@
 language: python
 python: "2.7"
 
+addons:
+    postgresql: "9.3"
+
 install: pip install tox
 
 before_script:
     - sudo rabbitmq-plugins disable rabbitmq_management
     - git clone --depth 1 https://github.com/genome/ptero-petri.git
     - git clone --depth 1 https://github.com/genome/ptero-shell-command.git
+    - psql -c 'create database ptero_workflow;' -U postgres
 
 env:
     global:
         - PTERO_SHELL_COMMAND_HOME=./ptero-shell-command
         - PTERO_PETRI_HOME=./ptero-petri
+        - PTERO_WORKFLOW_DB_STRING=postgres://postgres@localhost/ptero_workflow
 
 script:
     - tox
