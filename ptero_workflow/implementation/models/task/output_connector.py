@@ -37,3 +37,5 @@ class OutputConnector(Connector):
         s.commit()
 
         return requests.put(body_data['response_links']['done'])
+    def resolve_output_source(self, session, name, parallel_depths):
+        return self.resolve_input_source(session, name, parallel_depths)

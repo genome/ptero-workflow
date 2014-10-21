@@ -79,3 +79,19 @@ class DAG(Task):
     @property
     def _failure_limit_place_name(self):
         return '%s-failure-limit' % self.unique_name
+
+    def resolve_output_source(self, session, name, parallel_depths):
+        oc = self.children['output connector']
+        return oc.resolve_output_source(session, name, parallel_depths)
+
+    def create_input_sources(self, session, parallel_depths):
+        super(DAG, self).create_input_sources(session, parallel_depths)
+
+        if self.parallel_by:
+            child_par_depths = parallel_depths + [self.parallel_depth]
+        else:
+            child_par_depths = parallel_depths
+
+        for child_name in self.children:
+            self.children[child_name].create_input_sources(session,
+                    child_par_depths)

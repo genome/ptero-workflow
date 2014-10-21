@@ -1,6 +1,7 @@
 from ..base import Base
 from .. import edge
 from .. import result
+from .. import input_source
 from collections import defaultdict
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
@@ -237,6 +238,17 @@ class Task(Base):
     def join_fail_place_name(self):
         return '%s-join-fail' % self.unique_name
 
+    @property
+    def parallel_depth(self):
+        increment = 0
+        if self.parallel_by:
+            increment = 1
+
+        if self.parent:
+            return self.parent.parallel_depth + increment
+
+        else:
+            return increment
 
     def get_split_size(self, body_data, query_string_data):
         color = body_data['color']
@@ -411,3 +423,37 @@ class Task(Base):
     @property
     def failure_place_name(self):
         return '%s-failure' % self.unique_name
+
+    def resolve_input_source(self, session, name, parallel_depths):
+        if self.parallel_by == name:
+            pdepths = parallel_depths + [self.parallel_depth]
+        else:
+            pdepths = parallel_depths
+
+        for e in self.input_edges:
+            if e.destination_property == name:
+                return e.source_task.resolve_output_source(session,
+                        e.source_property, pdepths)
+
+    def resolve_output_source(self, session, name, parallel_depths):
+        return self, name, parallel_depths
+
+    def create_input_sources(self, session, parallel_depths):
+        LOG.debug('Creating input sources for %s', self.name)
+        for e in self.input_edges:
+            source_task, source_property, source_parallel_depths = \
+                    self.resolve_input_source(session, e.destination_property,
+                            parallel_depths)
+            LOG.debug('Found input source %s[%s] = %s[%s]: parallel_depths=%s',
+                    self.name, e.destination_property,
+                    source_task.name, source_property,
+                    source_parallel_depths)
+
+            in_source = input_source.InputSource(
+                    source_task=source_task,
+                    source_property=source_property,
+                    destination_task=self,
+                    destination_property=e.destination_property,
+                    parallel_depths=source_parallel_depths,
+            )
+            session.add(in_source)
