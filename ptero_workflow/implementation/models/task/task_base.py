@@ -1,5 +1,7 @@
 from ..base import Base
+from .. import edge
 from .. import result
+from collections import defaultdict
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -110,16 +112,32 @@ class Task(Base):
 
     def _attach_join_transitions(self, transitions, subclass_success_place,
             subclass_failure_place):
-        transitions.append({
-            'inputs': [subclass_success_place],
-            'outputs': [self.joined_place_name],
-            'type': 'barrier',
-            'action': {
-                'type': 'join',
-            }
-        })
-
         transitions.extend([
+            {
+                'inputs': [subclass_success_place],
+                'outputs': [self.joined_place_name],
+                'type': 'barrier',
+                'action': {
+                    'type': 'join',
+                }
+            },
+            {
+                'inputs': [self.joined_place_name],
+                'outputs': [self.array_result_wait_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('create_array_result'),
+                    'response_places': {
+                        'created': self.array_result_callback_place_name,
+                    }
+                },
+            },
+            {
+                'inputs': [self.array_result_wait_place_name,
+                    self.array_result_callback_place_name],
+                'outputs': [self.join_success_place_name],
+            },
+
             {
                 'inputs': [subclass_failure_place],
                 'outputs': [self.join_fail_convert_place_name],
@@ -134,7 +152,7 @@ class Task(Base):
             },
         ])
 
-        return self.joined_place_name, self.join_fail_place_name
+        return self.join_success_place_name, self.join_fail_place_name
 
     def _attach_status_update_actions(self, transitions, action_success_place,
             action_failure_place):
@@ -176,6 +194,18 @@ class Task(Base):
         return '%s-update-status-failure' % self.unique_name
 
     @property
+    def array_result_wait_place_name(self):
+        return '%s-array-result-wait' % self.unique_name
+
+    @property
+    def array_result_callback_place_name(self):
+        return '%s-array-result-callback' % self.unique_name
+
+    @property
+    def join_success_place_name(self):
+        return '%s-join-success-place' % self.unique_name
+
+    @property
     def split_size_wait_place_name(self):
         return '%s-split-size-wait' % self.unique_name
 
@@ -215,37 +245,53 @@ class Task(Base):
 
         colors = group.get('color_lineage', []) + [color]
 
-        source_data = self.get_input_task_and_name(self.parallel_by)
-        output = self._fetch_input(colors, source_data)
+        parallel_input_result = self.get_input(self.parallel_by, colors)
         response = requests.put(response_links['send_data'],
-                data=simplejson.dumps({'color_group_size': output.size}),
+                data=simplejson.dumps(
+                    {'color_group_size': parallel_input_result.size}),
                 headers={'Content-Type': 'application/json'})
         return response
 
+    def get_input(self, property_name, colors):
+        s = object_session(self)
+        e = s.query(edge.Edge).filter_by(destination_task=self,
+                destination_property=property_name
+                ).one()
+
+        return s.query(result.Result
+                ).filter_by(task=e.source_task, name=e.source_property
+                ).filter(result.Result.color.in_(colors),
+                ).one()
+
+    def create_array_result(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        parent_color = group.get('parent_color')
+        response_links = body_data['response_links']
+
+        s = object_session(self)
+        results = s.query(result.Result).filter_by(task=self,
+                parent_color=color).order_by('name', 'color').all()
+
+        grouped_results = defaultdict(list)
+        for r in results:
+            grouped_results[r.name].append(r)
+
+        for name, result_group in grouped_results.iteritems():
+            array_result = result.ArrayReferenceResult(task=self, name=name,
+                    color=color, parent_color=parent_color,
+                    size=len(result_group),
+                    reference_ids=[r.id for r in result_group])
+            s.add(array_result)
+        s.commit()
+
+        response = requests.put(response_links['created'])
+        assert 200 <= response.status_code < 300
+
     def get_outputs(self, color):
-        if self.parallel_by is None:
-            # XXX Broken -- does not even use color.
-            return {o.name: o.data for o in self.results}
-        else:
-            grouped = {}
-            for o in self.results:
-                if o.name not in grouped:
-                    grouped[o.name] = []
-                grouped[o.name].append(o)
-
-            results = {}
-            for name, outputs in grouped.iteritems():
-                results[name] = [o.data
-                        for o in sorted(outputs, key=lambda x: x.color)]
-            return results
-
-    def _convert_output(self, property_name, output_holder, parallel_index):
-        LOG.debug('Converting output for: property_name="%s", parallel_by="%s"',
-                property_name, self.parallel_by)
-        if property_name == self.parallel_by:
-            return output_holder.get_element(parallel_index)
-        else:
-            return output_holder.data
+        s = object_session(self)
+        results = s.query(result.Result).filter_by(task=self, color=color).all()
+        return {r.name: r.data for r in results}
 
     @classmethod
     def from_dict(cls, type, **kwargs):
@@ -316,9 +362,6 @@ class Task(Base):
         else:
             return []
 
-    def get_output(self, name, color):
-        return self.get_outputs(color).get(name)
-
     def set_outputs(self, outputs, color, parent_color):
         s = object_session(self)
         for name, value in outputs.iteritems():
@@ -326,52 +369,29 @@ class Task(Base):
                     color=color, parent_color=parent_color)
 
     def get_inputs(self, colors, parallel_index):
-        source_tasks = self._source_task_data()
-
         inputs = {}
-        for property_name, source_data in source_tasks.iteritems():
-            output_holder = self._fetch_input(colors, source_data)
-            inputs[property_name] = self._convert_output(property_name,
-                    output_holder, parallel_index)
-        LOG.debug('Got inputs for color lineage %s (parallel_index %s): %s',
-                colors, parallel_index, inputs)
+        for name, r in self.get_input_results(colors):
+            if name == self.parallel_by:
+                inputs[name] = r.get_element(parallel_index)
+
+            else:
+                inputs[name] = r.data
 
         return inputs
 
-    def _source_task_data(self):
-        source_tasks = {}
+    def get_input_results(self, colors):
+        results = []
         for edge in self.input_edges:
-            source_tasks[edge.destination_property] =\
-                    edge.source_task.get_source_task_and_name(
-                            edge.source_property)
+            results.append((
+                edge.destination_property,
+                edge.source_task.get_output(edge.source_property, colors)
+            ))
+        return results
 
-        return source_tasks
-
-    def get_source_task_and_name(self, output_param_name):
-        return self, output_param_name
-
-    def get_input_task_and_name(self, input_param_name):
-        for edge in self.input_edges:
-            if edge.destination_property == input_param_name:
-                return edge.source_task.get_source_task_and_name(
-                        edge.source_property)
-        raise ValueError('Could not determine input task and name from (%s)'
-                % input_param_name)
-
-    def get_input_sources(self):
-        input_sources = {}
-        for edge in self.input_edges:
-            input_sources[edge.destination_property] =\
-                    edge.source_task.get_source_task_and_name(
-                            edge.source_property)
-        return input_sources
-
-    def _fetch_input(self, color_list, source_data):
-        (task, property_name) = source_data
-
+    def get_output(self, property_name, color_list):
         s = object_session(self)
         return s.query(result.Result
-                ).filter_by(task=task, name=property_name
+                ).filter_by(task=self, name=property_name
                 ).filter(result.Result.color.in_(color_list)).one()
 
     def handle_callback(self, callback_type, body_data, query_string_data):

@@ -1,0 +1,51 @@
+{
+    "parallelBy": "in_parallel",
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ]
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_constant",
+            "destinationProperty": "const_param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "const_param",
+            "destinationProperty": "out_constant"
+        },
+
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_parallel",
+            "destinationProperty": "parallel_param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "out_parallel"
+        }
+    ],
+
+    "inputs": {
+        "in_constant": "kittens",
+        "in_parallel": ["Simba", "Tabby", "Emilio"]
+    },
+
+    "environment": {}
+}

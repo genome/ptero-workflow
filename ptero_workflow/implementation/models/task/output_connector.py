@@ -1,11 +1,18 @@
-from .task_base import Task
+from .. import result
+from .connector_base import Connector
 from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm.session import object_session
+import logging
+import requests
+
+
+LOG = logging.getLogger(__name__)
 
 
 __all__ = ['OutputConnector']
 
 
-class OutputConnector(Task):
+class OutputConnector(Connector):
     __tablename__ = 'output_connector'
 
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)
@@ -14,17 +21,19 @@ class OutputConnector(Task):
         'polymorphic_identity': 'output connector',
     }
 
-    def get_outputs(self, color):
-        source_data = self.get_input_sources()
-        result = {}
-        for property_name, source in source_data.iteritems():
-            source_task, source_name = source
-            result[property_name] = source_task.get_output(source_name, color)
-        return result
+    def make_result_pointers(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        parent_color = group.get('parent_color')
 
-    def get_source_task_and_name(self, output_param_name):
-        task, name = self.get_input_task_and_name(output_param_name)
-        return task.get_source_task_and_name(name)
+        colors = group['color_lineage'] + [color]
 
-    def attach_subclass_transitions(self, transitions, start_place):
-        return start_place, None
+        s = object_session(self)
+
+        for name, r in self.get_input_results(colors):
+            pointer = result.Pointer(task=self.parent, name=name, color=color,
+                    parent_color=parent_color, target_id=r.target_id)
+            s.add(pointer)
+        s.commit()
+
+        return requests.put(body_data['response_links']['done'])
