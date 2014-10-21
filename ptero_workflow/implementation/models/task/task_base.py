@@ -372,8 +372,6 @@ class Task(Base):
         inputs = {}
         for name, r in self.get_input_results(colors):
             if name == self.parallel_by:
-                LOG.debug('property %s is parallel_by (%s)', name,
-                        self.parallel_by)
                 inputs[name] = r.get_element(parallel_index)
 
             else:
