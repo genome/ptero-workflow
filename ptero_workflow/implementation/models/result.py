@@ -55,62 +55,6 @@ class ConcreteResult(Result):
     def get_element(self, index):
         return json_type.get_data_element(self, index)
 
-    @property
-    def target_id(self):
-        return self.id
-
-
-class Pointer(Result):
-    __tablename__ = 'result_pointer'
-
-    id = Column(Integer, ForeignKey('result.id'), primary_key=True)
-
-    target_id = Column(Integer, ForeignKey('result.id'), nullable=False)
-    target = relationship('Result', foreign_keys=[target_id])
-
-    __mapper_args__ = {
-            'polymorphic_identity': 'pointer',
-            'inherit_condition': id == Result.id,
-    }
-
-    @property
-    def size(self):
-        return self.target.size
-
-    @property
-    def data(self):
-        return self.target.data
-
-    def get_element(self, index):
-        return self.target.get_element(index)
-
-
-class ElementPointer(Result):
-    __tablename__ = 'result_element_pointer'
-
-    id = Column(Integer, ForeignKey('result.id'), primary_key=True)
-
-    target_id = Column(Integer, ForeignKey('result.id'), nullable=False)
-    target = relationship('Result', foreign_keys=[target_id])
-
-    index = Column(Integer, nullable=False)
-
-    __mapper_args__ = {
-            'polymorphic_identity': 'element_pointer',
-            'inherit_condition': id == Result.id,
-    }
-
-    @property
-    def data(self):
-        return self.target.get_element(self.index)
-
-    @property
-    def size(self):
-        raise NotImplementedError()
-
-    def get_element(self, index):
-        raise NotImplementedError()
-
 
 class ArrayReferenceResult(Result):
     __tablename__ = 'result_array_reference'
@@ -135,7 +79,3 @@ class ArrayReferenceResult(Result):
     @property
     def get_element(self, index):
         return json_type.get_referenced_element(self, index)
-
-    @property
-    def target_id(self):
-        return self.id

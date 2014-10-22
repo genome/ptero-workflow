@@ -14,10 +14,6 @@ class DAG(Task):
         'polymorphic_identity': 'dag',
     }
 
-    def get_source_task_and_name(self, output_param_name):
-        oc = self.children['output connector']
-        return oc.get_source_task_and_name(output_param_name)
-
     def attach_subclass_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._child_start_place(child.name)

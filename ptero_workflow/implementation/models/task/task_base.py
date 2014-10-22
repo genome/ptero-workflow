@@ -157,18 +157,14 @@ class Task(Base):
 
     def _attach_status_update_actions(self, transitions, action_success_place,
             action_failure_place):
-        if action_success_place is None:
-            success_place = action_success_place
-
-        else:
-            transitions.append({
-                    'inputs': [action_success_place],
-                    'outputs': [self.update_status_success_place_name],
-                    'action': {
-                        'type': 'notify',
-                        'url': self.callback_url('set_status', status='success')
-                    }})
-            success_place = self.update_status_success_place_name
+        transitions.append({
+                'inputs': [action_success_place],
+                'outputs': [self.update_status_success_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('set_status', status='success')
+                }})
+        success_place = self.update_status_success_place_name
 
 
         if action_failure_place is None:
@@ -271,17 +267,6 @@ class Task(Base):
                 headers={'Content-Type': 'application/json'})
         return response
 
-    def get_input(self, property_name, colors, begins):
-        s = object_session(self)
-        e = s.query(edge.Edge).filter_by(destination_task=self,
-                destination_property=property_name
-                ).one()
-
-        return s.query(result.Result
-                ).filter_by(task=e.source_task, name=e.source_property
-                ).filter(result.Result.color.in_(colors),
-                ).one()
-
     def create_array_result(self, body_data, query_string_data):
         color = body_data['color']
         group = body_data['group']
@@ -344,13 +329,6 @@ class Task(Base):
     def success_place_name(self):
         return '%s-success' % self.unique_name
 
-    def success_place_pair_name(self, task):
-        return '%s-success-for-%s' % (self.unique_name, task.unique_name)
-
-    @property
-    def ready_place_name(self):
-        return '%s-ready' % self.unique_name
-
     def callback_url(self, callback_type, **params):
         if params:
             query_string = '?%s' % urllib.urlencode(params)
@@ -400,21 +378,6 @@ class Task(Base):
                 colors, inputs)
 
         return inputs
-
-    def get_input_results(self, colors):
-        results = []
-        for edge in self.input_edges:
-            results.append((
-                edge.destination_property,
-                edge.source_task.get_output(edge.source_property, colors)
-            ))
-        return results
-
-    def get_output(self, property_name, color_list):
-        s = object_session(self)
-        return s.query(result.Result
-                ).filter_by(task=self, name=property_name
-                ).filter(result.Result.color.in_(color_list)).one()
 
     def handle_callback(self, callback_type, body_data, query_string_data):
         if callback_type in self.VALID_CALLBACK_TYPES:
