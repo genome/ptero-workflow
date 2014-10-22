@@ -55,23 +55,16 @@ class InputSource(Base):
                 ).filter(result.Result.color.in_(colors)).one()
 
         indexes = self.parallel_indexes(colors, begins)
-
-        if indexes:
-            LOG.debug('%s[%s]  parallel_depths=%s, colors=%s, begins=%s '
-                    '-> indexes=%s',
-                    self.source_task.name, self.source_property,
-                    self.parallel_depths, colors, begins, indexes)
-            # XXX This will only work for completely orthogonal inputs.
-            assert len(indexes) == 1
-            return r.get_element(indexes[0])
-
-        else:
-            return r.data
+        LOG.debug('%s[%s]  parallel_depths=%s, colors=%s, begins=%s '
+                '-> indexes=%s',
+                self.source_task.name, self.source_property,
+                self.parallel_depths, colors, begins, indexes)
+        return r.get_data(indexes)
 
     def get_size(self, colors, begins):
+        indexes = self.parallel_indexes(colors, begins)
         s = object_session(self)
-
         r = s.query(result.Result
                 ).filter_by(task=self.source_task, name=self.source_property
                 ).filter(result.Result.color.in_(colors)).one()
-        return r.size
+        return r.get_size(indexes)

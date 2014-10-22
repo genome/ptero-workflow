@@ -55,6 +55,18 @@ class ConcreteResult(Result):
     def get_element(self, index):
         return json_type.get_data_element(self, index)
 
+    def get_data(self, indexes):
+        d = self.data
+        for i in indexes:
+            d = d[i]
+        return d
+
+    def get_size(self, indexes):
+        d = self.data
+        for i in indexes:
+            d = d[i]
+        return len(d)
+
 
 class ArrayReferenceResult(Result):
     __tablename__ = 'result_array_reference'
@@ -78,3 +90,22 @@ class ArrayReferenceResult(Result):
 
     def get_element(self, index):
         return json_type.get_referenced_element(self, index)
+
+    def get_data(self, indexes):
+        if indexes:
+            s = object_session(self)
+            rid = self.reference_ids[indexes[0]]
+            r = s.query(Result).filter_by(id=rid).one()
+            return r.get_data(indexes[1:])
+        else:
+            return self.data
+
+    def get_size(self, indexes):
+        if indexes:
+            s = object_session(self)
+            rid = self.reference_ids[indexes][0]
+            r = s.query(Result).filter_by(id=rid).one()
+            return r.get_size(indexes[1:])
+
+        else:
+            return self.size

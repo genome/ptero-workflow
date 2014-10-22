@@ -402,7 +402,8 @@ class Task(Base):
 
     def resolve_input_source(self, session, name, parallel_depths):
         if self.parallel_by == name:
-            pdepths = parallel_depths + [self.parallel_depth]
+            pdepths = [self.parallel_depth] + parallel_depths
+
         else:
             pdepths = parallel_depths
 
