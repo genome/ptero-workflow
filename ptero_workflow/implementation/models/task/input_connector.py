@@ -1,5 +1,5 @@
 from .. import result
-from .connector_base import Connector
+from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import logging
@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 __all__ = ['InputConnector']
 
 
-class InputConnector(Connector):
+class InputConnector(Task):
     __tablename__ = 'input_connector'
 
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)

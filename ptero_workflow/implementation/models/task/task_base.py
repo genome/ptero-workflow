@@ -74,6 +74,9 @@ class Task(Base):
 
         return success_place, failure_place
 
+    def attach_subclass_transitions(self, transitions, start_place):
+        return start_place, None
+
     def _attach_split_transitions(self, transitions, start_place):
         transitions.extend([
             {
