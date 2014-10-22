@@ -282,6 +282,7 @@ class Task(Base):
                     output_name, [])
             results = s.query(result.Result
                     ).filter_by(task=source, name=name, parent_color=color
+                    ).order_by('color'
                     ).all()
 
             array_result = result.ArrayReferenceResult(task=source, name=name,
