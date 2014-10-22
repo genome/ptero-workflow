@@ -48,13 +48,6 @@ class ConcreteResult(Result):
         'polymorphic_identity': 'concrete'
     }
 
-    @property
-    def size(self):
-        return json_type.get_data_size(self)
-
-    def get_element(self, index):
-        return json_type.get_data_element(self, index)
-
     def get_data(self, indexes):
         d = self.data
         for i in indexes:
@@ -87,9 +80,6 @@ class ArrayReferenceResult(Result):
         for rid in self.reference_ids:
             results.append(s.query(Result).filter_by(id=rid).one())
         return [r.data for r in results]
-
-    def get_element(self, index):
-        return json_type.get_referenced_element(self, index)
 
     def get_data(self, indexes):
         if indexes:
