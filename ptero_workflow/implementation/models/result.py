@@ -49,16 +49,10 @@ class ConcreteResult(Result):
     }
 
     def get_data(self, indexes):
-        d = self.data
-        for i in indexes:
-            d = d[i]
-        return d
+        return json_type.get_data_element(self, indexes)
 
     def get_size(self, indexes):
-        d = self.data
-        for i in indexes:
-            d = d[i]
-        return len(d)
+        return json_type.get_data_size(self, indexes)
 
 
 class ArrayReferenceResult(Result):
