@@ -25,6 +25,8 @@ _RETRY_DELAY = 0.15
 class TestCaseMixin(object):
     __metaclass__ = abc.ABCMeta
 
+    maxDiff = None
+
     @property
     def api_port(self):
         return int(os.environ['PTERO_WORKFLOW_PORT'])
