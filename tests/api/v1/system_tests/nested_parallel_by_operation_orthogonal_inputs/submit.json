@@ -1,0 +1,53 @@
+{
+    "parallelBy": "in_outer_parallel",
+
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ],
+            "parallelBy": "kitten_name"
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_outer_parallel",
+            "destinationProperty": "animal_type"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "animal_type",
+            "destinationProperty": "out_outer_parallel"
+        },
+
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_inner_parallel",
+            "destinationProperty": "kitten_name"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "kitten_name",
+            "destinationProperty": "out_inner_parallel"
+        }
+    ],
+
+    "inputs": {
+        "in_outer_parallel": ["kittens", "puppies"],
+        "in_inner_parallel": ["Simba", "Tabby", "Emilio"]
+    },
+
+    "environment": {}
+}
