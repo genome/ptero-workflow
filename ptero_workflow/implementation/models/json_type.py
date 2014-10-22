@@ -73,7 +73,6 @@ def get_data_size_postgres_extensions(task, indexes):
     return tup[0]
 
 
-
 if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
         ).startswith('postgres'):
 

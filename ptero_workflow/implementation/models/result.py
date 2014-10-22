@@ -81,6 +81,7 @@ class ArrayReferenceResult(Result):
             rid = self.reference_ids[indexes[0]]
             r = s.query(Result).filter_by(id=rid).one()
             return r.get_data(indexes[1:])
+
         else:
             return self.data
 
