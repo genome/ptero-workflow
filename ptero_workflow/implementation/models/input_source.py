@@ -34,6 +34,14 @@ class InputSource(Base):
     destination_task = relationship('Task', backref='input_sources',
             foreign_keys=[destination_id])
 
+    def parallel_indexes(self, colors, begins):
+        indexes = []
+        for depth in self.parallel_depths:
+            if depth >= len(colors):
+                return indexes
+            indexes.append(colors[depth] - begins[depth])
+        return indexes
+
     def get_data(self, colors, begins):
         LOG.debug('get_data %s[%s] -> %s[%s] with parallel_depths=%s, '
                 'colors=%s, begins=%s',
@@ -46,11 +54,16 @@ class InputSource(Base):
                 ).filter_by(task=self.source_task, name=self.source_property
                 ).filter(result.Result.color.in_(colors)).one()
 
-        if self.parallel_depths:
-            # XXX This will not work for parallel nesting.  Multiple indexes
-            # will need to be calculated from colors, begins and
-            # self.parallel_depths.
-            return r.get_element(colors[-1] - begins[-1])
+        indexes = self.parallel_indexes(colors, begins)
+
+        if indexes:
+            LOG.debug('%s[%s]  parallel_depths=%s, colors=%s, begins=%s '
+                    '-> indexes=%s',
+                    self.source_task.name, self.source_property,
+                    self.parallel_depths, colors, begins, indexes)
+            # XXX This will only work for completely orthogonal inputs.
+            assert len(indexes) == 1
+            return r.get_element(indexes[0])
 
         else:
             return r.data
