@@ -81,7 +81,7 @@ if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
     JSON = psqlJSON
     get_data_element = get_data_element_postgres_extensions
     get_data_size = get_data_size_postgres_extensions
-    get_referenced_element = get_referenced_element_postgres_extensions
+    get_referenced_element = get_referenced_element_brute_force
 
 else:
     JSON = JSONEncodedDict(1000)
