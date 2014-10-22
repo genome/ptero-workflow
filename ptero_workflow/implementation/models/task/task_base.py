@@ -256,15 +256,22 @@ class Task(Base):
         response_links = body_data['response_links']
 
         colors = group.get('color_lineage', []) + [color]
+        begins = group.get('begin_lineage', []) + [group['begin']]
 
-        parallel_input_result = self.get_input(self.parallel_by, colors)
+        s = object_session(self)
+        source = s.query(input_source.InputSource
+                ).filter_by(destination_task=self,
+                        destination_property=self.parallel_by
+                ).one()
+        size = source.get_size(colors, begins)
+        LOG.debug('Split size for %s[%s] colors=%s is %s',
+                self.name, self.parallel_by, colors, size)
         response = requests.put(response_links['send_data'],
-                data=simplejson.dumps(
-                    {'color_group_size': parallel_input_result.size}),
+                data=simplejson.dumps({'color_group_size': size}),
                 headers={'Content-Type': 'application/json'})
         return response
 
-    def get_input(self, property_name, colors):
+    def get_input(self, property_name, colors, begins):
         s = object_session(self)
         e = s.query(edge.Edge).filter_by(destination_task=self,
                 destination_property=property_name
@@ -282,28 +289,31 @@ class Task(Base):
         response_links = body_data['response_links']
 
         s = object_session(self)
-        results = s.query(result.Result).filter_by(task=self,
-                parent_color=color).order_by('name', 'color').all()
+        for output_name in self.output_names:
+            source, name, parallel_depths = self.resolve_output_source(s,
+                    output_name, [])
+            results = s.query(result.Result
+                    ).filter_by(task=source, name=name, parent_color=color
+                    ).all()
 
-        grouped_results = defaultdict(list)
-        for r in results:
-            grouped_results[r.name].append(r)
-
-        for name, result_group in grouped_results.iteritems():
-            array_result = result.ArrayReferenceResult(task=self, name=name,
+            array_result = result.ArrayReferenceResult(task=source, name=name,
                     color=color, parent_color=parent_color,
-                    size=len(result_group),
-                    reference_ids=[r.id for r in result_group])
+                    size=len(results),
+                    reference_ids=[r.id for r in results])
             s.add(array_result)
+
         s.commit()
 
         response = requests.put(response_links['created'])
         assert 200 <= response.status_code < 300
 
-    def get_outputs(self, color):
-        s = object_session(self)
-        results = s.query(result.Result).filter_by(task=self, color=color).all()
-        return {r.name: r.data for r in results}
+    @property
+    def input_names(self):
+        return [e.destination_property for e in self.input_edges]
+
+    @property
+    def output_names(self):
+        return [e.source_property for e in self.output_edges]
 
     @classmethod
     def from_dict(cls, type, **kwargs):
@@ -380,14 +390,14 @@ class Task(Base):
             o = result.ConcreteResult(task=self, name=name, data=value,
                     color=color, parent_color=parent_color)
 
-    def get_inputs(self, colors, parallel_index):
+    def get_inputs(self, colors, begins):
         inputs = {}
-        for name, r in self.get_input_results(colors):
-            if name == self.parallel_by:
-                inputs[name] = r.get_element(parallel_index)
+        for source in self.input_sources:
+            inputs[source.destination_property] = source.get_data(
+                    colors, begins)
 
-            else:
-                inputs[name] = r.data
+        LOG.debug('Got inputs for %s, colors=%s: %s', self.name,
+                colors, inputs)
 
         return inputs
 

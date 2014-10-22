@@ -82,16 +82,20 @@ class DAG(Task):
 
     def resolve_output_source(self, session, name, parallel_depths):
         oc = self.children['output connector']
-        return oc.resolve_output_source(session, name, parallel_depths)
+        return oc.resolve_input_source(session, name, parallel_depths)
 
     def create_input_sources(self, session, parallel_depths):
         super(DAG, self).create_input_sources(session, parallel_depths)
 
-        if self.parallel_by:
-            child_par_depths = parallel_depths + [self.parallel_depth]
-        else:
-            child_par_depths = parallel_depths
-
         for child_name in self.children:
             self.children[child_name].create_input_sources(session,
-                    child_par_depths)
+                    parallel_depths)
+
+    def get_outputs(self):
+        oc = self.children['output connector']
+        return oc.get_inputs([0], [0])
+
+    @property
+    def output_names(self):
+        oc = self.children['output connector']
+        return oc.input_names
