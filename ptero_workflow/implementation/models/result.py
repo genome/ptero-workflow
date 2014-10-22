@@ -76,6 +76,5 @@ class ArrayReferenceResult(Result):
             results.append(s.query(Result).filter_by(id=rid).one())
         return [r.data for r in results]
 
-    @property
     def get_element(self, index):
         return json_type.get_referenced_element(self, index)
