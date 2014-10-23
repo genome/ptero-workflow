@@ -1,0 +1,12 @@
+{
+    "outputs": {
+        "out_outer_parallel": [
+            ["kittens", "kittens", "kittens"],
+            ["puppies", "puppies", "puppies"]
+        ],
+        "out_inner_parallel": [
+            ["Simba", "Tabby", "Emilio"],
+            ["Simba", "Tabby", "Emilio"]
+        ]
+    }
+}

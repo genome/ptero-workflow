@@ -1,6 +1,7 @@
 from ..base import Base
 from .. import edge
 from .. import result
+from .. import input_source
 from collections import defaultdict
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
@@ -72,6 +73,9 @@ class Task(Base):
                 transitions, action_success_place, action_failure_place)
 
         return success_place, failure_place
+
+    def attach_subclass_transitions(self, transitions, start_place):
+        return start_place, None
 
     def _attach_split_transitions(self, transitions, start_place):
         transitions.extend([
@@ -156,18 +160,14 @@ class Task(Base):
 
     def _attach_status_update_actions(self, transitions, action_success_place,
             action_failure_place):
-        if action_success_place is None:
-            success_place = action_success_place
-
-        else:
-            transitions.append({
-                    'inputs': [action_success_place],
-                    'outputs': [self.update_status_success_place_name],
-                    'action': {
-                        'type': 'notify',
-                        'url': self.callback_url('set_status', status='success')
-                    }})
-            success_place = self.update_status_success_place_name
+        transitions.append({
+                'inputs': [action_success_place],
+                'outputs': [self.update_status_success_place_name],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('set_status', status='success')
+                }})
+        success_place = self.update_status_success_place_name
 
 
         if action_failure_place is None:
@@ -237,6 +237,17 @@ class Task(Base):
     def join_fail_place_name(self):
         return '%s-join-fail' % self.unique_name
 
+    @property
+    def parallel_depth(self):
+        increment = 0
+        if self.parallel_by:
+            increment = 1
+
+        if self.parent:
+            return self.parent.parallel_depth + increment
+
+        else:
+            return increment
 
     def get_split_size(self, body_data, query_string_data):
         color = body_data['color']
@@ -244,24 +255,20 @@ class Task(Base):
         response_links = body_data['response_links']
 
         colors = group.get('color_lineage', []) + [color]
+        begins = group.get('begin_lineage', []) + [group['begin']]
 
-        parallel_input_result = self.get_input(self.parallel_by, colors)
+        s = object_session(self)
+        source = s.query(input_source.InputSource
+                ).filter_by(destination_task=self,
+                        destination_property=self.parallel_by
+                ).one()
+        size = source.get_size(colors, begins)
+        LOG.debug('Split size for %s[%s] colors=%s is %s',
+                self.name, self.parallel_by, colors, size)
         response = requests.put(response_links['send_data'],
-                data=simplejson.dumps(
-                    {'color_group_size': parallel_input_result.size}),
+                data=simplejson.dumps({'color_group_size': size}),
                 headers={'Content-Type': 'application/json'})
         return response
-
-    def get_input(self, property_name, colors):
-        s = object_session(self)
-        e = s.query(edge.Edge).filter_by(destination_task=self,
-                destination_property=property_name
-                ).one()
-
-        return s.query(result.Result
-                ).filter_by(task=e.source_task, name=e.source_property
-                ).filter(result.Result.color.in_(colors),
-                ).one()
 
     def create_array_result(self, body_data, query_string_data):
         color = body_data['color']
@@ -270,28 +277,31 @@ class Task(Base):
         response_links = body_data['response_links']
 
         s = object_session(self)
-        results = s.query(result.Result).filter_by(task=self,
-                parent_color=color).order_by('name', 'color').all()
+        for output_name in self.output_names:
+            source, name, parallel_depths = self.resolve_output_source(s,
+                    output_name, [])
+            results = s.query(result.Result
+                    ).filter_by(task=source, name=name, parent_color=color
+                    ).all()
 
-        grouped_results = defaultdict(list)
-        for r in results:
-            grouped_results[r.name].append(r)
-
-        for name, result_group in grouped_results.iteritems():
-            array_result = result.ArrayReferenceResult(task=self, name=name,
+            array_result = result.ArrayReferenceResult(task=source, name=name,
                     color=color, parent_color=parent_color,
-                    size=len(result_group),
-                    reference_ids=[r.id for r in result_group])
+                    size=len(results),
+                    reference_ids=[r.id for r in results])
             s.add(array_result)
+
         s.commit()
 
         response = requests.put(response_links['created'])
         assert 200 <= response.status_code < 300
 
-    def get_outputs(self, color):
-        s = object_session(self)
-        results = s.query(result.Result).filter_by(task=self, color=color).all()
-        return {r.name: r.data for r in results}
+    @property
+    def input_names(self):
+        return [e.destination_property for e in self.input_edges]
+
+    @property
+    def output_names(self):
+        return [e.source_property for e in self.output_edges]
 
     @classmethod
     def from_dict(cls, type, **kwargs):
@@ -321,13 +331,6 @@ class Task(Base):
     @property
     def success_place_name(self):
         return '%s-success' % self.unique_name
-
-    def success_place_pair_name(self, task):
-        return '%s-success-for-%s' % (self.unique_name, task.unique_name)
-
-    @property
-    def ready_place_name(self):
-        return '%s-ready' % self.unique_name
 
     def callback_url(self, callback_type, **params):
         if params:
@@ -368,31 +371,16 @@ class Task(Base):
             o = result.ConcreteResult(task=self, name=name, data=value,
                     color=color, parent_color=parent_color)
 
-    def get_inputs(self, colors, parallel_index):
+    def get_inputs(self, colors, begins):
         inputs = {}
-        for name, r in self.get_input_results(colors):
-            if name == self.parallel_by:
-                inputs[name] = r.get_element(parallel_index)
+        for source in self.input_sources:
+            inputs[source.destination_property] = source.get_data(
+                    colors, begins)
 
-            else:
-                inputs[name] = r.data
+        LOG.debug('Got inputs for %s, colors=%s: %s', self.name,
+                colors, inputs)
 
         return inputs
-
-    def get_input_results(self, colors):
-        results = []
-        for edge in self.input_edges:
-            results.append((
-                edge.destination_property,
-                edge.source_task.get_output(edge.source_property, colors)
-            ))
-        return results
-
-    def get_output(self, property_name, color_list):
-        s = object_session(self)
-        return s.query(result.Result
-                ).filter_by(task=self, name=property_name
-                ).filter(result.Result.color.in_(color_list)).one()
 
     def handle_callback(self, callback_type, body_data, query_string_data):
         if callback_type in self.VALID_CALLBACK_TYPES:
@@ -411,3 +399,37 @@ class Task(Base):
     @property
     def failure_place_name(self):
         return '%s-failure' % self.unique_name
+
+    def resolve_input_source(self, session, name, parallel_depths):
+        if self.parallel_by == name:
+            pdepths = parallel_depths + [self.parallel_depth]
+        else:
+            pdepths = parallel_depths
+
+        for e in self.input_edges:
+            if e.destination_property == name:
+                return e.source_task.resolve_output_source(session,
+                        e.source_property, pdepths)
+
+    def resolve_output_source(self, session, name, parallel_depths):
+        return self, name, parallel_depths
+
+    def create_input_sources(self, session, parallel_depths):
+        LOG.debug('Creating input sources for %s', self.name)
+        for e in self.input_edges:
+            source_task, source_property, source_parallel_depths = \
+                    self.resolve_input_source(session, e.destination_property,
+                            parallel_depths)
+            LOG.debug('Found input source %s[%s] = %s[%s]: parallel_depths=%s',
+                    self.name, e.destination_property,
+                    source_task.name, source_property,
+                    source_parallel_depths)
+
+            in_source = input_source.InputSource(
+                    source_task=source_task,
+                    source_property=source_property,
+                    destination_task=self,
+                    destination_property=e.destination_property,
+                    parallel_depths=source_parallel_depths,
+            )
+            session.add(in_source)

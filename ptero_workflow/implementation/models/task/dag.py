@@ -14,10 +14,6 @@ class DAG(Task):
         'polymorphic_identity': 'dag',
     }
 
-    def get_source_task_and_name(self, output_param_name):
-        oc = self.children['output connector']
-        return oc.get_source_task_and_name(output_param_name)
-
     def attach_subclass_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._child_start_place(child.name)
@@ -79,3 +75,23 @@ class DAG(Task):
     @property
     def _failure_limit_place_name(self):
         return '%s-failure-limit' % self.unique_name
+
+    def resolve_output_source(self, session, name, parallel_depths):
+        oc = self.children['output connector']
+        return oc.resolve_input_source(session, name, parallel_depths)
+
+    def create_input_sources(self, session, parallel_depths):
+        super(DAG, self).create_input_sources(session, parallel_depths)
+
+        for child_name in self.children:
+            self.children[child_name].create_input_sources(session,
+                    parallel_depths)
+
+    def get_outputs(self):
+        oc = self.children['output connector']
+        return oc.get_inputs([0], [0])
+
+    @property
+    def output_names(self):
+        oc = self.children['output connector']
+        return oc.input_names

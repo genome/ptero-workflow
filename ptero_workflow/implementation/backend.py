@@ -41,6 +41,8 @@ class Backend(object):
                 workflow.root_task, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
+        workflow.root_task.create_input_sources(self.session, [])
+
         self.session.add(workflow)
         self.session.commit()
 

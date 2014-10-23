@@ -59,15 +59,18 @@ def get_data_size_postgres_extensions(task):
 
 
 def get_referenced_element_brute_force(task, index):
-    element_result_id = task.data[index]
+    from . import result
+    element_result_id = task.reference_ids[index]
 
-    r = s.query(Result).filter_by(id=element_result_id).one()
+    s = object_session(task)
+    r = s.query(result.Result).filter_by(id=element_result_id).one()
     return r.data
 
 def get_referenced_element_postgres_extensions(task, index):
+    from . import result
     s = object_session(task)
-    r = s.query(Result
-            ).join(Result.id == task.__class__.reference_ids[index]
+    r = s.query(result.Result
+            ).join(result.Result.id == task.__class__.reference_ids[index]
             ).filter(task.__class__.id == task.id).one()
     return r.data
 
@@ -78,7 +81,7 @@ if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
     JSON = psqlJSON
     get_data_element = get_data_element_postgres_extensions
     get_data_size = get_data_size_postgres_extensions
-    get_referenced_element = get_referenced_element_postgres_extensions
+    get_referenced_element = get_referenced_element_brute_force
 
 else:
     JSON = JSONEncodedDict(1000)

@@ -70,8 +70,8 @@ class ShellCommand(Method):
         response_links = body_data['response_links']
 
         colors = group.get('color_lineage', []) + [color]
+        begins = group.get('begin_lineage', []) + [group['begin']]
         parent_color = _get_parent_color(colors)
-        parallel_index = color - group['begin']
 
         s = object_session(self)
         execution = Execution(method=self, color=color,
@@ -81,7 +81,7 @@ class ShellCommand(Method):
         s.add(execution)
         s.commit()
 
-        job_id = self._submit_to_shell_command(colors, parallel_index,
+        job_id = self._submit_to_shell_command(colors, begins,
                 self.command_line, execution.id)
 
         execution.data['job_id'] = job_id
@@ -119,9 +119,9 @@ class ShellCommand(Method):
             return requests.put(
                     execution.data['petri_response_links']['failure'])
 
-    def _submit_to_shell_command(self, colors, parallel_index, command_line,
+    def _submit_to_shell_command(self, colors, begins, command_line,
             execution_id):
-        body_data = self._shell_command_submit_data(colors, parallel_index,
+        body_data = self._shell_command_submit_data(colors, begins,
                 command_line, execution_id)
         response = requests.post(self._shell_command_submit_url,
                 data=simplejson.dumps(body_data),
@@ -135,13 +135,13 @@ class ShellCommand(Method):
             int(os.environ['PTERO_SHELL_COMMAND_PORT']),
         )
 
-    def _shell_command_submit_data(self, colors, parallel_index, command_line,
+    def _shell_command_submit_data(self, colors, begins, command_line,
             execution_id):
         return {
             'commandLine': command_line,
             'user': os.environ.get('USER'),
             'stdin': simplejson.dumps(
-                self.task.get_inputs(colors, parallel_index)),
+                self.task.get_inputs(colors, begins)),
             'callbacks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),
                 'ended': self.callback_url('ended', execution_id=execution_id),

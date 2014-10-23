@@ -54,7 +54,7 @@ class Workflow(Base):
         data = {
             'tasks': tasks,
             'edges': edges,
-            'inputs': self.root_task.get_inputs(colors=[0], parallel_index=0),
+            'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
             'environment': simplejson.loads(self.environment),
         }
         if self.root_task.status is not None:
@@ -68,4 +68,4 @@ class Workflow(Base):
         return transitions
 
     def get_outputs(self):
-        return self.root_task.get_outputs(0)
+        return self.root_task.get_outputs()

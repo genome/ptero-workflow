@@ -1,0 +1,75 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ],
+            "parallelBy": "parallel_param"
+        },
+        "B": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ],
+            "parallelBy": "parallel_param"
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_constant",
+            "destinationProperty": "constant_param"
+        },
+        {
+            "source": "A",
+            "destination": "B",
+            "sourceProperty": "constant_param",
+            "destinationProperty": "constant_param"
+        },
+        {
+            "source": "B",
+            "destination": "output connector",
+            "sourceProperty": "constant_param",
+            "destinationProperty": "out_constant"
+        },
+
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_parallel",
+            "destinationProperty": "parallel_param"
+        },
+        {
+            "source": "A",
+            "destination": "B",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "parallel_param"
+        },
+        {
+            "source": "B",
+            "destination": "output connector",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "out_parallel"
+        }
+    ],
+
+    "inputs": {
+        "in_constant": "kittens",
+        "in_parallel": ["Simba", "Tabby", "Emilio"]
+    },
+
+    "environment": {}
+}
