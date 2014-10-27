@@ -48,12 +48,11 @@ class ConcreteResult(Result):
         'polymorphic_identity': 'concrete'
     }
 
-    @property
-    def size(self):
-        return json_type.get_data_size(self)
+    def get_data(self, indexes):
+        return json_type.get_data_element(self, indexes)
 
-    def get_element(self, index):
-        return json_type.get_data_element(self, index)
+    def get_size(self, indexes):
+        return json_type.get_data_size(self, indexes)
 
 
 class ArrayReferenceResult(Result):
@@ -76,5 +75,22 @@ class ArrayReferenceResult(Result):
             results.append(s.query(Result).filter_by(id=rid).one())
         return [r.data for r in results]
 
-    def get_element(self, index):
-        return json_type.get_referenced_element(self, index)
+    def get_data(self, indexes):
+        if indexes:
+            s = object_session(self)
+            rid = self.reference_ids[indexes[0]]
+            r = s.query(Result).filter_by(id=rid).one()
+            return r.get_data(indexes[1:])
+
+        else:
+            return self.data
+
+    def get_size(self, indexes):
+        if indexes:
+            s = object_session(self)
+            rid = self.reference_ids[indexes][0]
+            r = s.query(Result).filter_by(id=rid).one()
+            return r.get_size(indexes[1:])
+
+        else:
+            return self.size

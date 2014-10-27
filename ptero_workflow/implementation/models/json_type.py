@@ -35,44 +35,42 @@ class JSONEncodedDict(TypeDecorator):
         return value
 
 
-def get_data_element_brute_force(task, index):
-    return task.data[index]
+def get_data_element_brute_force(task, indexes):
+    d = task.data
+    for i in indexes:
+        d = d[i]
+    return d
 
-def get_data_element_postgres_extensions(task, index):
+def get_data_element_postgres_extensions(task, indexes):
+    if indexes:
+        q = task.__class__.data[indexes]
+    else:
+        q = task.__class__.data
+
     s = object_session(task)
-    tup = s.query(task.__class__.data[index]).filter_by(id=task.id).one()
+    tup = s.query(q).filter_by(id=task.id).one()
     return tup[0]
 
 
-def get_data_size_brute_force(task):
-    return len(task.data)
+def get_data_size_brute_force(task, indexes):
+    d = task.data
+    for i in indexes:
+        d = d[i]
+    return len(d)
 
 
 class json_array_length(GenericFunction):
     type = Integer
 
-def get_data_size_postgres_extensions(task):
+def get_data_size_postgres_extensions(task, indexes):
+    if indexes:
+        q = task.__class__.data[indexes]
+    else:
+        q = task.__class__.data
+
     s = object_session(task)
-    tup = s.query(json_array_length(task.__class__.data)
-        ).filter_by(id=task.id).one()
+    tup = s.query(json_array_length(q)).filter_by(id=task.id).one()
     return tup[0]
-
-
-def get_referenced_element_brute_force(task, index):
-    from . import result
-    element_result_id = task.reference_ids[index]
-
-    s = object_session(task)
-    r = s.query(result.Result).filter_by(id=element_result_id).one()
-    return r.data
-
-def get_referenced_element_postgres_extensions(task, index):
-    from . import result
-    s = object_session(task)
-    r = s.query(result.Result
-            ).join(result.Result.id == task.__class__.reference_ids[index]
-            ).filter(task.__class__.id == task.id).one()
-    return r.data
 
 
 if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
@@ -81,10 +79,8 @@ if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
     JSON = psqlJSON
     get_data_element = get_data_element_postgres_extensions
     get_data_size = get_data_size_postgres_extensions
-    get_referenced_element = get_referenced_element_brute_force
 
 else:
     JSON = JSONEncodedDict(1000)
     get_data_element = get_data_element_brute_force
     get_data_size = get_data_size_brute_force
-    get_referenced_element = get_referenced_element_brute_force

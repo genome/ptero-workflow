@@ -282,6 +282,7 @@ class Task(Base):
                     output_name, [])
             results = s.query(result.Result
                     ).filter_by(task=source, name=name, parent_color=color
+                    ).order_by('color'
                     ).all()
 
             array_result = result.ArrayReferenceResult(task=source, name=name,
@@ -402,7 +403,8 @@ class Task(Base):
 
     def resolve_input_source(self, session, name, parallel_depths):
         if self.parallel_by == name:
-            pdepths = parallel_depths + [self.parallel_depth]
+            pdepths = [self.parallel_depth] + parallel_depths
+
         else:
             pdepths = parallel_depths
 

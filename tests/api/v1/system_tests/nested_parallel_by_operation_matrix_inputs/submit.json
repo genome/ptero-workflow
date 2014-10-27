@@ -1,0 +1,43 @@
+{
+    "parallelBy": "in_matrix",
+
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ],
+            "parallelBy": "name"
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_matrix",
+            "destinationProperty": "name"
+        },
+
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "name",
+            "destinationProperty": "out_matrix"
+        }
+    ],
+
+    "inputs": {
+        "in_matrix": [
+            ["Simba", "Tabby", "Emilio"],
+            ["Pluto", "Snoopy"]
+        ]
+    },
+
+    "environment": {}
+}
