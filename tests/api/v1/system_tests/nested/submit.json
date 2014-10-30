@@ -1,20 +1,26 @@
 {
-    "nodes": {
+    "tasks": {
         "A": {
             "methods": [
                 {
                     "name": "execute",
-                    "commandLine": ["cat"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         },
         "Inner": {
-            "nodes": {
+            "tasks": {
                 "B": {
                     "methods": [
                         {
                             "name": "execute",
-                            "commandLine": ["cat"]
+                            "service": "ShellCommand",
+                            "parameters": {
+                                "commandLine": ["cat"]
+                            }
                         }
                     ]
                 }
@@ -38,7 +44,10 @@
             "methods": [
                 {
                     "name": "execute",
-                    "commandLine": ["cat"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         }

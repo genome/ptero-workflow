@@ -1,6 +1,7 @@
 flask
 flask-restful
 librabbitmq
+psycopg2
 python-statsd
 redis
 requests

@@ -3,7 +3,9 @@ from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import Boolean, ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.session import object_session
+import json_type
 import logging
+import os
 import simplejson
 
 
@@ -16,92 +18,79 @@ LOG = logging.getLogger(__file__)
 class Result(Base):
     __tablename__ = 'result'
     __table_args__ = (
-        UniqueConstraint('node_id', 'name', 'color'),
+        UniqueConstraint('task_id', 'name', 'color'),
     )
 
     id           = Column(Integer, primary_key=True)
 
-    node_id = Column(Integer, ForeignKey('node.id'), nullable=True)
+    task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
     name    = Column(Text, nullable=False, index=True)
     color   = Column(Integer, nullable=False, index=True)
+    parent_color = Column(Integer, nullable=True, index=True)
 
     type         = Column(Text, nullable=False)
 
-    node = relationship('Node', backref='results')
+    task = relationship('Task', backref='results')
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }
 
 
-class Scalar(Result):
-    __tablename__ = 'result_scalar'
+class ConcreteResult(Result):
+    __tablename__ = 'result_concrete'
 
     id = Column(Integer, ForeignKey('result.id'), primary_key=True)
-    data = Column(Text)
+
+    data = Column(json_type.JSON)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'scalar'
+        'polymorphic_identity': 'concrete'
     }
 
+    def get_data(self, indexes):
+        return json_type.get_data_element(self, indexes)
 
-class ArrayEntry(Base):
-    __tablename__ = 'result_array_entry'
-
-    array_id = Column(Integer, ForeignKey('result_array.id'), primary_key=True)
-    index = Column(Integer, primary_key=True)
-
-    serialized_data = Column(Text)
-
-    array = relationship('Array', backref='entries', foreign_keys=[array_id])
-
-    @property
-    def data(self):
-        return simplejson.loads(self.serialized_data)
-
-    @data.setter
-    def data(self, value):
-        self.serialized_data = simplejson.dumps(value)
+    def get_size(self, indexes):
+        return json_type.get_data_size(self, indexes)
 
 
-class Array(Result):
-    __tablename__ = 'result_array'
+class ArrayReferenceResult(Result):
+    __tablename__ = 'result_array_reference'
 
     id = Column(Integer, ForeignKey('result.id'), primary_key=True)
 
+    reference_ids = Column(json_type.JSON)
+    size = Column(Integer, nullable=False)
+
     __mapper_args__ = {
-        'polymorphic_identity': 'array'
+            'polymorphic_identity': 'array_reference',
     }
 
     @property
     def data(self):
-        return [entry.data for entry in self.entries]
-
-    @property
-    def size(self):
         s = object_session(self)
-        return s.query(ArrayEntry).filter_by(array_id=self.id).count()
+        results = []
+        for rid in self.reference_ids:
+            results.append(s.query(Result).filter_by(id=rid).one())
+        return [r.data for r in results]
 
-    def get_element(self, index):
-        s = object_session(self)
-        entry = s.query(ArrayEntry).filter_by(
-                array_id=self.id, index=index).one()
-        return entry.data
+    def get_data(self, indexes):
+        if indexes:
+            s = object_session(self)
+            rid = self.reference_ids[indexes[0]]
+            r = s.query(Result).filter_by(id=rid).one()
+            return r.get_data(indexes[1:])
 
-    @classmethod
-    def create(cls, node, name, data, color):
-        self = cls(node=node, name=name, color=color)
-        for index, item in enumerate(data):
-            entry = ArrayEntry(index=index)
-            entry.data = item
-            self.entries.append(entry)
-        return self
+        else:
+            return self.data
 
+    def get_size(self, indexes):
+        if indexes:
+            s = object_session(self)
+            rid = self.reference_ids[indexes][0]
+            r = s.query(Result).filter_by(id=rid).one()
+            return r.get_size(indexes[1:])
 
-def create_result(node, name, data, color):
-    if isinstance(data, list):
-        return Array.create(node=node, name=name, data=data,
-                color=color)
-
-    else:
-        return Scalar(node=node, name=name, data=data, color=color)
+        else:
+            return self.size

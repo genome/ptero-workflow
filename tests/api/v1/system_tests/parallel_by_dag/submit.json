@@ -1,4 +1,5 @@
 {
+    "parallelBy": "in_parallel",
     "tasks": {
         "A": {
             "methods": [
@@ -9,8 +10,7 @@
                         "commandLine": ["cat"]
                     }
                 }
-            ],
-            "parallelBy": "parallel_param"
+            ]
         }
     },
 
@@ -19,12 +19,12 @@
             "source": "input connector",
             "destination": "A",
             "sourceProperty": "in_constant",
-            "destinationProperty": "constant_param"
+            "destinationProperty": "const_param"
         },
         {
             "source": "A",
             "destination": "output connector",
-            "sourceProperty": "constant_param",
+            "sourceProperty": "const_param",
             "destinationProperty": "out_constant"
         },
 

@@ -11,6 +11,18 @@
                 }
             ],
             "parallelBy": "parallel_param"
+        },
+        "B": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ],
+            "parallelBy": "parallel_param"
         }
     },
 
@@ -23,6 +35,12 @@
         },
         {
             "source": "A",
+            "destination": "B",
+            "sourceProperty": "constant_param",
+            "destinationProperty": "constant_param"
+        },
+        {
+            "source": "B",
             "destination": "output connector",
             "sourceProperty": "constant_param",
             "destinationProperty": "out_constant"
@@ -36,6 +54,12 @@
         },
         {
             "source": "A",
+            "destination": "B",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "parallel_param"
+        },
+        {
+            "source": "B",
             "destination": "output connector",
             "sourceProperty": "parallel_param",
             "destinationProperty": "out_parallel"

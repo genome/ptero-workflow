@@ -21,19 +21,22 @@ class RoundTripSuccess(object):
 
     def test_get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
-        key_names = ['nodes', 'edges', 'inputs', 'environment']
+        key_names = ['tasks', 'edges', 'inputs', 'environment']
         for key in key_names:
             self.assertItemsEqual(self.post_data[key], get_response.DATA[key])
 
 
 class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'A': {
                 'methods': [
                     {
                         'name': 'execute',
-                        'commandLine': ['cat']
+                        'service': 'ShellCommand',
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -60,14 +63,17 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
 
 class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'Inner': {
-                'nodes': {
+                'tasks': {
                     'A': {
                         'methods': [
                             {
                                 'name': 'execute',
-                                'commandLine': ['cat']
+                                'service': 'ShellCommand',
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },
@@ -108,14 +114,17 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
+class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'A': {
                 'methods': [
                     {
                         'name': 'execute',
-                        'commandLine': ['cat']
+                        'service': 'ShellCommand',
+                        'parameters': {
+                            'commandLine': ['cat']
+                        }
                     }
                 ]
             },
@@ -140,16 +149,19 @@ class ParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
-class NestedParallelByCommandWorkflow(RoundTripSuccess, BaseAPITest):
+class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
-        'nodes': {
+        'tasks': {
             'Inner': {
-                'nodes': {
+                'tasks': {
                     'A': {
                         'methods': [
                             {
                                 'name': 'execute',
-                                'commandLine': ['cat']
+                                'service': 'ShellCommand',
+                                'parameters': {
+                                    'commandLine': ['cat']
+                                }
                             }
                         ]
                     },

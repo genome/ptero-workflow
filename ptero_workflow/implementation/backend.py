@@ -1,5 +1,5 @@
 from . import models
-from . import nodes
+from . import tasks
 from . import translator
 import os
 import simplejson
@@ -29,22 +29,21 @@ class Backend(object):
         )
 
         root_data = {
-            'nodes': workflow_data['nodes'],
+            'tasks': workflow_data['tasks'],
             'edges': workflow_data['edges'],
+            'parallelBy': workflow_data.get('parallelBy'),
         }
 
-        workflow.root_node = nodes.create_node('root',
+        workflow.root_task = tasks.create_task('root',
                 root_data, workflow=workflow)
 
-        root_color_group = models.ColorGroup(workflow=workflow, index=0,
-                begin=0, end=1)
-
-        workflow.input_holder_node = nodes.create_input_holder(
-                workflow.root_node, workflow_data['inputs'], color=0,
+        workflow.input_holder_task = tasks.create_input_holder(
+                workflow.root_task, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
+        workflow.root_task.create_input_sources(self.session, [])
+
         self.session.add(workflow)
-        self.session.add(root_color_group)
         self.session.commit()
 
         return workflow
@@ -70,10 +69,21 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
-    def event(self, node_id, event_type, body_data, query_string_data):
-        node = self.session.query(models.Node
-                ).filter_by(id=node_id).one()
-        node.handle_event(event_type, body_data, query_string_data)
+    def get_workflow_outputs(self, workflow_id):
+        workflow = self.session.query(models.Workflow).get(workflow_id)
+        return workflow.get_outputs()
+
+    def handle_task_callback(self, task_id, callback_type, body_data,
+            query_string_data):
+        task = self.session.query(models.Task
+                ).filter_by(id=task_id).one()
+        task.handle_callback(callback_type, body_data, query_string_data)
+
+    def handle_method_callback(self, method_id, callback_type, body_data,
+            query_string_data):
+        method = self.session.query(models.Method
+                ).filter_by(id=method_id).one()
+        method.handle_callback(callback_type, body_data, query_string_data)
 
     def cleanup(self):
         self.session.rollback()

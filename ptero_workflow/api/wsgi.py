@@ -1,6 +1,7 @@
 from ptero_workflow.api import application
 import argparse
 import logging
+import os
 
 
 app = application.create_app()
@@ -15,5 +16,6 @@ def parse_args():
 
 if __name__ == '__main__':
     args = parse_args()
-    logging.basicConfig()
+    logging.basicConfig(
+            level=os.environ.get('PTERO_WORKFLOW_LOG_LEVEL', 'INFO').upper())
     app.run(port=args.port, debug=args.debug)

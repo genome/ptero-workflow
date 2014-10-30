@@ -1,14 +1,20 @@
 {
-    "nodes": {
+    "tasks": {
         "A": {
             "methods": [
                 {
                     "name": "shortcut",
-                    "commandLine": ["false"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["false"]
+                    }
                 },
                 {
                     "name": "execute",
-                    "commandLine": ["cat"]
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
                 }
             ]
         }

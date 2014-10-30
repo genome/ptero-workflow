@@ -1,22 +1,18 @@
 {
+    "parallelBy": "in_matrix",
+
     "tasks": {
         "A": {
             "methods": [
                 {
-                    "name": "shortcut",
+                    "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
                         "commandLine": ["cat"]
                     }
-                },
-                {
-                    "name": "execute",
-                    "service": "ShellCommand",
-                    "parameters": {
-                        "commandLine": ["false"]
-                    }
                 }
-            ]
+            ],
+            "parallelBy": "name"
         }
     },
 
@@ -24,19 +20,23 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "in_a",
-            "destinationProperty": "param"
+            "sourceProperty": "in_matrix",
+            "destinationProperty": "name"
         },
+
         {
             "source": "A",
             "destination": "output connector",
-            "sourceProperty": "param",
-            "destinationProperty": "out_a"
+            "sourceProperty": "name",
+            "destinationProperty": "out_matrix"
         }
     ],
 
     "inputs": {
-        "in_a": "kittens"
+        "in_matrix": [
+            ["Simba", "Tabby", "Emilio"],
+            ["Pluto", "Snoopy"]
+        ]
     },
 
     "environment": {}
