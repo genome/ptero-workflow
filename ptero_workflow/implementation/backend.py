@@ -1,25 +1,24 @@
 from . import models
 from . import tasks
-from . import translator
-import os
 import simplejson
-import requests
+
+
+_TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'
 
 
 class Backend(object):
-    def __init__(self, session):
+    def __init__(self, session, celery_app):
         self.session = session
+        self.celery_app = celery_app
+
+    @property
+    def submit_net_task(self):
+        return self.celery_app.tasks[_TASK_BASE + 'submit_net.SubmitNet']
 
     def create_workflow(self, workflow_data):
         workflow = self._save_workflow(workflow_data)
 
-        petri_data = translator.build_petri_net(workflow)
-        response_data = self._submit_net(petri_data)
-
-        workflow.net_key = response_data['net_key']
-        self.session.commit()
-
-        self._start_net(response_data['entry_links'][workflow.start_place_name])
+        self.submit_net_task.delay(workflow.id)
 
         return workflow.id
 
@@ -47,24 +46,6 @@ class Backend(object):
         self.session.commit()
 
         return workflow
-
-    def _submit_net(self, petri_data):
-        response = requests.post(self._petri_submit_url,
-                data=simplejson.dumps(petri_data),
-                headers={'Content-Type': 'application/json'})
-        return response.json()
-
-    @property
-    def _petri_submit_url(self):
-        return 'http://%s:%d/v1/nets' % (
-            os.environ.get('PTERO_PETRI_HOST', 'localhost'),
-            int(os.environ.get('PTERO_PETRI_PORT', 80)),
-        )
-
-    def _start_net(self, start_url):
-        response = requests.post(start_url,
-                headers={'Content-Type': 'application/json'})
-        return response.json()
 
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
