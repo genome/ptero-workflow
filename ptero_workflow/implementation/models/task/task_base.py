@@ -9,9 +9,9 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
+import celery
 import logging
 import os
-import requests
 import simplejson
 import urllib
 
@@ -265,10 +265,8 @@ class Task(Base):
         size = source.get_size(colors, begins)
         LOG.debug('Split size for %s[%s] colors=%s is %s',
                 self.name, self.parallel_by, colors, size)
-        response = requests.put(response_links['send_data'],
-                data=simplejson.dumps({'color_group_size': size}),
-                headers={'Content-Type': 'application/json'})
-        return response
+        self.http.delay('PUT', response_links['send_data'],
+                color_group_size=size)
 
     def create_array_result(self, body_data, query_string_data):
         color = body_data['color']
@@ -293,8 +291,7 @@ class Task(Base):
 
         s.commit()
 
-        response = requests.put(response_links['created'])
-        assert 200 <= response.status_code < 300
+        self.http.delay('PUT', response_links['created'])
 
     @property
     def input_names(self):
@@ -435,3 +432,8 @@ class Task(Base):
                     parallel_depths=source_parallel_depths,
             )
             session.add(in_source)
+
+    @property
+    def http(self):
+        return celery.current_app.tasks[
+                'ptero_workflow.implementation.celery_tasks.http.HTTP']

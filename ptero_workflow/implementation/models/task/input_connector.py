@@ -3,7 +3,6 @@ from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import logging
-import requests
 
 
 LOG = logging.getLogger(__name__)
