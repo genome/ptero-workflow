@@ -24,7 +24,13 @@ class SubmitNet(celery.Task):
         workflow.net_key = response_data['net_key']
         session.commit()
 
-        self._start_net(response_data['entry_links'][workflow.start_place_name])
+        self.http.delay('POST',
+                response_data['entry_links'][workflow.start_place_name])
+
+    @property
+    def http(self):
+        return celery.current_app.tasks[
+                'ptero_workflow.implementation.celery_tasks.http.HTTP']
 
     def _submit_net(self, petri_data):
         response = requests.post(self._petri_submit_url,
@@ -38,8 +44,3 @@ class SubmitNet(celery.Task):
             os.environ.get('PTERO_PETRI_HOST', 'localhost'),
             int(os.environ.get('PTERO_PETRI_PORT', 80)),
         )
-
-    def _start_net(self, start_url):
-        response = requests.post(start_url,
-                headers={'Content-Type': 'application/json'})
-        return response.json()
