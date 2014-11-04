@@ -1,0 +1,86 @@
+{
+    "tasks": {
+        "start": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ]
+        },
+        "middle": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ],
+            "parallelBy": "parallel_param"
+        },
+        "stop": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"]
+                    }
+                }
+            ]
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "start",
+            "sourceProperty": "in_constant",
+            "destinationProperty": "constant_param"
+        },
+        {
+            "source": "start",
+            "destination": "stop",
+            "sourceProperty": "constant_param",
+            "destinationProperty": "constant_param"
+        },
+
+        {
+            "source": "input connector",
+            "destination": "middle",
+            "sourceProperty": "in_parallel",
+            "destinationProperty": "parallel_param"
+        },
+        {
+            "source": "middle",
+            "destination": "stop",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "parallel_param"
+        },
+
+        {
+            "source": "stop",
+            "destination": "output connector",
+            "sourceProperty": "constant_param",
+            "destinationProperty": "out_constant"
+        },
+        {
+            "source": "stop",
+            "destination": "output connector",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "out_parallel"
+        }
+    ],
+
+    "inputs": {
+        "in_constant": "kittens",
+        "in_parallel": ["Simba", "Tabby", "Emilio"]
+    },
+
+    "environment": {}
+}
