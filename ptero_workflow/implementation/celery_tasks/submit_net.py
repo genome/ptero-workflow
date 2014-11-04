@@ -1,10 +1,8 @@
 from .. import models
 from .. import tasks
 from .. import translator
-import base64
 import celery
 import os
-import uuid
 
 
 __all__ = ['SubmitNet']
@@ -17,8 +15,6 @@ class SubmitNet(celery.Task):
         session = celery.current_app.Session()
 
         workflow = session.query(models.Workflow).get(workflow_id)
-        workflow.net_key = generate_net_key()
-        session.commit()
 
         petri_data = translator.build_petri_net(workflow)
         self._submit_net(petri_data, workflow.net_key)
@@ -37,7 +33,3 @@ class SubmitNet(celery.Task):
             int(os.environ.get('PTERO_PETRI_PORT', 80)),
             net_key,
         )
-
-
-def generate_net_key():
-    return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]

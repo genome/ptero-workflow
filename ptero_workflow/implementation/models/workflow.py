@@ -1,8 +1,10 @@
 from .base import Base
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
+import base64
 import logging
 import simplejson
+import uuid
 
 
 __all__ = ['Workflow']
@@ -11,13 +13,18 @@ __all__ = ['Workflow']
 LOG = logging.getLogger(__file__)
 
 
+
+def _generate_net_key():
+    return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
+
+
 class Workflow(Base):
     __tablename__ = 'workflow'
 
     id          = Column(Integer, primary_key=True)
     environment = Column(Text)
 
-    net_key = Column(Text, unique=True)
+    net_key = Column(Text, unique=True, default=_generate_net_key)
 
     root_task_id = Column(Integer, ForeignKey('task.id',
         use_alter=True, name='fk_workflow_root_task'))
