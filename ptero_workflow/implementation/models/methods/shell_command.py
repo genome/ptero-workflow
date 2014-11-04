@@ -2,6 +2,7 @@ from ..execution import Execution
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
+import celery
 import os
 import requests
 import simplejson
@@ -110,14 +111,15 @@ class ShellCommand(Method):
                     execution.parent_color)
             execution.append_status('succeeded')
             s.commit()
-            return requests.put(
-                    execution.data['petri_response_links']['success'])
+            response_url = execution.data['petri_response_links']['success']
 
         else:
             execution.append_status('failed')
             s.commit()
-            return requests.put(
-                    execution.data['petri_response_links']['failure'])
+            response_url = execution.data['petri_response_links']['failure']
+
+        self.http.delay('PUT', response_url)
+
 
     def _submit_to_shell_command(self, colors, begins, command_line,
             execution_id):
@@ -127,6 +129,11 @@ class ShellCommand(Method):
                 data=simplejson.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
         return response.json()['jobId']
+
+    @property
+    def http(self):
+        return celery.current_app.tasks[
+                'ptero_workflow.implementation.celery_tasks.http.HTTP']
 
     @property
     def _shell_command_submit_url(self):
