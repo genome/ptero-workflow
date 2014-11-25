@@ -21,7 +21,7 @@ class ShellCommand(Method):
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
-            ['begun', 'ended', 'execute'])
+            ['begun', 'ended', 'error', 'execute'])
 
     def _place_name(self, kind):
         return '%s-%s-%s' % (self.task.unique_name, self.name, kind)
@@ -115,6 +115,17 @@ class ShellCommand(Method):
 
         self.http.delay('PUT', response_url)
 
+    def error(self, body_data, query_string_data):
+        execution_id = query_string_data['execution_id']
+
+        s = object_session(self)
+        execution = s.query(Execution).filter_by(id=execution_id,
+                method_id=self.id).one()
+
+        execution.append_status('errored')
+        s.commit()
+        response_url = execution.data['petri_response_links']['failure']
+        self.http.delay('PUT', response_url)
 
     def _submit_to_shell_command(self, colors, begins, execution_id):
         body_data = self._shell_command_submit_data(colors, begins,
@@ -145,6 +156,7 @@ class ShellCommand(Method):
             'callbacks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),
                 'ended': self.callback_url('ended', execution_id=execution_id),
+                'error': self.callback_url('error', execution_id=execution_id),
             },
         })
         return submit_data
