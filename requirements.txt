@@ -3,7 +3,6 @@ flask == 0.10.1
 flask-restful == 0.2.12
 librabbitmq == 1.6.1
 psycopg2 == 2.5.4
-python-statsd == 1.7.2
 redis == 2.10.3
 requests == 2.4.3
 simplejson == 3.6.5
