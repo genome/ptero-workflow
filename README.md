@@ -1,6 +1,7 @@
 # PTero Workflow Service
 [![Build Status](https://travis-ci.org/genome/ptero-workflow.svg?branch=master)](https://travis-ci.org/genome/ptero-workflow)
-[![Coverage Status](https://img.shields.io/coveralls/genome/ptero-workflow.svg)](https://coveralls.io/r/genome/ptero-workflow)
+[![Coverage Status](https://img.shields.io/coveralls/genome/ptero-workflow.svg)](https://coveralls.io/r/genome/ptero-workflow?branch=master)
+[![Requirements Status](https://requires.io/github/genome/ptero-workflow/requirements.svg?branch=master)](https://requires.io/github/genome/ptero-workflow/requirements/?branch=master)
 
 This project provides the client facing API for the PTero Workflow system.
 This system is designed to be a highly scalable replacement of the [legacy
