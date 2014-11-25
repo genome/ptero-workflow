@@ -22,6 +22,10 @@ _MAX_RETRIES = 10
 _RETRY_DELAY = 0.15
 
 
+def validate_json(text):
+    data = json.loads(text)
+
+
 class TestCaseMixin(object):
     __metaclass__ = abc.ABCMeta
 
@@ -77,7 +81,16 @@ class TestCaseMixin(object):
     @property
     def _workflow_body(self):
         with open(self._workflow_file_path) as f:
-            return f.read()
+            template = jinja2.Template(f.read())
+            body = template.render(**self._template_data)
+            validate_json(body)
+        return body
+
+    @property
+    def _template_data(self):
+        return {
+            'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_TEMP'],
+        }
 
     @property
     def _workflow_file_path(self):

@@ -40,6 +40,7 @@ def setUp():
 
     logdir = 'var/log'
     mkdir_p(logdir)
+    mkdir_p(os.environ['PTERO_WORKFLOW_TEST_TEMP'])
     outlog = open(os.path.join(logdir, 'honcho.out'), 'w')
     errlog = open(os.path.join(logdir, 'honcho.err'), 'w')
 
