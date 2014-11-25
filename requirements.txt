@@ -1,6 +1,6 @@
 celery
 flask
-flask-restful
+flask-restful == 0.2.12
 librabbitmq
 psycopg2
 python-statsd

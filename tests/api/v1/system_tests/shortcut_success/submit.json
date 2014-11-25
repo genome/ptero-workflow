@@ -6,14 +6,16 @@
                     "name": "shortcut",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["cat"]
+                        "commandLine": ["cat"],
+                        "workingDirectory": "{{ workingDirectory }}"
                     }
                 },
                 {
                     "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["false"]
+                        "commandLine": ["false"],
+                        "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
             ]

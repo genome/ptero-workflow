@@ -6,7 +6,8 @@
                     "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["cat"]
+                        "commandLine": ["cat"],
+                        "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
             ]
@@ -17,7 +18,8 @@
                     "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["cat"]
+                        "commandLine": ["cat"],
+                        "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
             ],
