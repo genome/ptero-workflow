@@ -1,7 +1,7 @@
 import celery
 import logging
 import requests
-import simplejson
+import json
 
 
 __all__ = ['HTTP']
@@ -24,4 +24,4 @@ class HTTP(celery.Task):
                     % response.status_code)
 
     def body(self, kwargs):
-        return simplejson.dumps(kwargs)
+        return json.dumps(kwargs)

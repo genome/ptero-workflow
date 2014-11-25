@@ -1,6 +1,6 @@
 from . import models
 from . import tasks
-import simplejson
+import json
 
 
 _TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'
@@ -24,7 +24,7 @@ class Backend(object):
 
     def _save_workflow(self, workflow_data):
         workflow = models.Workflow(
-            environment=simplejson.dumps(workflow_data['environment']),
+            environment=json.dumps(workflow_data['environment']),
         )
 
         root_data = {

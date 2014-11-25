@@ -6,7 +6,7 @@ import json
 import os
 import requests
 import signal
-import simplejson
+import json
 import subprocess
 import sys
 import time
@@ -99,7 +99,7 @@ class TestCaseMixin(object):
     @property
     def _expected_result(self):
         with open(self._expected_result_path) as f:
-            return simplejson.load(f)
+            return json.load(f)
 
     @property
     def _expected_result_path(self):

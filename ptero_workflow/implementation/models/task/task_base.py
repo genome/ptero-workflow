@@ -12,7 +12,6 @@ from sqlalchemy.orm.session import object_session
 import celery
 import logging
 import os
-import simplejson
 import urllib
 
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm.session import object_session
 import celery
 import os
 import requests
-import simplejson
+import json
 
 
 __all__ = ['ShellCommand']
@@ -101,7 +101,7 @@ class ShellCommand(Method):
                 method_id=self.id).one()
 
         if body_data['exitCode'] == 0:
-            outputs = simplejson.loads(body_data['stdout'])
+            outputs = json.loads(body_data['stdout'])
             self.task.set_outputs(outputs, execution.color,
                     execution.parent_color)
             execution.append_status('succeeded')
@@ -131,7 +131,7 @@ class ShellCommand(Method):
         body_data = self._shell_command_submit_data(colors, begins,
                 execution_id)
         response = requests.post(self._shell_command_submit_url,
-                data=simplejson.dumps(body_data),
+                data=json.dumps(body_data),
                 headers={'Content-Type': 'application/json'})
         return response.json()['jobId']
 
@@ -151,7 +151,7 @@ class ShellCommand(Method):
         submit_data = self.parameters
         submit_data.update({
             'user': os.environ.get('USER'),
-            'stdin': simplejson.dumps(
+            'stdin': json.dumps(
                 self.task.get_inputs(colors, begins)),
             'callbacks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),

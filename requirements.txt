@@ -5,5 +5,4 @@ librabbitmq == 1.6.1
 psycopg2 == 2.5.4
 redis == 2.10.3
 requests == 2.4.3
-simplejson == 3.6.5
 sqlalchemy == 0.9.8
