@@ -3,7 +3,7 @@ from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
 import base64
 import logging
-import simplejson
+import json
 import uuid
 
 
@@ -62,7 +62,7 @@ class Workflow(Base):
             'tasks': tasks,
             'edges': edges,
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
-            'environment': simplejson.loads(self.environment),
+            'environment': json.loads(self.environment),
         }
         if self.root_task.status is not None:
             data['status'] = self.root_task.status

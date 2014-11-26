@@ -1,6 +1,6 @@
 from ptero_workflow.api import application
 import requests
-import simplejson
+import json
 import os
 import unittest
 
@@ -22,17 +22,17 @@ class BaseAPITest(unittest.TestCase):
     def patch(self, url, data):
         return _deserialize_response(requests.patch(url,
             headers={'content-type': 'application/json'},
-            data=simplejson.dumps(data)))
+            data=json.dumps(data)))
 
     def post(self, url, data):
         return _deserialize_response(requests.post(url,
             headers={'content-type': 'application/json'},
-            data=simplejson.dumps(data)))
+            data=json.dumps(data)))
 
     def put(self, url, data):
         return _deserialize_response(requests.put(url,
             headers={'content-type': 'application/json'},
-            data=simplejson.dumps(data)))
+            data=json.dumps(data)))
 
 
 def _deserialize_response(response):

@@ -6,7 +6,6 @@ from sqlalchemy.orm.session import object_session
 import json_type
 import logging
 import os
-import simplejson
 
 
 __all__ = ['Result']
