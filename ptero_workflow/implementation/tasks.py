@@ -5,23 +5,21 @@ from . import models
 __all__ = ['create_task']
 
 
-def _build_dag(task_data, task):
+def _build_dag(task_data, method):
     _validate_dag_task_data(task_data)
 
     for name, child_task_data in task_data['tasks'].iteritems():
         create_task(name=name, task_data=child_task_data,
-                parent=task, workflow=task.workflow)
+                parent=method)
 
     create_task(name='input connector',
-            task_data={'type': 'input connector'}, parent=task,
-            workflow=task.workflow)
+            task_data={'type': 'input connector'}, parent=method)
     create_task(name='output connector',
-            task_data={'type': 'output connector'}, parent=task,
-            workflow=task.workflow)
+            task_data={'type': 'output connector'}, parent=method)
 
     for edge_data in task_data['edges']:
-        source = task.children[edge_data['source']]
-        destination = task.children[edge_data['destination']]
+        source = method.children[edge_data['source']]
+        destination = method.children[edge_data['destination']]
         models.Edge(
             destination_task=destination,
             destination_property=edge_data['destinationProperty'],
@@ -40,11 +38,12 @@ def _build_method_list(task_data, task):
                 task_id=task.id,
                 index=index
         )
-        task.methods[method_name] = method
+        task.method_list.append(method)
+        if 'tasks' in data:
+            _build_dag(data, method)
 
 
 _NODE_BUILDERS = {
-    'dag': _build_dag,
     'method-list': _build_method_list,
 }
 def _build_task(task_data, task):
@@ -74,9 +73,6 @@ def _get_task_type(task_data):
                     'allowed explicit type, not (%s)' % task_data['type'])
     elif 'methods' in task_data:
         return 'method-list'
-
-    elif 'tasks' in task_data:
-        return 'dag'
 
     else:
         raise RuntimeError('Cannot determine task type from task_data (%s)' %

@@ -23,13 +23,18 @@ class Backend(object):
         return workflow.id
 
     def _save_workflow(self, workflow_data):
-        workflow = models.Workflow(
-            environment=json.dumps(workflow_data['environment']),
-        )
+        workflow = models.Workflow()
 
         root_data = {
-            'tasks': workflow_data['tasks'],
-            'edges': workflow_data['edges'],
+            'methods': [
+                {
+                    'name': 'root dag',
+                    'service': 'DAG',
+                    'parameters': {},
+                    'tasks': workflow_data['tasks'],
+                    'edges': workflow_data['edges'],
+                },
+            ],
             'parallelBy': workflow_data.get('parallelBy'),
         }
 
@@ -40,9 +45,11 @@ class Backend(object):
                 workflow.root_task, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
+        self.session.add(workflow)
+        self.session.commit()
+
         workflow.root_task.create_input_sources(self.session, [])
 
-        self.session.add(workflow)
         self.session.commit()
 
         return workflow

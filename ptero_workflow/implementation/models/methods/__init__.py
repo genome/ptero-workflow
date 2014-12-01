@@ -1,7 +1,8 @@
+from dag import *
 from .method_base import *
 from .shell_command import *
 
-METHOD_SUBCLASSES = [ShellCommand]
+METHOD_SUBCLASSES = [DAGMethod, ShellCommand]
 
 def _calculate_subclass_lookup():
     result = {}

@@ -54,3 +54,6 @@ class Method(Base):
             callback_type,
             query_string,
         )
+
+    def create_input_sources(self, session, parallel_depths):
+        pass

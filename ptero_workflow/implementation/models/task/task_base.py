@@ -4,8 +4,7 @@ from .. import input_source
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import backref, relationship
-from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
@@ -32,19 +31,13 @@ class Task(Base):
     ])
 
     id        = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('task.id'), nullable=True)
+    parent_id = Column(Integer, ForeignKey('method_dag.id', use_alter=True,
+        name='fk_task_parent_method_dag'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
-    workflow_id = Column(Integer, ForeignKey('workflow.id'), nullable=False)
+    workflow_id = Column(Integer, ForeignKey('workflow.id'))
     status = Column(Text)
     parallel_by = Column(Text, nullable=True)
-
-    children = relationship('Task',
-            backref=backref('parent', uselist=False, remote_side=[id]),
-            collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
-
-    child_list = relationship('Task')
 
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
@@ -241,7 +234,7 @@ class Task(Base):
             increment = 1
 
         if self.parent:
-            return self.parent.parallel_depth + increment
+            return self.parent.task.parallel_depth + increment
 
         else:
             return increment
