@@ -1,8 +1,6 @@
 from ..base import Base
-from .. import edge
 from .. import result
 from .. import input_source
-from collections import defaultdict
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
@@ -282,10 +280,9 @@ class Task(Base):
                     ).order_by('color'
                     ).all()
 
-            array_result = result.ArrayReferenceResult(task=source, name=name,
+            array_result = result.Result(task=source, name=name,
                     color=color, parent_color=parent_color,
-                    size=len(results),
-                    reference_ids=[r.id for r in results])
+                    data=[r.data for r in results])
             s.add(array_result)
 
         s.commit()
@@ -363,9 +360,8 @@ class Task(Base):
             return []
 
     def set_outputs(self, outputs, color, parent_color):
-        s = object_session(self)
         for name, value in outputs.iteritems():
-            o = result.ConcreteResult(task=self, name=name, data=value,
+            result.Result(task=self, name=name, data=value,
                     color=color, parent_color=parent_color)
 
     def get_inputs(self, colors, begins):
