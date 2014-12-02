@@ -1,0 +1,86 @@
+{
+    "tasks": {
+        "Inner": {
+            "methods": [
+                {
+                    "tasks": { },
+
+                    "edges": [
+                        {
+                            "source": "input connector",
+                            "sourceProperty": "constant_param_in",
+                            "destination": "output connector",
+                            "destinationProperty": "constant_param_out"
+                        },
+                        {
+                            "source": "input connector",
+                            "sourceProperty": "parallel_param_in",
+                            "destination": "output connector",
+                            "destinationProperty": "parallel_param_out"
+                        }
+                    ]
+                }
+            ],
+            "parallelBy": "parallel_param_in"
+        },
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["cat"],
+                        "workingDirectory": "{{ workingDirectory }}"
+                    }
+                }
+            ]
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "Inner",
+            "sourceProperty": "in_constant",
+            "destinationProperty": "constant_param_in"
+        },
+        {
+            "source": "Inner",
+            "destination": "A",
+            "sourceProperty": "constant_param_out",
+            "destinationProperty": "constant_param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "constant_param",
+            "destinationProperty": "out_constant"
+        },
+
+        {
+            "source": "input connector",
+            "destination": "Inner",
+            "sourceProperty": "in_parallel",
+            "destinationProperty": "parallel_param_in"
+        },
+        {
+            "source": "Inner",
+            "destination": "A",
+            "sourceProperty": "parallel_param_out",
+            "destinationProperty": "parallel_param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "parallel_param",
+            "destinationProperty": "out_parallel"
+        }
+    ],
+
+    "inputs": {
+        "in_constant": "kittens",
+        "in_parallel": ["Simba", "Tabby", "Emilio"]
+    },
+
+    "environment": {}
+}

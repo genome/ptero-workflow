@@ -1,0 +1,6 @@
+{
+    "outputs": {
+        "out_constant": ["kittens", "kittens", "kittens"],
+        "out_parallel": ["Simba", "Tabby", "Emilio"]
+    }
+}
