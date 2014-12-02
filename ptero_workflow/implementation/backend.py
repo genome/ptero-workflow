@@ -45,6 +45,16 @@ class Backend(object):
                 workflow.root_task, workflow_data['inputs'], color=0,
                 workflow=workflow)
 
+        dummy_output_task = models.InputHolder(name='dummy output task')
+        self.session.add(dummy_output_task)
+
+        for edge_data in workflow_data['edges']:
+            if 'output connector' == edge_data['destination']:
+                self.session.add(models.Edge(source_task=workflow.root_task,
+                        source_property=edge_data['destinationProperty'],
+                        destination_task=dummy_output_task,
+                        destination_property=edge_data['destinationProperty']))
+
         self.session.add(workflow)
         self.session.commit()
 

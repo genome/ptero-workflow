@@ -425,3 +425,9 @@ class Task(Base):
     def http(self):
         return celery.current_app.tasks[
                 'ptero_workflow.implementation.celery_tasks.http.HTTP']
+
+    def get_outputs(self, color):
+        s = object_session(self)
+        results = s.query(result.Result).filter_by(task=self, color=color).all()
+        if results:
+            return {r.name: r.data for r in results}

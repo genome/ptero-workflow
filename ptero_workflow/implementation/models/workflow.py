@@ -74,4 +74,4 @@ class Workflow(Base):
         return transitions
 
     def get_outputs(self):
-        return self.root_task.method_list[0].get_outputs([0], [0])
+        return self.root_task.get_outputs(0)
