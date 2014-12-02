@@ -108,7 +108,8 @@ class DAGMethod(Method):
 
     @property
     def unique_name(self):
-        return '-'.join(['method', str(self.id), self.name.replace(' ', '_')])
+        name = self.name or ''
+        return '-'.join(['task', str(self.id), name.replace(' ', '_')])
 
     @property
     def failure_place_name(self):

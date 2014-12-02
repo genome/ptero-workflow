@@ -35,11 +35,8 @@ class Task(Base):
         name='fk_task_parent_method_dag'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
-    workflow_id = Column(Integer, ForeignKey('workflow.id'))
     status = Column(Text)
     parallel_by = Column(Text, nullable=True)
-
-    workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
     __mapper_args__ = {
         'polymorphic_on': 'type',

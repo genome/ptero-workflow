@@ -1,46 +1,50 @@
 {
     "tasks": {
         "Inner": {
-            "tasks": {
-                "A": {
-                    "methods": [
+            "methods": [
+                {
+                    "tasks": {
+                        "A": {
+                            "methods": [
+                                {
+                                    "name": "execute",
+                                    "service": "ShellCommand",
+                                    "parameters": {
+                                        "commandLine": ["cat"],
+                                        "workingDirectory": "{{ workingDirectory }}"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+
+                    "edges": [
                         {
-                            "name": "execute",
-                            "service": "ShellCommand",
-                            "parameters": {
-                                "commandLine": ["cat"],
-                                "workingDirectory": "{{ workingDirectory }}"
-                            }
+                            "source": "input connector",
+                            "destination": "A",
+                            "sourceProperty": "constant_param_in",
+                            "destinationProperty": "constant_param"
+                        },
+                        {
+                            "source": "A",
+                            "destination": "output connector",
+                            "sourceProperty": "constant_param",
+                            "destinationProperty": "constant_param_out"
+                        },
+
+                        {
+                            "source": "input connector",
+                            "destination": "A",
+                            "sourceProperty": "parallel_param_in",
+                            "destinationProperty": "parallel_param"
+                        },
+                        {
+                            "source": "A",
+                            "destination": "output connector",
+                            "sourceProperty": "parallel_param",
+                            "destinationProperty": "parallel_param_out"
                         }
                     ]
-                }
-            },
-
-            "edges": [
-                {
-                    "source": "input connector",
-                    "destination": "A",
-                    "sourceProperty": "constant_param_in",
-                    "destinationProperty": "constant_param"
-                },
-                {
-                    "source": "A",
-                    "destination": "output connector",
-                    "sourceProperty": "constant_param",
-                    "destinationProperty": "constant_param_out"
-                },
-
-                {
-                    "source": "input connector",
-                    "destination": "A",
-                    "sourceProperty": "parallel_param_in",
-                    "destinationProperty": "parallel_param"
-                },
-                {
-                    "source": "A",
-                    "destination": "output connector",
-                    "sourceProperty": "parallel_param",
-                    "destinationProperty": "parallel_param_out"
                 }
             ],
             "parallelBy": "parallel_param_in"

@@ -1,5 +1,4 @@
 from ..base import Base
-from ..json_type import JSON
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 import os
@@ -23,9 +22,7 @@ class Method(Base):
 
     name = Column(Text)
 
-    index = Column(Integer, nullable=False, index=True)
-
-    parameters = Column(JSON, nullable=False)
+    index = Column(Integer, nullable=True, index=True)
 
     service = Column(Text, nullable=False)
     __mapper_args__ = {
