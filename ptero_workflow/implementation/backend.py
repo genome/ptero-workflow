@@ -27,9 +27,6 @@ class Backend(object):
         root_data = {
             'methods': [
                 {
-                    'name': 'root dag',
-                    'service': 'DAG',
-                    'parameters': {},
                     'tasks': workflow_data['tasks'],
                     'edges': workflow_data['edges'],
                 },

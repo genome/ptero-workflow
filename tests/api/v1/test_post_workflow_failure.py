@@ -113,41 +113,45 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'tasks': {
             'Inner': {
-                'tasks': {
-                    'A': {
-                        'methods': [
-                            {
-                                'name': 'execute',
-                                'service': 'ShellCommand',
-                                'parameters': {
-                                    'commandLine': ['cat']
-                                }
-                            }
-                        ]
-                    },
-                    'input connector': {
-                        'methods': [
-                            {
-                                'name': 'execute',
-                                'service': 'ShellCommand',
-                                'parameters': {
-                                    'commandLine': ['cat']
-                                }
-                            }
-                        ]
-                    },
-                },
-                'edges': [
+                'methods': [
                     {
-                        'source': 'input connector',
-                        'destination': 'A',
-                        'sourceProperty': 'inner_input',
-                        'destinationProperty': 'param',
-                    }, {
-                        'source': 'A',
-                        'destination': 'output connector',
-                        'sourceProperty': 'result',
-                        'destinationProperty': 'inner_output',
+                        'tasks': {
+                            'A': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'ShellCommand',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
+                                    }
+                                ]
+                            },
+                            'input connector': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'ShellCommand',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
+                                    }
+                                ]
+                            },
+                        },
+                        'edges': [
+                            {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            }, {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            },
+                        ],
                     },
                 ],
             },
@@ -176,41 +180,45 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     post_data = {
         'tasks': {
             'Inner': {
-                'tasks': {
-                    'A': {
-                        'methods': [
-                            {
-                                'name': 'execute',
-                                'service': 'ShellCommand',
-                                'parameters': {
-                                    'commandLine': ['cat']
-                                }
-                            }
-                        ]
-                    },
-                    'output connector': {
-                        'methods': [
-                            {
-                                'name': 'execute',
-                                'service': 'ShellCommand',
-                                'parameters': {
-                                    'commandLine': ['cat']
-                                }
-                            }
-                        ]
-                    },
-                },
-                'edges': [
+                'methods': [
                     {
-                        'source': 'input connector',
-                        'destination': 'A',
-                        'sourceProperty': 'inner_input',
-                        'destinationProperty': 'param',
-                    }, {
-                        'source': 'A',
-                        'destination': 'output connector',
-                        'sourceProperty': 'result',
-                        'destinationProperty': 'inner_output',
+                        'tasks': {
+                            'A': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'ShellCommand',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
+                                    }
+                                ]
+                            },
+                            'output connector': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'ShellCommand',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
+                                    }
+                                ]
+                            },
+                        },
+                        'edges': [
+                            {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            }, {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            },
+                        ],
                     },
                 ],
             },

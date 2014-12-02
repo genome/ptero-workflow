@@ -1,3 +1,4 @@
+from . import exceptions
 from . import models
 
 
@@ -23,6 +24,8 @@ def build_method(data, index=None, parent_task=None):
 
 
 def _build_dag_method(data, index, parent_task):
+    _validate_dag_data(data)
+
     method = models.DAGMethod(name=data.get('name'), index=index,
             task=parent_task)
 
@@ -62,3 +65,17 @@ def create_input_holder(root, inputs, color):
         models.Edge(source_task=task, destination_task=root,
                 source_property=i, destination_property=i)
     return task
+
+
+def _validate_dag_data(data):
+    _validate_dag_task_names(data['tasks'])
+
+
+_ILLEGAL_TASK_NAMES = {'input connector', 'output connector'}
+
+
+def _validate_dag_task_names(tasks):
+    for illegal_name in _ILLEGAL_TASK_NAMES:
+        if illegal_name in tasks:
+            raise exceptions.InvalidWorkflow('"%s" is an illegal task name'
+                    % illegal_name)
