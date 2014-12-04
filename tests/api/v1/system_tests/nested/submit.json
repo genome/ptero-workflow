@@ -13,32 +13,36 @@
             ]
         },
         "Inner": {
-            "tasks": {
-                "B": {
-                    "methods": [
+            "methods": [
+                {
+                    "tasks": {
+                        "B": {
+                            "methods": [
+                                {
+                                    "name": "execute",
+                                    "service": "ShellCommand",
+                                    "parameters": {
+                                        "commandLine": ["cat"],
+                                        "workingDirectory": "{{ workingDirectory }}"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "edges": [
                         {
-                            "name": "execute",
-                            "service": "ShellCommand",
-                            "parameters": {
-                                "commandLine": ["cat"],
-                                "workingDirectory": "{{ workingDirectory }}"
-                            }
+                            "source": "input connector",
+                            "destination": "B",
+                            "sourceProperty": "inner_in_b",
+                            "destinationProperty": "param"
+                        },
+                        {
+                            "source": "B",
+                            "destination": "output connector",
+                            "sourceProperty": "param",
+                            "destinationProperty": "inner_out_b"
                         }
                     ]
-                }
-            },
-            "edges": [
-                {
-                    "source": "input connector",
-                    "destination": "B",
-                    "sourceProperty": "inner_in_b",
-                    "destinationProperty": "param"
-                },
-                {
-                    "source": "B",
-                    "destination": "output connector",
-                    "sourceProperty": "param",
-                    "destinationProperty": "inner_out_b"
                 }
             ]
         },

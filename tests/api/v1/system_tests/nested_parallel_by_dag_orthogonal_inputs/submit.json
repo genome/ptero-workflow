@@ -3,46 +3,50 @@
 
     "tasks": {
         "Inner": {
-            "tasks": {
-                "A": {
-                    "methods": [
+            "methods": [
+                {
+                    "tasks": {
+                        "A": {
+                            "methods": [
+                                {
+                                    "name": "execute",
+                                    "service": "ShellCommand",
+                                    "parameters": {
+                                        "commandLine": ["cat"],
+                                        "workingDirectory": "{{ workingDirectory }}"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+
+                    "edges": [
                         {
-                            "name": "execute",
-                            "service": "ShellCommand",
-                            "parameters": {
-                                "commandLine": ["cat"],
-                                "workingDirectory": "{{ workingDirectory }}"
-                            }
+                            "source": "input connector",
+                            "destination": "A",
+                            "sourceProperty": "animal_type_in",
+                            "destinationProperty": "animal_type"
+                        },
+                        {
+                            "source": "A",
+                            "destination": "output connector",
+                            "sourceProperty": "animal_type",
+                            "destinationProperty": "animal_type_out"
+                        },
+
+                        {
+                            "source": "input connector",
+                            "destination": "A",
+                            "sourceProperty": "kitten_name_in",
+                            "destinationProperty": "kitten_name"
+                        },
+                        {
+                            "source": "A",
+                            "destination": "output connector",
+                            "sourceProperty": "kitten_name",
+                            "destinationProperty": "kitten_name_out"
                         }
                     ]
-                }
-            },
-
-            "edges": [
-                {
-                    "source": "input connector",
-                    "destination": "A",
-                    "sourceProperty": "animal_type_in",
-                    "destinationProperty": "animal_type"
-                },
-                {
-                    "source": "A",
-                    "destination": "output connector",
-                    "sourceProperty": "animal_type",
-                    "destinationProperty": "animal_type_out"
-                },
-
-                {
-                    "source": "input connector",
-                    "destination": "A",
-                    "sourceProperty": "kitten_name_in",
-                    "destinationProperty": "kitten_name"
-                },
-                {
-                    "source": "A",
-                    "destination": "output connector",
-                    "sourceProperty": "kitten_name",
-                    "destinationProperty": "kitten_name_out"
                 }
             ],
             "parallelBy": "kitten_name_in"

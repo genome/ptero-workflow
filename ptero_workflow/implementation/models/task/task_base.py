@@ -1,13 +1,10 @@
 from ..base import Base
-from .. import edge
 from .. import result
 from .. import input_source
-from collections import defaultdict
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import backref, relationship
-from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
@@ -34,21 +31,12 @@ class Task(Base):
     ])
 
     id        = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('task.id'), nullable=True)
+    parent_id = Column(Integer, ForeignKey('method_dag.id', use_alter=True,
+        name='fk_task_parent_method_dag'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
-    workflow_id = Column(Integer, ForeignKey('workflow.id'), nullable=False)
     status = Column(Text)
     parallel_by = Column(Text, nullable=True)
-
-    children = relationship('Task',
-            backref=backref('parent', uselist=False, remote_side=[id]),
-            collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
-
-    child_list = relationship('Task')
-
-    workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -243,7 +231,7 @@ class Task(Base):
             increment = 1
 
         if self.parent:
-            return self.parent.parallel_depth + increment
+            return self.parent.task.parallel_depth + increment
 
         else:
             return increment
@@ -282,10 +270,9 @@ class Task(Base):
                     ).order_by('color'
                     ).all()
 
-            array_result = result.ArrayReferenceResult(task=source, name=name,
+            array_result = result.Result(task=source, name=name,
                     color=color, parent_color=parent_color,
-                    size=len(results),
-                    reference_ids=[r.id for r in results])
+                    data=[r.data for r in results])
             s.add(array_result)
 
         s.commit()
@@ -363,9 +350,8 @@ class Task(Base):
             return []
 
     def set_outputs(self, outputs, color, parent_color):
-        s = object_session(self)
         for name, value in outputs.iteritems():
-            o = result.ConcreteResult(task=self, name=name, data=value,
+            result.Result(task=self, name=name, data=value,
                     color=color, parent_color=parent_color)
 
     def get_inputs(self, colors, begins):
@@ -436,3 +422,9 @@ class Task(Base):
     def http(self):
         return celery.current_app.tasks[
                 'ptero_workflow.implementation.celery_tasks.http.HTTP']
+
+    def get_outputs(self, color):
+        s = object_session(self)
+        results = s.query(result.Result).filter_by(task=self, color=color).all()
+        if results:
+            return {r.name: r.data for r in results}

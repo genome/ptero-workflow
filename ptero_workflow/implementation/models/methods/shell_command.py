@@ -1,4 +1,5 @@
 from ..execution import Execution
+from ..json_type import JSON
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
@@ -15,6 +16,8 @@ class ShellCommand(Method):
     __tablename__ = 'shell_command'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
+
+    parameters = Column(JSON, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'ShellCommand',

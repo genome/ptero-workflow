@@ -21,11 +21,12 @@ class InputConnector(Task):
     }
 
     def resolve_output_source(self, session, name, parallel_depths):
-        return self.parent.resolve_input_source(session, name, parallel_depths)
+        return self.parent.task.resolve_input_source(session, name,
+                parallel_depths)
 
     def create_input_sources(self, session, parallel_depths):
         pass
 
     @property
     def input_names(self):
-        return self.parent.input_names
+        return self.parent.task.input_names

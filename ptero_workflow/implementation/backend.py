@@ -1,6 +1,5 @@
 from . import models
 from . import tasks
-import json
 
 
 _TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'
@@ -23,26 +22,38 @@ class Backend(object):
         return workflow.id
 
     def _save_workflow(self, workflow_data):
-        workflow = models.Workflow(
-            environment=json.dumps(workflow_data['environment']),
-        )
+        workflow = models.Workflow()
 
         root_data = {
-            'tasks': workflow_data['tasks'],
-            'edges': workflow_data['edges'],
+            'methods': [
+                {
+                    'tasks': workflow_data['tasks'],
+                    'edges': workflow_data['edges'],
+                },
+            ],
             'parallelBy': workflow_data.get('parallelBy'),
         }
 
-        workflow.root_task = tasks.create_task('root',
-                root_data, workflow=workflow)
+        workflow.root_task = tasks.build_task('root', root_data)
 
         workflow.input_holder_task = tasks.create_input_holder(
-                workflow.root_task, workflow_data['inputs'], color=0,
-                workflow=workflow)
+                workflow.root_task, workflow_data['inputs'], color=0)
+
+        dummy_output_task = models.InputHolder(name='dummy output task')
+        self.session.add(dummy_output_task)
+
+        for edge_data in workflow_data['edges']:
+            if 'output connector' == edge_data['destination']:
+                self.session.add(models.Edge(source_task=workflow.root_task,
+                        source_property=edge_data['destinationProperty'],
+                        destination_task=dummy_output_task,
+                        destination_property=edge_data['destinationProperty']))
+
+        self.session.add(workflow)
+        self.session.commit()
 
         workflow.root_task.create_input_sources(self.session, [])
 
-        self.session.add(workflow)
         self.session.commit()
 
         return workflow

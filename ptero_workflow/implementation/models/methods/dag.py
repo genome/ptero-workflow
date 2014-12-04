@@ -1,20 +1,30 @@
-from .task_base import Task
+from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
+from sqlalchemy.orm.session import object_session
 
 
-__all__ = ['DAG']
+__all__ = ['DAGMethod']
 
 
-class DAG(Task):
-    __tablename__ = 'dag'
+class DAGMethod(Method):
+    __tablename__ = 'method_dag'
 
-    id = Column(Integer, ForeignKey('task.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('method.id'), primary_key=True)
+
+    children = relationship('Task',
+            backref=backref('parent', uselist=False, remote_side=[id]),
+            collection_class=attribute_mapped_collection('name'),
+            cascade='all, delete-orphan')
+
+    child_list = relationship('Task')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'dag',
+        'polymorphic_identity': 'DAG',
     }
 
-    def attach_subclass_transitions(self, transitions, start_place):
+    def attach_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._child_start_place(child.name)
             child_success_place, child_failure_place = child.attach_transitions(
@@ -81,17 +91,38 @@ class DAG(Task):
         return oc.resolve_input_source(session, name, parallel_depths)
 
     def create_input_sources(self, session, parallel_depths):
-        super(DAG, self).create_input_sources(session, parallel_depths)
+        super(DAGMethod, self).create_input_sources(session, parallel_depths)
 
         for child_name in self.children:
             self.children[child_name].create_input_sources(session,
                     parallel_depths)
 
-    def get_outputs(self):
+    def get_outputs(self, colors, begins):
         oc = self.children['output connector']
-        return oc.get_inputs([0], [0])
+        return oc.get_inputs(colors, begins)
 
     @property
     def output_names(self):
         oc = self.children['output connector']
         return oc.input_names
+
+    @property
+    def unique_name(self):
+        name = self.name or ''
+        return '-'.join(['task', str(self.id), name.replace(' ', '_')])
+
+    @property
+    def failure_place_name(self):
+        return '%s-failure' % self.unique_name
+
+    @property
+    def success_place_name(self):
+        return '%s-success' % self.unique_name
+
+
+def _get_parent_color(colors):
+    if len(colors) == 1:
+        return None
+
+    else:
+        return colors[-2]

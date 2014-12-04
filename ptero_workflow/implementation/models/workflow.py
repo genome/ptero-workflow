@@ -50,7 +50,7 @@ class Workflow(Base):
 
     @property
     def tasks(self):
-        return self.root_task.children
+        return self.root_task.method_list[0].children
 
     @property
     def as_dict(self):
@@ -62,7 +62,6 @@ class Workflow(Base):
             'tasks': tasks,
             'edges': edges,
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
-            'environment': json.loads(self.environment),
         }
         if self.root_task.status is not None:
             data['status'] = self.root_task.status
@@ -75,4 +74,4 @@ class Workflow(Base):
         return transitions
 
     def get_outputs(self):
-        return self.root_task.get_outputs()
+        return self.root_task.get_outputs(0)
