@@ -24,7 +24,7 @@ class ShellCommand(Method):
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
-            ['begun', 'ended', 'error', 'execute'])
+            ['begun', 'error', 'execute', 'failure', 'success'])
 
     def _place_name(self, kind):
         return '%s-%s-%s' % (self.task.unique_name, self.name, kind)
@@ -96,25 +96,32 @@ class ShellCommand(Method):
         execution.append_status('begun')
         s.commit()
 
-    def ended(self, body_data, query_string_data):
+    def success(self, body_data, query_string_data):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
         execution = s.query(Execution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        if body_data['exitCode'] == 0:
-            outputs = json.loads(body_data['stdout'])
-            self.task.set_outputs(outputs, execution.color,
-                    execution.parent_color)
-            execution.append_status('succeeded')
-            s.commit()
-            response_url = execution.data['petri_response_links']['success']
+        outputs = json.loads(body_data['stdout'])
+        self.task.set_outputs(outputs, execution.color,
+                execution.parent_color)
+        execution.append_status('succeeded')
+        s.commit()
+        response_url = execution.data['petri_response_links']['success']
 
-        else:
-            execution.append_status('failed')
-            s.commit()
-            response_url = execution.data['petri_response_links']['failure']
+        self.http.delay('PUT', response_url)
+
+    def failure(self, body_data, query_string_data):
+        execution_id = query_string_data['execution_id']
+
+        s = object_session(self)
+        execution = s.query(Execution).filter_by(id=execution_id,
+                method_id=self.id).one()
+
+        execution.append_status('failed')
+        s.commit()
+        response_url = execution.data['petri_response_links']['failure']
 
         self.http.delay('PUT', response_url)
 
@@ -156,10 +163,11 @@ class ShellCommand(Method):
             'user': os.environ.get('USER'),
             'stdin': json.dumps(
                 self.task.get_inputs(colors, begins)),
-            'callbacks': {
+            'webhooks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),
-                'ended': self.callback_url('ended', execution_id=execution_id),
                 'error': self.callback_url('error', execution_id=execution_id),
+                'failure': self.callback_url('failure', execution_id=execution_id),
+                'success': self.callback_url('success', execution_id=execution_id),
             },
         })
         return submit_data
