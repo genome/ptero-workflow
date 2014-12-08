@@ -163,7 +163,7 @@ class ShellCommand(Method):
             'user': os.environ.get('USER'),
             'stdin': json.dumps(
                 self.task.get_inputs(colors, begins)),
-            'callbacks': {
+            'webhooks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),
                 'error': self.callback_url('error', execution_id=execution_id),
                 'failure': self.callback_url('failure', execution_id=execution_id),
