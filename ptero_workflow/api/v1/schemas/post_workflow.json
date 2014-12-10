@@ -7,7 +7,6 @@
         "inputs": { "type": "object" },
         "tasks": { "type": "object" },
         "edges": { "type": "array" },
-        "environment": { "type": "object" },
         "parallelBy": { "type": "string" }
     },
     "required": ["inputs", "tasks", "edges"],

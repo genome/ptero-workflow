@@ -64,7 +64,5 @@
     "inputs": {
         "in_constant": "kittens",
         "in_parallel": ["Simba", "Tabby", "Emilio"]
-    },
-
-    "environment": {}
+    }
 }

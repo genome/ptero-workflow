@@ -39,7 +39,5 @@
 
     "inputs": {
         "in_a": "kittens"
-    },
-
-    "environment": {}
+    }
 }
