@@ -4,7 +4,7 @@
 
     "type": "object",
     "properties": {
-        "inputs": { "type": "object" },
+        "inputs": { "$ref": "#/definitions/inputDictionary" },
         "tasks": { "type": "object" },
         "edges": { "type": "array" },
         "parallelBy": { "$ref": "#/definitions/name" }
@@ -16,6 +16,22 @@
         "name": {
             "type": "string",
             "minLength": 1
+        },
+
+        "inputType": { "oneOf": [
+            { "$ref": "#/definitions/name" },
+            {
+                "type": "array",
+                "items": { "$ref": "#/definitions/inputType" }
+            }
+        ]},
+
+        "inputDictionary": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": { "$ref": "#/definitions/inputType" }
+            },
+            "additionalProperties": false
         }
     }
 }
