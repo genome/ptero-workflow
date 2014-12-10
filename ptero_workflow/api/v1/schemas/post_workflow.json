@@ -1,0 +1,15 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "POST /v1/workflows",
+
+    "type": "object",
+    "properties": {
+        "inputs": { "type": "object" },
+        "tasks": { "type": "object" },
+        "edges": { "type": "array" },
+        "environment": { "type": "object" },
+        "parallelBy": { "type": "string" }
+    },
+    "required": ["inputs", "tasks", "edges"],
+    "additionalProperties": false
+}

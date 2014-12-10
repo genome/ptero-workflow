@@ -1,6 +1,8 @@
+from . import validators
 from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
+from jsonschema import ValidationError
 
 import pkg_resources
 import logging
@@ -13,12 +15,17 @@ LOG = logging.getLogger(__file__)
 class WorkflowListView(Resource):
     def post(self):
         try:
-            workflow_id = g.backend.create_workflow(request.get_json())
+            data = validators.get_workflow_post_data()
+            workflow_id = g.backend.create_workflow(data)
             return '', 201, {
                 'Location': url_for('workflow-detail', workflow_id=workflow_id)
             }
 
+        except ValidationError as e:
+            LOG.exception(e)
+            return {'error': e.message}, 400
         except exceptions.InvalidWorkflow as e:
+            LOG.exception(e)
             return {'error': e.message}, 400
         except:
             LOG.exception('Unexpected exception posting workflow')
