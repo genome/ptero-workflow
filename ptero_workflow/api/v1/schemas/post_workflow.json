@@ -7,8 +7,15 @@
         "inputs": { "type": "object" },
         "tasks": { "type": "object" },
         "edges": { "type": "array" },
-        "parallelBy": { "type": "string" }
+        "parallelBy": { "$ref": "#/definitions/name" }
     },
     "required": ["inputs", "tasks", "edges"],
-    "additionalProperties": false
+    "additionalProperties": false,
+
+    "definitions": {
+        "name": {
+            "type": "string",
+            "minLength": 1
+        }
+    }
 }
