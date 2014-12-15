@@ -45,9 +45,39 @@
         "task": {
             "type": "object",
             "properties": {
-                "methods": { "type": "array" },
+                "methods": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/method" }
+                },
                 "parallelBy": { "$ref": "#/definitions/name" }
             },
+            "required": ["methods"],
+            "additionalProperties": false
+        },
+
+        "method": { "oneOf": [
+            { "$ref": "#/definitions/workflow" },
+            { "$ref": "#/definitions/execution" }
+        ]},
+
+        "workflow": {
+            "type": "object",
+            "properties": {
+                "tasks": { "$ref": "#/definitions/taskDictionary" },
+                "edges": { "$ref": "#/definitions/edgeList" }
+            },
+            "required": ["tasks", "edges"],
+            "additionalProperties": false
+        },
+
+        "execution": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/definitions/name" },
+                "parameters": { "type": "object" },
+                "service": { "$ref": "#/definitions/name" }
+            },
+            "required": ["service"],
             "additionalProperties": false
         },
 
