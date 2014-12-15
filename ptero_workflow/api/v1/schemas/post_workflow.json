@@ -6,7 +6,7 @@
     "properties": {
         "inputs": { "$ref": "#/definitions/inputDictionary" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
-        "edges": { "type": "array" },
+        "edges": { "$ref": "#/definitions/edgeList" },
         "parallelBy": { "$ref": "#/definitions/name" }
     },
     "required": ["inputs", "tasks", "edges"],
@@ -48,6 +48,28 @@
                 "methods": { "type": "array" },
                 "parallelBy": { "$ref": "#/definitions/name" }
             },
+            "additionalProperties": false
+        },
+
+        "edgeList": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/edge" }
+        },
+
+        "edge": {
+            "type": "object",
+            "properties": {
+                "destination": { "$ref": "#/definitions/name" },
+                "destinationProperty": { "$ref": "#/definitions/name" },
+                "source": { "$ref": "#/definitions/name" },
+                "sourceProperty": { "$ref": "#/definitions/name" }
+            },
+            "required": [
+                "destination",
+                "destinationProperty",
+                "source",
+                "sourceProperty"
+            ],
             "additionalProperties": false
         }
     }
