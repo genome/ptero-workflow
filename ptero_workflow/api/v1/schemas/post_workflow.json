@@ -5,7 +5,7 @@
     "type": "object",
     "properties": {
         "inputs": { "$ref": "#/definitions/inputDictionary" },
-        "tasks": { "type": "object" },
+        "tasks": { "$ref": "#/definitions/taskDictionary" },
         "edges": { "type": "array" },
         "parallelBy": { "$ref": "#/definitions/name" }
     },
@@ -30,6 +30,23 @@
             "type": "object",
             "patternProperties": {
                 "^.+$": { "$ref": "#/definitions/inputType" }
+            },
+            "additionalProperties": false
+        },
+
+        "taskDictionary": {
+            "type": "object",
+            "patternProperties": {
+                "^.+$": { "$ref": "#/definitions/task" }
+            },
+            "additionalProperties": false
+        },
+
+        "task": {
+            "type": "object",
+            "properties": {
+                "methods": { "type": "array" },
+                "parallelBy": { "$ref": "#/definitions/name" }
             },
             "additionalProperties": false
         }

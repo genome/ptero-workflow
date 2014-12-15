@@ -64,32 +64,34 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
             'Inner': {
-                'tasks': {
-                    'A': {
-                        'methods': [
-                            {
-                                'name': 'execute',
-                                'service': 'ShellCommand',
-                                'parameters': {
-                                    'commandLine': ['cat']
+                'methods': [{
+                    'tasks': {
+                        'A': {
+                            'methods': [
+                                {
+                                    'name': 'execute',
+                                    'service': 'ShellCommand',
+                                    'parameters': {
+                                        'commandLine': ['cat']
+                                    }
                                 }
-                            }
-                        ]
+                            ]
+                        },
                     },
-                },
-                'edges': [
-                    {
-                        'source': 'input connector',
-                        'destination': 'A',
-                        'sourceProperty': 'inner_input',
-                        'destinationProperty': 'param',
-                    }, {
-                        'source': 'A',
-                        'destination': 'output connector',
-                        'sourceProperty': 'result',
-                        'destinationProperty': 'inner_output',
-                    },
-                ],
+                    'edges': [
+                        {
+                            'source': 'input connector',
+                            'destination': 'A',
+                            'sourceProperty': 'inner_input',
+                            'destinationProperty': 'param',
+                        }, {
+                            'source': 'A',
+                            'destination': 'output connector',
+                            'sourceProperty': 'result',
+                            'destinationProperty': 'inner_output',
+                        },
+                    ],
+                }]
             },
         },
 
@@ -150,32 +152,34 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
             'Inner': {
-                'tasks': {
-                    'A': {
-                        'methods': [
-                            {
-                                'name': 'execute',
-                                'service': 'ShellCommand',
-                                'parameters': {
-                                    'commandLine': ['cat']
+                'methods': [{
+                    'tasks': {
+                        'A': {
+                            'methods': [
+                                {
+                                    'name': 'execute',
+                                    'service': 'ShellCommand',
+                                    'parameters': {
+                                        'commandLine': ['cat']
+                                    }
                                 }
-                            }
-                        ]
+                            ]
+                        },
                     },
-                },
-                'edges': [
-                    {
-                        'source': 'input connector',
-                        'destination': 'A',
-                        'sourceProperty': 'inner_input',
-                        'destinationProperty': 'param',
-                    }, {
-                        'source': 'A',
-                        'destination': 'output connector',
-                        'sourceProperty': 'result',
-                        'destinationProperty': 'inner_output',
-                    },
-                ],
+                    'edges': [
+                        {
+                            'source': 'input connector',
+                            'destination': 'A',
+                            'sourceProperty': 'inner_input',
+                            'destinationProperty': 'param',
+                        }, {
+                            'source': 'A',
+                            'destination': 'output connector',
+                            'sourceProperty': 'result',
+                            'destinationProperty': 'inner_output',
+                        },
+                    ],
+                }],
             },
         },
 
