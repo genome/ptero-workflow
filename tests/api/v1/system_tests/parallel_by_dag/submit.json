@@ -8,6 +8,7 @@
                     "service": "ShellCommand",
                     "parameters": {
                         "commandLine": ["cat"],
+                        "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
