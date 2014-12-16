@@ -4,7 +4,7 @@
 
     "type": "object",
     "properties": {
-        "inputs": { "$ref": "#/definitions/inputDictionary" },
+        "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
         "edges": { "$ref": "#/definitions/edgeList" },
         "parallelBy": { "$ref": "#/definitions/name" }
@@ -16,24 +16,6 @@
         "name": {
             "type": "string",
             "minLength": 1
-        },
-
-        "inputType": { "oneOf": [
-            { "$ref": "#/definitions/name" },
-            {
-                "type": "array",
-                "minItems": 0,
-                "items": { "$ref": "#/definitions/inputType" }
-            }
-        ]},
-
-        "inputDictionary": {
-            "type": "object",
-            "minProperties": 0,
-            "patternProperties": {
-                "^.+$": { "$ref": "#/definitions/inputType" }
-            },
-            "additionalProperties": false
         },
 
         "taskDictionary": {
@@ -78,7 +60,7 @@
             "type": "object",
             "properties": {
                 "name": { "$ref": "#/definitions/name" },
-                "parameters": { "$ref": "#/definitions/inputDictionary" },
+                "parameters": { "type": "object" },
                 "service": { "$ref": "#/definitions/name" }
             },
             "required": ["service"],
