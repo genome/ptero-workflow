@@ -32,7 +32,7 @@ def procfile_path():
     return os.path.join(this_dir(), 'scripts', 'Procfile')
 
 def service_command_line():
-    return ['honcho', '-f', procfile_path(), 'start']
+    return ['honcho', 'start', '-f', procfile_path()]
 
 
 def setUp():
