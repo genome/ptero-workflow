@@ -80,7 +80,5 @@
     "inputs": {
         "in_1": "parrots",
         "in_2": "toucans"
-    },
-
-    "environment": {}
+    }
 }

@@ -113,7 +113,5 @@
         "in_a_1": "foo",
         "in_a_2": "bar",
         "in_b": "baz"
-    },
-
-    "environment": {}
+    }
 }

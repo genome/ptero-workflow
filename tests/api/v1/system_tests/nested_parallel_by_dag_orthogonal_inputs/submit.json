@@ -84,7 +84,5 @@
     "inputs": {
         "in_outer_parallel": ["kittens", "puppies"],
         "in_inner_parallel": ["Simba", "Tabby", "Emilio"]
-    },
-
-    "environment": {}
+    }
 }

@@ -67,7 +67,5 @@
 
     "inputs": {
         "in_val": "walruses"
-    },
-
-    "environment": {}
+    }
 }

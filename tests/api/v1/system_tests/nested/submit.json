@@ -102,7 +102,5 @@
     "inputs": {
         "outer_in_a": "ferret",
         "outer_in_inner": "badger"
-    },
-
-    "environment": {}
+    }
 }
