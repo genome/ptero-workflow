@@ -14,11 +14,14 @@ class PostWorkflowFailure(object):
         self.response = self.post(self.post_url, self.post_data)
 
 
-    def test_should_return_400(self):
+    def test_should_set_expected_error_message(self):
         self.assertEqual(400, self.response.status_code)
+        self.assertEqual({'error': self.expected_error_message},
+                self.response.DATA)
 
 
 class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
+    expected_error_message = '"input connector" is an illegal task name'
     post_data = {
         'tasks': {
             'input connector': {
@@ -60,11 +63,11 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
         'inputs': {
             'in_a': 'kittens',
         },
-        'environment': {},
     }
 
 
 class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
+    expected_error_message = '"output connector" is an illegal task name'
     post_data = {
         'tasks': {
             'A': {
@@ -106,10 +109,10 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
         'inputs': {
             'in_a': 'kittens',
         },
-        'environment': {},
     }
 
 class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
+    expected_error_message = '"input connector" is an illegal task name'
     post_data = {
         'tasks': {
             'Inner': {
@@ -173,10 +176,10 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
         'inputs': {
             'outer_input': 'kittens',
         },
-        'environment': {},
     }
 
 class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
+    expected_error_message = '"output connector" is an illegal task name'
     post_data = {
         'tasks': {
             'Inner': {
@@ -240,5 +243,4 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
         'inputs': {
             'outer_input': 'kittens',
         },
-        'environment': {},
     }
