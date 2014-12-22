@@ -3,8 +3,20 @@
         "Inner": {
             "methods": [
                 {
-                    "tasks": { },
-
+                    "tasks": {
+                        "michael": {
+                            "methods": [
+                                {
+                                    "name": "execute",
+                                    "service": "ShellCommand",
+                                    "parameters": {
+                                        "commandLine": ["false"],
+                                        "workingDirectory": "{{ workingDirectory }}"
+                                    }
+                                }
+                            ]
+                        }
+                    },
                     "edges": [
                         {
                             "source": "input connector",
