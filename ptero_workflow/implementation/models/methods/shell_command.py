@@ -160,7 +160,6 @@ class ShellCommand(Method):
     def _shell_command_submit_data(self, colors, begins, execution_id):
         submit_data = self.parameters
         submit_data.update({
-            'user': os.environ.get('USER'),
             'stdin': json.dumps(
                 self.task.get_inputs(colors, begins)),
             'webhooks': {

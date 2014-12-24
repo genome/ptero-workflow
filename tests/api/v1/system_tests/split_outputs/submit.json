@@ -7,6 +7,7 @@
                     "service": "ShellCommand",
                     "parameters": {
                         "commandLine": ["cat"],
+                        "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
@@ -19,6 +20,7 @@
                     "service": "ShellCommand",
                     "parameters": {
                         "commandLine": ["cat"],
+                        "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
@@ -31,6 +33,7 @@
                     "service": "ShellCommand",
                     "parameters": {
                         "commandLine": ["cat"],
+                        "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}"
                     }
                 }
