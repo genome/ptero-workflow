@@ -21,7 +21,10 @@
         "taskDictionary": {
             "type": "object",
             "minProperties": 1,
-            "items": { "$ref": "#/definitions/task" }
+            "patternProperties": {
+                "^.+$": { "$ref": "#/definitions/task" }
+            },
+            "additionalProperties": false
         },
 
         "task": {

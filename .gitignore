@@ -1,6 +1,7 @@
 *.pyc
 /*.egg
 /*.egg-info
+/.eggs
 /.coverage
 /.tox
 /AUTHORS
