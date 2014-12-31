@@ -5,7 +5,6 @@ from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 
-import pkg_resources
 import logging
 import urllib
 
