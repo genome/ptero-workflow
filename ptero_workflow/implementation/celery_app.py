@@ -1,5 +1,5 @@
 from . import celery_tasks
-from celery.signals import worker_init
+from celery.signals import worker_process_init
 import celery
 import os
 import sqlalchemy
@@ -28,7 +28,7 @@ for var, default in _DEFAULT_CELERY_CONFIG.iteritems():
 app.Session = sqlalchemy.orm.sessionmaker()
 
 
-@worker_init.connect
+@worker_process_init.connect
 def initialize_sqlalchemy_session(signal, sender):
     from . import models
 
