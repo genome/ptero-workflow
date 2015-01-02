@@ -38,7 +38,7 @@ def initialize_sqlalchemy_session(**kwargs):
         try:
             models.Base.metadata.create_all(engine)
             break
-        except sqlalchemy.exc.OperationalError:
+        except sqlalchemy.exc.SQLAlchemyError:
             time.sleep(0.5)
 
     app.Session.configure(bind=engine)

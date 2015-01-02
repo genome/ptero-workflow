@@ -32,7 +32,7 @@ class Factory(object):
             try:
                 models.Base.metadata.create_all(self._engine)
                 break
-            except sqlalchemy.exc.OperationalError:
+            except sqlalchemy.exc.SQLAlchemyError:
                 time.sleep(0.5)
 
         self._Session = sqlalchemy.orm.sessionmaker(bind=self._engine)
