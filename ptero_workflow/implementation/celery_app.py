@@ -3,6 +3,7 @@ from celery.signals import worker_process_init
 import celery
 import os
 import sqlalchemy
+import time
 
 
 app = celery.Celery('PTero-workflow-celery',
@@ -33,5 +34,11 @@ def initialize_sqlalchemy_session(**kwargs):
     from . import models
 
     engine = sqlalchemy.create_engine(os.environ['PTERO_WORKFLOW_DB_STRING'])
-    models.Base.metadata.create_all(engine)
+    for i in xrange(3):
+        try:
+            models.Base.metadata.create_all(engine)
+            break
+        except sqlalchemy.exc.OperationalError:
+            time.sleep(0.5)
+
     app.Session.configure(bind=engine)
