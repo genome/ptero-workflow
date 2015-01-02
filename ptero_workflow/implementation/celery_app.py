@@ -29,7 +29,7 @@ app.Session = sqlalchemy.orm.sessionmaker()
 
 
 @worker_process_init.connect
-def initialize_sqlalchemy_session(signal, sender):
+def initialize_sqlalchemy_session(**kwargs):
     from . import models
 
     engine = sqlalchemy.create_engine(os.environ['PTERO_WORKFLOW_DB_STRING'])
