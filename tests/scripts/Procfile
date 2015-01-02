@@ -3,4 +3,4 @@ petri: cd $PTERO_PETRI_HOME; honcho start -f tests/scripts/Procfile -c orchestra
 web: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND tests/scripts/sigterm_wrapper coverage run ptero_workflow/api/wsgi.py --port $PTERO_WORKFLOW_PORT
 redis: redis-server --port $PTERO_WORKFLOW_REDIS_PORT
 rabbit: RABBITMQ_NODE_PORT=$PTERO_WORKFLOW_AMQP_PORT RABBITMQ_NODENAME=ptero-workflow-rabbitmq RABBITMQ_LOG_BASE=$PWD/var/log RABBITMQ_MNESIA_BASE=$PWD/var/rabbitmq-data rabbitmq-server
-worker: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run $(which celery) worker -n workflow_worker.%h.$PORT --pool=eventlet --concurrency 1 -A ptero_workflow.implementation.celery_app
+worker: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run $(which celery) worker -n workflow_worker.%h.$PORT --concurrency 2 -A ptero_workflow.implementation.celery_app

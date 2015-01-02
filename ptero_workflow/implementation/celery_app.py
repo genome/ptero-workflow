@@ -1,8 +1,9 @@
 from . import celery_tasks
-from celery.signals import worker_init
+from celery.signals import worker_process_init
 import celery
 import os
 import sqlalchemy
+import time
 
 
 app = celery.Celery('PTero-workflow-celery',
@@ -28,10 +29,16 @@ for var, default in _DEFAULT_CELERY_CONFIG.iteritems():
 app.Session = sqlalchemy.orm.sessionmaker()
 
 
-@worker_init.connect
-def initialize_sqlalchemy_session(signal, sender):
+@worker_process_init.connect
+def initialize_sqlalchemy_session(**kwargs):
     from . import models
 
     engine = sqlalchemy.create_engine(os.environ['PTERO_WORKFLOW_DB_STRING'])
-    models.Base.metadata.create_all(engine)
+    for i in xrange(3):
+        try:
+            models.Base.metadata.create_all(engine)
+            break
+        except sqlalchemy.exc.SQLAlchemyError:
+            time.sleep(0.5)
+
     app.Session.configure(bind=engine)
