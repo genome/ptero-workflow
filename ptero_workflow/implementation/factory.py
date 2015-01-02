@@ -1,6 +1,7 @@
 from . import backend
 from . import models
 import sqlalchemy
+import time
 
 
 __all__ = ['Factory']
@@ -27,7 +28,13 @@ class Factory(object):
 
     def _initialize_sqlalchemy(self):
         self._engine = sqlalchemy.create_engine(self.connection_string)
-        models.Base.metadata.create_all(self._engine)
+        for i in xrange(3):
+            try:
+                models.Base.metadata.create_all(self._engine)
+                break
+            except sqlalchemy.exc.OperationalError:
+                time.sleep(0.5)
+
         self._Session = sqlalchemy.orm.sessionmaker(bind=self._engine)
 
     def _initialize_celery(self):
