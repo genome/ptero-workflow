@@ -1,10 +1,10 @@
+from . import reports
 from . import validators
 from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 
-import pkg_resources
 import logging
 import urllib
 
@@ -49,9 +49,8 @@ class WorkflowDetailView(Resource):
 #     static dict.  That will allow us to write a url generation function for
 #     each one, so that they can put the necessary arguments into their query
 #     strings.
-_REPORTS = [ep.name for ep in pkg_resources.iter_entry_points('reports')]
 def _generate_report_links(workflow_id):
-    return {n: _report_url(workflow_id, n) for n in _REPORTS}
+    return {n: _report_url(workflow_id, n) for n in reports.report_names()}
 
 
 def _report_url(workflow_id, report_type):
@@ -92,9 +91,5 @@ class MethodCallback(Resource):
 
 class ReportDetailView(Resource):
     def get(self, report_type):
-        generator = _get_report_generator(report_type)
+        generator = reports.get_report_generator(report_type)
         return generator(**request.args)
-
-def _get_report_generator(report_type):
-    return pkg_resources.load_entry_point('ptero_workflow', 'reports',
-            report_type)
