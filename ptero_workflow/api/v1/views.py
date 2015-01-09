@@ -4,6 +4,7 @@ from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
+from ptero_workflow.implementation.exceptions import OutputsAlreadySet
 
 import logging
 import urllib
@@ -49,6 +50,17 @@ class ExecutionInputsView(Resource):
         try:
             execution_input_data = g.backend.get_execution_inputs(execution_id)
             return execution_input_data, 200
+        except:
+            LOG.exception('Unexpected exception getting execution inputs')
+            raise
+
+class ExecutionOutputsView(Resource):
+    def put(self, execution_id):
+        try:
+            g.backend.set_execution_outputs(execution_id, request.get_json())
+            return '', 200
+        except OutputsAlreadySet:
+            return '', 403
         except:
             LOG.exception('Unexpected exception getting execution inputs')
             raise

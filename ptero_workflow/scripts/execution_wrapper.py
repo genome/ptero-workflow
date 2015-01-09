@@ -1,5 +1,6 @@
 import argparse
 import json
+import os
 import requests
 import subprocess
 import sys
@@ -18,6 +19,10 @@ def get_from_url(url):
     r = requests.get(url)
     return r.content
 
+def put_to_url(url, data):
+    r = requests.put(url, json=data)
+    return r.status_code
+
 def main():
     args = parse_arguments()
     command = json.loads(args.command_line)
@@ -28,7 +33,7 @@ def main():
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_data, stderr_data = p.communicate(input)
 
-    sys.stdout.write(stdout_data)
-    sys.stderr.write(stderr_data)
+    if put_to_url(args.outputs_url, json.loads(stdout_data)) != 200:
+        sys.exit(os.EX_CANTCREAT)
 
     sys.exit( p.wait() )

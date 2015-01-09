@@ -34,6 +34,10 @@ class Execution(Base):
         return self.method.task.get_inputs(colors=self.colors,
                 begins=self.begins)
 
+    def set_outputs(self, outputs):
+        return self.method.task.set_outputs(outputs=outputs,color=self.color,
+                parent_color=self.parent_color)
+
 
 class ExecutionStatusHistory(Base):
     __tablename__ = 'execution_status_history'

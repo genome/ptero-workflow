@@ -1,4 +1,5 @@
 from ..base import Base
+from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 import os
@@ -53,10 +54,12 @@ class Method(Base):
         )
 
     def execution_inputs_url(self, execution_id):
-        return 'http://%s:%d/v1/executions/%d/inputs' % (
-            os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
-            int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
-            execution_id)
+        return url_for('execution-inputs', execution_id=execution_id,
+                _external=True)
+
+    def execution_outputs_url(self, execution_id):
+        return url_for('execution-outputs', execution_id=execution_id,
+                _external=True)
 
     def create_input_sources(self, session, parallel_depths):
         pass

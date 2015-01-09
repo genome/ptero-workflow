@@ -1,5 +1,10 @@
 from . import models
 from . import tasks
+from sqlalchemy.exc import IntegrityError
+from ptero_workflow.implementation.exceptions import OutputsAlreadySet
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 _TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'
@@ -68,6 +73,17 @@ class Backend(object):
     def get_execution_inputs(self, execution_id):
         execution = self.session.query(models.Execution).get(execution_id)
         return execution.get_inputs()
+
+    def set_execution_outputs(self, execution_id, outputs):
+        execution = self.session.query(models.Execution).get(execution_id)
+        execution.set_outputs(outputs)
+        try:
+            self.session.commit()
+        except IntegrityError:
+            self.session.rollback()
+            LOG.exception('Execution %d has already had its outputs set' %
+                    execution.id)
+            raise OutputsAlreadySet
 
     def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):

@@ -104,9 +104,6 @@ class ShellCommand(Method):
         execution = s.query(Execution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        outputs = json.loads(body_data['stdout'])
-        self.task.set_outputs(outputs, execution.color,
-                execution.parent_color)
         execution.append_status('succeeded')
         s.commit()
         response_url = execution.data['petri_response_links']['success']
@@ -176,7 +173,8 @@ class ShellCommand(Method):
         return [
             'ptero_workflow_execution_wrapper',
             '--command-line', json.dumps(command_line),
-            '--inputs-url', self.execution_inputs_url(execution_id)]
+            '--inputs-url', self.execution_inputs_url(execution_id),
+            '--outputs-url', self.execution_outputs_url(execution_id)]
 
 def _get_parent_color(colors):
     if len(colors) == 1:
