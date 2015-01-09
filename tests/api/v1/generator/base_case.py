@@ -91,6 +91,7 @@ class TestCaseMixin(object):
         return {
             'user': os.environ.get('USER'),
             'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_TEMP'],
+            'environment': json.dumps(dict(os.environ)),
         }
 
     @property

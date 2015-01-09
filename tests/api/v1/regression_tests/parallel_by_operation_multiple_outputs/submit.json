@@ -8,7 +8,8 @@
                     "parameters": {
                         "commandLine": ["cat"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 }
             ]
@@ -21,7 +22,8 @@
                     "parameters": {
                         "commandLine": ["cat"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 }
             ],
@@ -35,7 +37,8 @@
                     "parameters": {
                         "commandLine": ["cat"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 }
             ]
