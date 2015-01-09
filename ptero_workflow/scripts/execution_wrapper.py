@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import argparse
 import json
 import requests
@@ -20,16 +18,17 @@ def get_from_url(url):
     r = requests.get(url)
     return r.content
 
-def execute_command_line(command, input=None):
+def main():
+    args = parse_arguments()
+    command = json.loads(args.command_line)
+    input = None
+    if args.inputs_url:
+        input = get_from_url(args.inputs_url)
     p = subprocess.Popen( command, stdin=subprocess.PIPE,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    return p.communicate(input)
+    stdout_data, stderr_data = p.communicate(input)
 
-args = parse_arguments()
-command = json.loads(args.command_line)
-input = None
-if args.inputs_url:
-    input = get_from_url(args.inputs_url)
-stdout_data, stderr_data = execute_command_line(command, input)
-sys.stdout.write(stdout_data)
-sys.stderr.write(stderr_data)
+    sys.stdout.write(stdout_data)
+    sys.stderr.write(stderr_data)
+
+    sys.exit( p.wait() )
