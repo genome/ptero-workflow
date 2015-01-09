@@ -65,6 +65,10 @@ class Backend(object):
         workflow = self.session.query(models.Workflow).get(workflow_id)
         return workflow.get_outputs()
 
+    def get_execution_inputs(self, execution_id):
+        execution = self.session.query(models.Execution).get(execution_id)
+        return execution.get_inputs()
+
     def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):
         task = self.session.query(models.Task

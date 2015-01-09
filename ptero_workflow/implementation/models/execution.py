@@ -24,9 +24,15 @@ class Execution(Base):
     parent_color = Column(Integer, index=True, nullable=True)
 
     data = Column(JSON)
+    colors = Column(JSON)
+    begins = Column(JSON)
 
     def append_status(self, status):
         return ExecutionStatusHistory(execution=self, status=status)
+
+    def get_inputs(self):
+        return self.method.task.get_inputs(colors=self.colors,
+                begins=self.begins)
 
 
 class ExecutionStatusHistory(Base):

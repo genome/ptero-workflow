@@ -44,6 +44,15 @@ class WorkflowDetailView(Resource):
             LOG.exception('Unexpected exception getting workflow')
             raise
 
+class ExecutionInputsView(Resource):
+    def get(self, execution_id):
+        try:
+            execution_input_data = g.backend.get_execution_inputs(execution_id)
+            return execution_input_data, 200
+        except:
+            LOG.exception('Unexpected exception getting execution inputs')
+            raise
+
 
 # XXX I think that the report generators should be instantiated here into a
 #     static dict.  That will allow us to write a url generation function for

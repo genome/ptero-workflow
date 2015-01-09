@@ -12,6 +12,10 @@ api.add_resource(views.WorkflowListView, '/workflows', endpoint='workflow-list')
 api.add_resource(views.WorkflowDetailView,
     '/workflows/<int:workflow_id>', endpoint='workflow-detail')
 
+api.add_resource(views.ExecutionInputsView,
+    '/executions/<int:execution_id>/inputs',
+    endpoint='execution-inputs')
+
 api.add_resource(views.TaskCallback,
     '/callbacks/tasks/<int:task_id>/callbacks/<string:callback_type>',
     endpoint='task-callback')

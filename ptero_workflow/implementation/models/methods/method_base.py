@@ -52,5 +52,11 @@ class Method(Base):
             query_string,
         )
 
+    def execution_inputs_url(self, execution_id):
+        return 'http://%s:%d/v1/executions/%d/inputs' % (
+            os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
+            int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
+            execution_id)
+
     def create_input_sources(self, session, parallel_depths):
         pass
