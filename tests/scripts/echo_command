@@ -5,10 +5,13 @@ import requests
 import sys
 
 def main():
-    inputs_url = os.environ['PTERO_WORKFLOW_INPUTS_URL']
+    inputs_url = os.environ['PTERO_WORKFLOW_EXECUTION_URL']
     outputs_url = os.environ['PTERO_WORKFLOW_OUTPUTS_URL']
 
-    inputs = requests.get(inputs_url).json()
+    execution_data = requests.get(inputs_url).json()
+    print execution_data
+    inputs = execution_data['inputs']
+
     if requests.put(outputs_url, json=inputs).status_code != 200:
         sys.exit(2)
 

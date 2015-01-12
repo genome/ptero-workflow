@@ -30,9 +30,28 @@ class Execution(Base):
     def append_status(self, status):
         return ExecutionStatusHistory(execution=self, status=status)
 
+    @property
+    def status(self):
+        return self.status_history[-1].status
+
+    @property
+    def as_dict(self):
+        e = {name: getattr(self, name) for name in ['id', 'method_id', 'color',
+            'parent_color', 'data', 'colors', 'begins', 'status']}
+
+        e['inputs'] = self.get_inputs()
+        e['outputs'] = self.get_outputs()
+        e['status_history'] = [h.as_dict for h in self.status_history]
+
+        return e
+
     def get_inputs(self):
         return self.method.task.get_inputs(colors=self.colors,
                 begins=self.begins)
+
+    def get_outputs(self):
+        # FIXME: not yet implemented
+        return {}
 
     def set_outputs(self, outputs):
         return self.method.task.set_outputs(outputs=outputs,color=self.color,
@@ -52,3 +71,7 @@ class ExecutionStatusHistory(Base):
 
     execution = relationship(Execution,
             backref=backref('status_history', order_by=timestamp))
+
+    @property
+    def as_dict(self):
+        return {'timestamp': str(self.timestamp), 'status': self.status}

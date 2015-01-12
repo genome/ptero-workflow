@@ -159,7 +159,7 @@ class ShellCommand(Method):
         submit_data = self.parameters
 
         submit_data['environment'].update({
-            'PTERO_WORKFLOW_INPUTS_URL': self.execution_inputs_url(execution_id),
+            'PTERO_WORKFLOW_EXECUTION_URL': self.execution_url(execution_id),
             'PTERO_WORKFLOW_OUTPUTS_URL': self.execution_outputs_url(execution_id),
         })
 

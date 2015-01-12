@@ -70,9 +70,9 @@ class Backend(object):
         workflow = self.session.query(models.Workflow).get(workflow_id)
         return workflow.get_outputs()
 
-    def get_execution_inputs(self, execution_id):
+    def get_execution(self, execution_id):
         execution = self.session.query(models.Execution).get(execution_id)
-        return execution.get_inputs()
+        return execution.as_dict
 
     def set_execution_outputs(self, execution_id, outputs):
         execution = self.session.query(models.Execution).get(execution_id)

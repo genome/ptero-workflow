@@ -56,8 +56,8 @@ class Method(Base):
             query_string,
         )
 
-    def execution_inputs_url(self, execution_id):
-        return url_for('execution-inputs', execution_id=execution_id,
+    def execution_url(self, execution_id):
+        return url_for('execution-detail', execution_id=execution_id,
                 _external=True)
 
     def execution_outputs_url(self, execution_id):

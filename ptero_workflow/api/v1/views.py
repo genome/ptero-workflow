@@ -45,13 +45,16 @@ class WorkflowDetailView(Resource):
             LOG.exception('Unexpected exception getting workflow')
             raise
 
-class ExecutionInputsView(Resource):
+class ExecutionDetailView(Resource):
     def get(self, execution_id):
         try:
-            execution_input_data = g.backend.get_execution_inputs(execution_id)
-            return execution_input_data, 200
+            LOG.debug('=== GETing ExecutionDetailView')
+            execution_data = g.backend.get_execution(execution_id)
+            LOG.debug('=== execution_data %s' % execution_data)
+            return execution_data, 200
+
         except:
-            LOG.exception('Unexpected exception getting execution inputs')
+            LOG.exception('Unexpected exception getting execution')
             raise
 
 class ExecutionOutputsView(Resource):
