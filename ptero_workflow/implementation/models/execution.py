@@ -36,9 +36,10 @@ class Execution(Base):
 
     @property
     def as_dict(self):
-        e = {name: getattr(self, name) for name in ['id', 'method_id', 'color',
+        e = {name: getattr(self, name) for name in ['color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
+        e['method'] = self.method.as_dict
         e['inputs'] = self.get_inputs()
         e['outputs'] = self.get_outputs()
         e['status_history'] = [h.as_dict for h in self.status_history]

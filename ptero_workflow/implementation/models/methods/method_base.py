@@ -66,3 +66,11 @@ class Method(Base):
 
     def create_input_sources(self, session, parallel_depths):
         pass
+
+    @property
+    def as_dict(self):
+        return {
+            'name': self.name,
+            'service': self.service,
+            'task': self.task.as_dict,
+        }
