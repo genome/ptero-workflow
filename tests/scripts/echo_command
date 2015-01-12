@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import os
+import requests
+import sys
+
+def main():
+    inputs_url = os.environ['PTERO_WORKFLOW_INPUTS_URL']
+    outputs_url = os.environ['PTERO_WORKFLOW_OUTPUTS_URL']
+
+    inputs = requests.get(inputs_url).json()
+    if requests.put(outputs_url, json=inputs).status_code != 200:
+        sys.exit(2)
+
+    if requests.put(outputs_url, json=inputs).status_code != 403:
+        sys.exit(3)
+
+    sys.exit(os.EX_OK)
+
+if __name__ == "__main__":
+    main()

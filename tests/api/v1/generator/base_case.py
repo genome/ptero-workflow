@@ -90,7 +90,7 @@ class TestCaseMixin(object):
     def _template_data(self):
         return {
             'user': os.environ.get('USER'),
-            'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_TEMP'],
+            'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_SCRIPTS_DIR'],
             'environment': json.dumps(dict(os.environ)),
         }
 

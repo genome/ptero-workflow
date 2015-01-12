@@ -157,9 +157,13 @@ class ShellCommand(Method):
 
     def _shell_command_submit_data(self, colors, begins, execution_id):
         submit_data = self.parameters
+
+        submit_data['environment'].update({
+            'PTERO_WORKFLOW_INPUTS_URL': self.execution_inputs_url(execution_id),
+            'PTERO_WORKFLOW_OUTPUTS_URL': self.execution_outputs_url(execution_id),
+        })
+
         submit_data.update({
-           'commandLine': self._wrap_command_line(
-               submit_data['commandLine'], execution_id),
             'webhooks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),
                 'error': self.callback_url('error', execution_id=execution_id),
@@ -168,13 +172,6 @@ class ShellCommand(Method):
             },
         })
         return submit_data
-
-    def _wrap_command_line(self, command_line, execution_id):
-        return [
-            'ptero_workflow_execution_wrapper',
-            '--command-line', json.dumps(command_line),
-            '--inputs-url', self.execution_inputs_url(execution_id),
-            '--outputs-url', self.execution_outputs_url(execution_id)]
 
 def _get_parent_color(colors):
     if len(colors) == 1:
