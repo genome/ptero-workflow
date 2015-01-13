@@ -5,17 +5,23 @@ import requests
 import sys
 
 def main():
-    inputs_url = os.environ['PTERO_WORKFLOW_EXECUTION_URL']
-    outputs_url = os.environ['PTERO_WORKFLOW_OUTPUTS_URL']
+    execution_url = os.environ['PTERO_WORKFLOW_EXECUTION_URL']
 
-    execution_data = requests.get(inputs_url).json()
+    execution_data = requests.get(execution_url).json()
     print execution_data
     inputs = execution_data['inputs']
 
-    if requests.put(outputs_url, json=inputs).status_code != 200:
+    patch_data = {
+        'outputs': inputs
+    }
+    if requests.patch(execution_url, json=patch_data).status_code != 200:
         sys.exit(2)
 
-    if requests.put(outputs_url, json=inputs).status_code != 403:
+    # This tests that outputs cannot be set more than once
+    patch_data = {
+        'outputs': {'foo': 'bar'}
+    }
+    if requests.patch(execution_url, json=patch_data).status_code != 409:
         sys.exit(3)
 
     sys.exit(os.EX_OK)

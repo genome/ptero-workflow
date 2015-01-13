@@ -60,10 +60,6 @@ class Method(Base):
         return url_for('execution-detail', execution_id=execution_id,
                 _external=True)
 
-    def execution_outputs_url(self, execution_id):
-        return url_for('execution-outputs', execution_id=execution_id,
-                _external=True)
-
     def create_input_sources(self, session, parallel_depths):
         pass
 

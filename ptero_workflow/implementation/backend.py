@@ -74,16 +74,15 @@ class Backend(object):
         execution = self.session.query(models.Execution).get(execution_id)
         return execution.as_dict
 
-    def set_execution_outputs(self, execution_id, outputs):
+    def update_execution(self, execution_id, update_data):
         execution = self.session.query(models.Execution).get(execution_id)
-        execution.set_outputs(outputs)
+        execution.update(update_data)
         try:
             self.session.commit()
         except IntegrityError:
             self.session.rollback()
-            LOG.exception('Execution %d has already had its outputs set' %
-                    execution.id)
             raise OutputsAlreadySet
+        return execution.as_dict
 
     def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):

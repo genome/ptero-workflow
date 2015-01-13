@@ -3,6 +3,13 @@ from .json_type import JSON
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.session import object_session
+from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
+        ImmutableUpdateError)
+from . import result
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 __all__ = ['Execution']
@@ -27,6 +34,12 @@ class Execution(Base):
     colors = Column(JSON)
     begins = Column(JSON)
 
+    UPDATE_METHODS = {
+        'status': 'update_status',
+        'data': 'update_data',
+        'outputs': 'update_outputs',
+    }
+
     def append_status(self, status):
         return ExecutionStatusHistory(execution=self, status=status)
 
@@ -36,27 +49,54 @@ class Execution(Base):
 
     @property
     def as_dict(self):
-        e = {name: getattr(self, name) for name in ['color',
+        result = {name: getattr(self, name) for name in ['color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
-        e['method'] = self.method.as_dict
-        e['inputs'] = self.get_inputs()
-        e['outputs'] = self.get_outputs()
-        e['status_history'] = [h.as_dict for h in self.status_history]
+        result['method'] = self.method.as_dict
+        result['inputs'] = self.get_inputs()
+        result['outputs'] = self.get_outputs()
+        result['status_history'] = [h.as_dict for h in self.status_history]
 
-        return e
+        return result
 
     def get_inputs(self):
         return self.method.task.get_inputs(colors=self.colors,
                 begins=self.begins)
 
     def get_outputs(self):
-        # FIXME: not yet implemented
-        return {}
+        s = object_session(self)
+        query_results = s.query(result.Result).filter_by(task=self.method.task,
+            color=self.color, parent_color=self.parent_color).all()
+        return {r.name: r.data for r in query_results}
 
-    def set_outputs(self, outputs):
-        return self.method.task.set_outputs(outputs=outputs,color=self.color,
-                parent_color=self.parent_color)
+    def update(self, update_data):
+        old_data = self.as_dict
+        needs_updating = [name for name, new_value in update_data.iteritems()
+                if old_data[name] != new_value]
+
+        invalid_fields = set(needs_updating) - set(self.UPDATE_METHODS.keys())
+        if (invalid_fields):
+            raise ImmutableUpdateError("Cannot update the following fields: %s"
+                    % invalid_fields)
+        else:
+            for name in needs_updating:
+                getattr(self, self.UPDATE_METHODS[name])(old_data[name], update_data[name])
+
+    def update_status(self, old_status, new_status):
+        # TODO implement
+        pass
+
+    def update_data(self, old_data, new_data):
+        # TODO implement
+        pass
+
+    def update_outputs(self, old_outputs, new_outputs):
+        if (old_outputs):
+            raise OutputsAlreadySet(
+                    "Cannot update outputs after they have been set once")
+        else:
+            return self.method.task.set_outputs(outputs=new_outputs,
+                    color=self.color, parent_color=self.parent_color)
 
 
 class ExecutionStatusHistory(Base):
