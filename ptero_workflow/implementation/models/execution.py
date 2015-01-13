@@ -83,12 +83,12 @@ class Execution(Base):
                 getattr(self, self.UPDATE_METHODS[name])(old_data[name], update_data[name])
 
     def update_status(self, old_status, new_status):
-        # TODO implement
-        pass
+        self.append_status(new_status)
 
     def update_data(self, old_data, new_data):
-        # TODO implement
-        pass
+        updated_data = old_data.copy()
+        updated_data.update(new_data)
+        self.data = updated_data
 
     def update_outputs(self, old_outputs, new_outputs):
         if (old_outputs):

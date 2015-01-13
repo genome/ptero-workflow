@@ -1,0 +1,37 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "ShellCommand",
+                    "parameters": {
+                        "commandLine": ["./update_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        }
+    },
+
+    "edges": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_a",
+            "destinationProperty": "param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "param",
+            "destinationProperty": "out_a"
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens"
+    }
+}
