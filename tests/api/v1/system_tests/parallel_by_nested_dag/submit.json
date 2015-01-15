@@ -3,50 +3,54 @@
         "Inner": {
             "methods": [
                 {
-                    "tasks": {
-                        "A": {
-                            "methods": [
-                                {
-                                    "name": "execute",
-                                    "service": "shell_command",
-                                    "parameters": {
-                                        "commandLine": ["./echo_command"],
-                                        "user": "{{ user }}",
-                                        "workingDirectory": "{{ workingDirectory }}",
-                                        "environment": {{ environment }}
+                    "name": "some_workflow",
+                    "parameters": {
+                        "tasks": {
+                            "A": {
+                                "methods": [
+                                    {
+                                        "name": "execute",
+                                        "service": "shell_command",
+                                        "parameters": {
+                                            "commandLine": ["./echo_command"],
+                                            "user": "{{ user }}",
+                                            "workingDirectory": "{{ workingDirectory }}",
+                                            "environment": {{ environment }}
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
+                        },
+
+                        "links": [
+                            {
+                                "source": "input connector",
+                                "destination": "A",
+                                "sourceProperty": "constant_param_in",
+                                "destinationProperty": "constant_param"
+                            },
+                            {
+                                "source": "A",
+                                "destination": "output connector",
+                                "sourceProperty": "constant_param",
+                                "destinationProperty": "constant_param_out"
+                            },
+
+                            {
+                                "source": "input connector",
+                                "destination": "A",
+                                "sourceProperty": "parallel_param_in",
+                                "destinationProperty": "parallel_param"
+                            },
+                            {
+                                "source": "A",
+                                "destination": "output connector",
+                                "sourceProperty": "parallel_param",
+                                "destinationProperty": "parallel_param_out"
+                            }
+                        ]
                     },
-
-                    "links": [
-                        {
-                            "source": "input connector",
-                            "destination": "A",
-                            "sourceProperty": "constant_param_in",
-                            "destinationProperty": "constant_param"
-                        },
-                        {
-                            "source": "A",
-                            "destination": "output connector",
-                            "sourceProperty": "constant_param",
-                            "destinationProperty": "constant_param_out"
-                        },
-
-                        {
-                            "source": "input connector",
-                            "destination": "A",
-                            "sourceProperty": "parallel_param_in",
-                            "destinationProperty": "parallel_param"
-                        },
-                        {
-                            "source": "A",
-                            "destination": "output connector",
-                            "sourceProperty": "parallel_param",
-                            "destinationProperty": "parallel_param_out"
-                        }
-                    ]
+                    "service": "workflow"
                 }
             ],
             "parallelBy": "parallel_param_in"

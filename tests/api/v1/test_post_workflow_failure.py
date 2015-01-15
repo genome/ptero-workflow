@@ -118,43 +118,47 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             'Inner': {
                 'methods': [
                     {
-                        'tasks': {
-                            'A': {
-                                'methods': [
-                                    {
-                                        'name': 'execute',
-                                        'service': 'shell_command',
-                                        'parameters': {
-                                            'commandLine': ['cat']
+                        'name': 'some_workflow',
+                        'parameters': {
+                            'tasks': {
+                                'A': {
+                                    'methods': [
+                                        {
+                                            'name': 'execute',
+                                            'service': 'shell_command',
+                                            'parameters': {
+                                                'commandLine': ['cat']
+                                            }
                                         }
-                                    }
-                                ]
-                            },
-                            'input connector': {
-                                'methods': [
-                                    {
-                                        'name': 'execute',
-                                        'service': 'shell_command',
-                                        'parameters': {
-                                            'commandLine': ['cat']
+                                    ]
+                                },
+                                'input connector': {
+                                    'methods': [
+                                        {
+                                            'name': 'execute',
+                                            'service': 'shell_command',
+                                            'parameters': {
+                                                'commandLine': ['cat']
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
+                                },
                             },
+                            'links': [
+                                {
+                                    'source': 'input connector',
+                                    'destination': 'A',
+                                    'sourceProperty': 'inner_input',
+                                    'destinationProperty': 'param',
+                                }, {
+                                    'source': 'A',
+                                    'destination': 'output connector',
+                                    'sourceProperty': 'result',
+                                    'destinationProperty': 'inner_output',
+                                },
+                            ],
                         },
-                        'links': [
-                            {
-                                'source': 'input connector',
-                                'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
-                            }, {
-                                'source': 'A',
-                                'destination': 'output connector',
-                                'sourceProperty': 'result',
-                                'destinationProperty': 'inner_output',
-                            },
-                        ],
+                        'service': 'workflow'
                     },
                 ],
             },
@@ -185,43 +189,47 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             'Inner': {
                 'methods': [
                     {
-                        'tasks': {
-                            'A': {
-                                'methods': [
-                                    {
-                                        'name': 'execute',
-                                        'service': 'shell_command',
-                                        'parameters': {
-                                            'commandLine': ['cat']
+                        'name': 'some_workflow',
+                        'parameters': {
+                            'tasks': {
+                                'A': {
+                                    'methods': [
+                                        {
+                                            'name': 'execute',
+                                            'service': 'shell_command',
+                                            'parameters': {
+                                                'commandLine': ['cat']
+                                            }
                                         }
-                                    }
-                                ]
-                            },
-                            'output connector': {
-                                'methods': [
-                                    {
-                                        'name': 'execute',
-                                        'service': 'shell_command',
-                                        'parameters': {
-                                            'commandLine': ['cat']
+                                    ]
+                                },
+                                'output connector': {
+                                    'methods': [
+                                        {
+                                            'name': 'execute',
+                                            'service': 'shell_command',
+                                            'parameters': {
+                                                'commandLine': ['cat']
+                                            }
                                         }
-                                    }
-                                ]
+                                    ]
+                                },
                             },
+                            'links': [
+                                {
+                                    'source': 'input connector',
+                                    'destination': 'A',
+                                    'sourceProperty': 'inner_input',
+                                    'destinationProperty': 'param',
+                                }, {
+                                    'source': 'A',
+                                    'destination': 'output connector',
+                                    'sourceProperty': 'result',
+                                    'destinationProperty': 'inner_output',
+                                },
+                            ],
                         },
-                        'links': [
-                            {
-                                'source': 'input connector',
-                                'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
-                            }, {
-                                'source': 'A',
-                                'destination': 'output connector',
-                                'sourceProperty': 'result',
-                                'destinationProperty': 'inner_output',
-                            },
-                        ],
+                        'service': 'workflow',
                     },
                 ],
             },

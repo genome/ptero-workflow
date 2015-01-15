@@ -5,50 +5,54 @@
         "Inner": {
             "methods": [
                 {
-                    "tasks": {
-                        "A": {
-                            "methods": [
-                                {
-                                    "name": "execute",
-                                    "service": "shell_command",
-                                    "parameters": {
-                                        "commandLine": ["./echo_command"],
-                                        "user": "{{ user }}",
-                                        "workingDirectory": "{{ workingDirectory }}",
-                                        "environment": {{ environment }}
+                    "name": "some_workflow",
+                    "parameters": {
+                        "tasks": {
+                            "A": {
+                                "methods": [
+                                    {
+                                        "name": "execute",
+                                        "service": "shell_command",
+                                        "parameters": {
+                                            "commandLine": ["./echo_command"],
+                                            "user": "{{ user }}",
+                                            "workingDirectory": "{{ workingDirectory }}",
+                                            "environment": {{ environment }}
+                                        }
                                     }
-                                }
-                            ]
-                        }
+                                ]
+                            }
+                        },
+
+                        "links": [
+                            {
+                                "source": "input connector",
+                                "destination": "A",
+                                "sourceProperty": "animal_type_in",
+                                "destinationProperty": "animal_type"
+                            },
+                            {
+                                "source": "A",
+                                "destination": "output connector",
+                                "sourceProperty": "animal_type",
+                                "destinationProperty": "animal_type_out"
+                            },
+
+                            {
+                                "source": "input connector",
+                                "destination": "A",
+                                "sourceProperty": "kitten_name_in",
+                                "destinationProperty": "kitten_name"
+                            },
+                            {
+                                "source": "A",
+                                "destination": "output connector",
+                                "sourceProperty": "kitten_name",
+                                "destinationProperty": "kitten_name_out"
+                            }
+                        ]
                     },
-
-                    "links": [
-                        {
-                            "source": "input connector",
-                            "destination": "A",
-                            "sourceProperty": "animal_type_in",
-                            "destinationProperty": "animal_type"
-                        },
-                        {
-                            "source": "A",
-                            "destination": "output connector",
-                            "sourceProperty": "animal_type",
-                            "destinationProperty": "animal_type_out"
-                        },
-
-                        {
-                            "source": "input connector",
-                            "destination": "A",
-                            "sourceProperty": "kitten_name_in",
-                            "destinationProperty": "kitten_name"
-                        },
-                        {
-                            "source": "A",
-                            "destination": "output connector",
-                            "sourceProperty": "kitten_name",
-                            "destinationProperty": "kitten_name_out"
-                        }
-                    ]
+                    "service": "workflow"
                 }
             ],
             "parallelBy": "kitten_name_in"

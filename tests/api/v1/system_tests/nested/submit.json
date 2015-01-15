@@ -17,36 +17,40 @@
         "Inner": {
             "methods": [
                 {
-                    "tasks": {
-                        "B": {
-                            "methods": [
-                                {
-                                    "name": "execute",
-                                    "service": "shell_command",
-                                    "parameters": {
-                                        "commandLine": ["./echo_command"],
-                                        "user": "{{ user }}",
-                                        "workingDirectory": "{{ workingDirectory }}",
-                                        "environment": {{ environment }}
+                    "name": "some_workflow",
+                    "parameters": {
+                        "tasks": {
+                            "B": {
+                                "methods": [
+                                    {
+                                        "name": "execute",
+                                        "service": "shell_command",
+                                        "parameters": {
+                                            "commandLine": ["./echo_command"],
+                                            "user": "{{ user }}",
+                                            "workingDirectory": "{{ workingDirectory }}",
+                                            "environment": {{ environment }}
+                                        }
                                     }
-                                }
-                            ]
-                        }
-                    },
-                    "links": [
-                        {
-                            "source": "input connector",
-                            "destination": "B",
-                            "sourceProperty": "inner_in_b",
-                            "destinationProperty": "param"
+                                ]
+                            }
                         },
-                        {
-                            "source": "B",
-                            "destination": "output connector",
-                            "sourceProperty": "param",
-                            "destinationProperty": "inner_out_b"
-                        }
-                    ]
+                        "links": [
+                            {
+                                "source": "input connector",
+                                "destination": "B",
+                                "sourceProperty": "inner_in_b",
+                                "destinationProperty": "param"
+                            },
+                            {
+                                "source": "B",
+                                "destination": "output connector",
+                                "sourceProperty": "param",
+                                "destinationProperty": "inner_out_b"
+                            }
+                        ]
+                    },
+                    "service": "workflow"
                 }
             ]
         },

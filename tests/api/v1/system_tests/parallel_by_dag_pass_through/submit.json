@@ -3,35 +3,39 @@
         "Inner": {
             "methods": [
                 {
-                    "tasks": {
-                        "michael": {
-                            "methods": [
-                                {
-                                    "name": "execute",
-                                    "service": "shell_command",
-                                    "parameters": {
-                                        "commandLine": ["false"],
-                                        "workingDirectory": "{{ workingDirectory }}",
-                                        "environment": {{ environment }}
+                    "name": "some_workflow",
+                    "parameters": {
+                        "tasks": {
+                            "michael": {
+                                "methods": [
+                                    {
+                                        "name": "execute",
+                                        "service": "shell_command",
+                                        "parameters": {
+                                            "commandLine": ["false"],
+                                            "workingDirectory": "{{ workingDirectory }}",
+                                            "environment": {{ environment }}
+                                        }
                                     }
-                                }
-                            ]
-                        }
-                    },
-                    "links": [
-                        {
-                            "source": "input connector",
-                            "sourceProperty": "constant_param_in",
-                            "destination": "output connector",
-                            "destinationProperty": "constant_param_out"
+                                ]
+                            }
                         },
-                        {
-                            "source": "input connector",
-                            "sourceProperty": "parallel_param_in",
-                            "destination": "output connector",
-                            "destinationProperty": "parallel_param_out"
-                        }
-                    ]
+                        "links": [
+                            {
+                                "source": "input connector",
+                                "sourceProperty": "constant_param_in",
+                                "destination": "output connector",
+                                "destinationProperty": "constant_param_out"
+                            },
+                            {
+                                "source": "input connector",
+                                "sourceProperty": "parallel_param_in",
+                                "destination": "output connector",
+                                "destinationProperty": "parallel_param_out"
+                            }
+                        ]
+                    },
+                    "service": "workflow"
                 }
             ],
             "parallelBy": "parallel_param_in"

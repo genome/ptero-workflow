@@ -32,8 +32,12 @@ class Backend(object):
         root_data = {
             'methods': [
                 {
-                    'tasks': workflow_data['tasks'],
-                    'links': workflow_data['links'],
+                    'name': 'root',
+                    'parameters': {
+                        'tasks': workflow_data['tasks'],
+                        'links': workflow_data['links'],
+                    },
+                    'service': 'workflow',
                 },
             ],
             'parallelBy': workflow_data.get('parallelBy'),

@@ -42,11 +42,25 @@
         },
 
         "method": { "oneOf": [
-            { "$ref": "#/definitions/workflow" },
+            { "$ref": "#/definitions/workflowMethod" },
             { "$ref": "#/definitions/shellCommandMethod" }
         ]},
 
-        "workflow": {
+        "workflowMethod": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/definitions/name" },
+                "parameters": { "$ref": "#/definitions/workflowParameters" },
+                "service": {
+                    "type": "string",
+                    "pattern": "^workflow$"
+                }
+            },
+            "required": ["name", "parameters", "service"],
+            "additionalProperties": false
+        },
+
+        "workflowParameters": {
             "type": "object",
             "properties": {
                 "tasks": { "$ref": "#/definitions/taskDictionary" },

@@ -65,32 +65,36 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
         'tasks': {
             'Inner': {
                 'methods': [{
-                    'tasks': {
-                        'A': {
-                            'methods': [
-                                {
-                                    'name': 'execute',
-                                    'service': 'shell_command',
-                                    'parameters': {
-                                        'commandLine': ['cat']
+                    'name': 'some_workflow',
+                    'parameters': {
+                        'tasks': {
+                            'A': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'shell_command',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            },
                         },
+                        'links': [
+                            {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            }, {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            },
+                        ],
                     },
-                    'links': [
-                        {
-                            'source': 'input connector',
-                            'destination': 'A',
-                            'sourceProperty': 'inner_input',
-                            'destinationProperty': 'param',
-                        }, {
-                            'source': 'A',
-                            'destination': 'output connector',
-                            'sourceProperty': 'result',
-                            'destinationProperty': 'inner_output',
-                        },
-                    ],
+                    'service': 'workflow',
                 }]
             },
         },
@@ -153,32 +157,36 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
         'tasks': {
             'Inner': {
                 'methods': [{
-                    'tasks': {
-                        'A': {
-                            'methods': [
-                                {
-                                    'name': 'execute',
-                                    'service': 'shell_command',
-                                    'parameters': {
-                                        'commandLine': ['cat']
+                    'name': 'some_workflow',
+                    'parameters': {
+                        'tasks': {
+                            'A': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'shell_command',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            },
                         },
+                        'links': [
+                            {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            }, {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            },
+                        ],
                     },
-                    'links': [
-                        {
-                            'source': 'input connector',
-                            'destination': 'A',
-                            'sourceProperty': 'inner_input',
-                            'destinationProperty': 'param',
-                        }, {
-                            'source': 'A',
-                            'destination': 'output connector',
-                            'sourceProperty': 'result',
-                            'destinationProperty': 'inner_output',
-                        },
-                    ],
+                    'service': 'workflow',
                 }],
             },
         },
