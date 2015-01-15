@@ -40,14 +40,14 @@ def _build_dag_method(data, index, parent_task):
 
     method.children = children
 
-    for edge_data in data['edges']:
-        source = children[edge_data['source']]
-        destination = children[edge_data['destination']]
-        models.Edge(
+    for link_data in data['links']:
+        source = children[link_data['source']]
+        destination = children[link_data['destination']]
+        models.Link(
             destination_task=destination,
-            destination_property=edge_data['destinationProperty'],
+            destination_property=link_data['destinationProperty'],
             source_task=source,
-            source_property=edge_data['sourceProperty'],
+            source_property=link_data['sourceProperty'],
         )
 
     return method
@@ -62,7 +62,7 @@ def create_input_holder(root, inputs, color):
     task = models.InputHolder(name='input_holder')
     task.set_outputs(inputs, color=color, parent_color=None)
     for i in inputs.iterkeys():
-        models.Edge(source_task=task, destination_task=root,
+        models.Link(source_task=task, destination_task=root,
                 source_property=i, destination_property=i)
     return task
 

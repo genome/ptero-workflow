@@ -47,7 +47,7 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 ]
             },
         },
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -93,7 +93,7 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                 ]
             },
         },
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -142,7 +142,7 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                                 ]
                             },
                         },
-                        'edges': [
+                        'links': [
                             {
                                 'source': 'input connector',
                                 'destination': 'A',
@@ -160,7 +160,7 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             },
         },
 
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
@@ -209,7 +209,7 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                                 ]
                             },
                         },
-                        'edges': [
+                        'links': [
                             {
                                 'source': 'input connector',
                                 'destination': 'A',
@@ -227,7 +227,7 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             },
         },
 
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',

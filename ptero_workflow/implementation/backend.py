@@ -33,7 +33,7 @@ class Backend(object):
             'methods': [
                 {
                     'tasks': workflow_data['tasks'],
-                    'edges': workflow_data['edges'],
+                    'links': workflow_data['links'],
                 },
             ],
             'parallelBy': workflow_data.get('parallelBy'),
@@ -47,12 +47,12 @@ class Backend(object):
         dummy_output_task = models.InputHolder(name='dummy output task')
         self.session.add(dummy_output_task)
 
-        for edge_data in workflow_data['edges']:
-            if 'output connector' == edge_data['destination']:
-                self.session.add(models.Edge(source_task=workflow.root_task,
-                        source_property=edge_data['destinationProperty'],
+        for link_data in workflow_data['links']:
+            if 'output connector' == link_data['destination']:
+                self.session.add(models.Link(source_task=workflow.root_task,
+                        source_property=link_data['destinationProperty'],
                         destination_task=dummy_output_task,
-                        destination_property=edge_data['destinationProperty']))
+                        destination_property=link_data['destinationProperty']))
 
         self.session.add(workflow)
         self.session.commit()

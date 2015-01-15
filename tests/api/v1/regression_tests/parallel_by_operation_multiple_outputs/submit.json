@@ -45,7 +45,7 @@
         }
     },
 
-    "edges": [
+    "links": [
         {
             "source": "input connector",
             "destination": "start",
