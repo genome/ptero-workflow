@@ -43,7 +43,7 @@
 
         "method": { "oneOf": [
             { "$ref": "#/definitions/workflow" },
-            { "$ref": "#/definitions/execution" }
+            { "$ref": "#/definitions/shellCommandMethod" }
         ]},
 
         "workflow": {
@@ -56,14 +56,17 @@
             "additionalProperties": false
         },
 
-        "execution": {
+        "shellCommandMethod": {
             "type": "object",
             "properties": {
                 "name": { "$ref": "#/definitions/name" },
                 "parameters": { "type": "object" },
-                "service": { "$ref": "#/definitions/name" }
+                "service": {
+                    "type": "string",
+                    "pattern": "^ShellCommand$"
+                }
             },
-            "required": ["service"],
+            "required": ["name", "parameters", "service"],
             "additionalProperties": false
         },
 
