@@ -1,6 +1,4 @@
 {
-    "parallelBy": "in_matrix",
-
     "tasks": {
         "A": {
             "methods": [
@@ -8,14 +6,13 @@
                     "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["./echo_command"],
+                        "commandLine": ["./update_command"],
                         "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}",
                         "environment": {{ environment }}
                     }
                 }
-            ],
-            "parallelBy": "name"
+            ]
         }
     },
 
@@ -23,22 +20,18 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "in_matrix",
-            "destinationProperty": "name"
+            "sourceProperty": "in_a",
+            "destinationProperty": "param"
         },
-
         {
             "source": "A",
             "destination": "output connector",
-            "sourceProperty": "name",
-            "destinationProperty": "out_matrix"
+            "sourceProperty": "param",
+            "destinationProperty": "out_a"
         }
     ],
 
     "inputs": {
-        "in_matrix": [
-            ["Simba", "Tabby", "Emilio"],
-            ["Pluto", "Snoopy"]
-        ]
+        "in_a": "kittens"
     }
 }

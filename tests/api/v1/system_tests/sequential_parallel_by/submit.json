@@ -6,9 +6,10 @@
                     "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["cat"],
+                        "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 }
             ],
@@ -20,9 +21,10 @@
                     "name": "execute",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["cat"],
+                        "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 }
             ],

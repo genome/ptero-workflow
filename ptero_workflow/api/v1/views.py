@@ -4,6 +4,7 @@ from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
+from ptero_workflow.implementation.exceptions import ImmutableUpdateError
 
 import logging
 import urllib
@@ -44,6 +45,30 @@ class WorkflowDetailView(Resource):
             LOG.exception('Unexpected exception getting workflow')
             raise
 
+class ExecutionDetailView(Resource):
+    def get(self, execution_id):
+        try:
+            execution_data = g.backend.get_execution(execution_id)
+            return execution_data, 200
+
+        except:
+            LOG.exception('Unexpected exception getting execution')
+            raise
+
+    def patch(self, execution_id):
+        update_data = request.get_json()
+        try:
+            execution_data = g.backend.update_execution(execution_id,
+                    update_data=update_data)
+            return execution_data, 200
+        except ImmutableUpdateError as e:
+            LOG.exception('ImmutableUpdateError occured while updating '
+                'execution (%d) with update_data=%s', execution_id, update_data)
+            return e.message, 409
+        except:
+            LOG.exception('Unexpected exception while updating execution (%d) '
+                'with update_data=%s', execution_id, update_data)
+            raise
 
 # XXX I think that the report generators should be instantiated here into a
 #     static dict.  That will allow us to write a url generation function for

@@ -42,6 +42,16 @@ class Task(Base):
         'polymorphic_on': 'type',
     }
 
+    @property
+    def as_dict(self):
+        result = {
+            'name': self.name,
+            'type': self.type,
+        }
+        if (self.parallel_by is not None):
+            result['parallel_by'] = self.parallel_by
+        return result
+
     def attach_transitions(self, transitions, start_place):
         if self.parallel_by is None:
             action_success_place, action_failure_place = \
@@ -296,17 +306,6 @@ class Task(Base):
     def subclass_for(cls, type):
         mapper = inspect(cls)
         return mapper.polymorphic_map[type].class_
-
-    @property
-    def to_dict(self):
-        d = self._as_dict_data
-        d['type'] = self.type
-        return d
-    as_dict = to_dict
-
-    @property
-    def _as_dict_data(self):
-        return {}
 
     @property
     def unique_name(self):

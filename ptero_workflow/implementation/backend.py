@@ -1,5 +1,10 @@
 from . import models
 from . import tasks
+from sqlalchemy.exc import IntegrityError
+from ptero_workflow.implementation.exceptions import OutputsAlreadySet
+import logging
+
+LOG = logging.getLogger(__name__)
 
 
 _TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'
@@ -64,6 +69,20 @@ class Backend(object):
     def get_workflow_outputs(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
         return workflow.get_outputs()
+
+    def get_execution(self, execution_id):
+        execution = self.session.query(models.Execution).get(execution_id)
+        return execution.as_dict
+
+    def update_execution(self, execution_id, update_data):
+        execution = self.session.query(models.Execution).get(execution_id)
+        execution.update(update_data)
+        try:
+            self.session.commit()
+        except IntegrityError:
+            self.session.rollback()
+            raise OutputsAlreadySet
+        return execution.as_dict
 
     def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):

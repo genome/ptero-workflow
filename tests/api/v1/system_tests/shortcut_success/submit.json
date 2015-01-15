@@ -6,9 +6,10 @@
                     "name": "shortcut",
                     "service": "ShellCommand",
                     "parameters": {
-                        "commandLine": ["cat"],
+                        "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 },
                 {
@@ -17,7 +18,8 @@
                     "parameters": {
                         "commandLine": ["false"],
                         "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}"
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
                     }
                 }
             ]

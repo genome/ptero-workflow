@@ -75,6 +75,7 @@ class ShellCommand(Method):
 
         s = object_session(self)
         execution = Execution(method=self, color=color,
+                colors=colors, begins=begins,
                 parent_color=parent_color, data={
                     'petri_response_links': response_links,
         })
@@ -103,9 +104,6 @@ class ShellCommand(Method):
         execution = s.query(Execution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        outputs = json.loads(body_data['stdout'])
-        self.task.set_outputs(outputs, execution.color,
-                execution.parent_color)
         execution.append_status('succeeded')
         s.commit()
         response_url = execution.data['petri_response_links']['success']
@@ -159,9 +157,12 @@ class ShellCommand(Method):
 
     def _shell_command_submit_data(self, colors, begins, execution_id):
         submit_data = self.parameters
+
+        submit_data['environment'].update({
+            'PTERO_WORKFLOW_EXECUTION_URL': self.execution_url(execution_id),
+        })
+
         submit_data.update({
-            'stdin': json.dumps(
-                self.task.get_inputs(colors, begins)),
             'webhooks': {
                 'begun': self.callback_url('begun', execution_id=execution_id),
                 'error': self.callback_url('error', execution_id=execution_id),

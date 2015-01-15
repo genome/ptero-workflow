@@ -1,4 +1,5 @@
 from ..base import Base
+from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 import os
@@ -44,6 +45,9 @@ class Method(Base):
         else:
             query_string = ''
 
+        # We cannot use url_for() here because this is called from outside the
+        # Flask Application Context
+
         return 'http://%s:%d/v1/callbacks/methods/%d/callbacks/%s%s' % (
             os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
             int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
@@ -52,5 +56,17 @@ class Method(Base):
             query_string,
         )
 
+    def execution_url(self, execution_id):
+        return url_for('execution-detail', execution_id=execution_id,
+                _external=True)
+
     def create_input_sources(self, session, parallel_depths):
         pass
+
+    @property
+    def as_dict(self):
+        return {
+            'name': self.name,
+            'service': self.service,
+            'task': self.task.as_dict,
+        }
