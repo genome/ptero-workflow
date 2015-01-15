@@ -20,7 +20,7 @@ class ShellCommand(Method):
     parameters = Column(JSON, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'ShellCommand',
+        'polymorphic_identity': 'shell_command',
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(

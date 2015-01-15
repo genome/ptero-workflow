@@ -63,7 +63,7 @@
                 "parameters": { "type": "object" },
                 "service": {
                     "type": "string",
-                    "pattern": "^ShellCommand$"
+                    "pattern": "^shell_command$"
                 }
             },
             "required": ["name", "parameters", "service"],

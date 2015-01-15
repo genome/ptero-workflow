@@ -4,7 +4,7 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "ShellCommand",
+                    "service": "shell_command",
                     "parameters": {
                         "commandLine": ["./update_command"],
                         "user": "{{ user }}",
