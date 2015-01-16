@@ -4,7 +4,7 @@
             "methods": [
                 {
                     "name": "shortcut",
-                    "service": "shell_command",
+                    "service": "shell-command",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -14,7 +14,7 @@
                 },
                 {
                     "name": "execute",
-                    "service": "shell_command",
+                    "service": "shell-command",
                     "parameters": {
                         "commandLine": ["false"],
                         "user": "{{ user }}",
