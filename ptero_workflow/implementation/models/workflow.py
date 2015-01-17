@@ -40,11 +40,11 @@ class Workflow(Base):
     start_place_name = 'workflow-start-place'
 
     @property
-    def edges(self):
+    def links(self):
         results = []
 
         for name,task in self.tasks.iteritems():
-            results.extend(task.input_edges)
+            results.extend(task.input_links)
 
         return results
 
@@ -56,11 +56,11 @@ class Workflow(Base):
     def as_dict(self):
         tasks = {name: task.as_dict for name,task in self.tasks.iteritems()
                 if name not in ['input connector', 'output connector']}
-        edges = [l.as_dict for l in self.edges]
+        links = [l.as_dict for l in self.links]
 
         data = {
             'tasks': tasks,
-            'edges': edges,
+            'links': links,
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
         }
         if self.root_task.status is not None:

@@ -13,24 +13,22 @@ def build_task(name, data, parent_method=None):
 
     return task
 
-
 def build_method(data, index=None, parent_task=None):
-    if 'tasks' in data:
+    if data['service'] == 'workflow':
         return _build_dag_method(data, index, parent_task)
-    elif 'service' in data:
+    else:
         return _build_service_method(data, index, parent_task,
                 models.SUBCLASS_LOOKUP[data['service']])
-    raise RuntimeError('No method found for class')
 
 
 def _build_dag_method(data, index, parent_task):
     _validate_dag_data(data)
 
-    method = models.DAGMethod(name=data.get('name'), index=index,
+    method = models.DAGMethod(name=data['name'], index=index,
             task=parent_task)
 
     children = {}
-    for name, child_task_data in data['tasks'].iteritems():
+    for name, child_task_data in data['parameters']['tasks'].iteritems():
         children[name] = build_task(name, child_task_data,
                 parent_method=method)
     children['input connector'] = models.InputConnector(
@@ -40,14 +38,14 @@ def _build_dag_method(data, index, parent_task):
 
     method.children = children
 
-    for edge_data in data['edges']:
-        source = children[edge_data['source']]
-        destination = children[edge_data['destination']]
-        models.Edge(
+    for link_data in data['parameters']['links']:
+        source = children[link_data['source']]
+        destination = children[link_data['destination']]
+        models.Link(
             destination_task=destination,
-            destination_property=edge_data['destinationProperty'],
+            destination_property=link_data['destinationProperty'],
             source_task=source,
-            source_property=edge_data['sourceProperty'],
+            source_property=link_data['sourceProperty'],
         )
 
     return method
@@ -62,13 +60,13 @@ def create_input_holder(root, inputs, color):
     task = models.InputHolder(name='input_holder')
     task.set_outputs(inputs, color=color, parent_color=None)
     for i in inputs.iterkeys():
-        models.Edge(source_task=task, destination_task=root,
+        models.Link(source_task=task, destination_task=root,
                 source_property=i, destination_property=i)
     return task
 
 
 def _validate_dag_data(data):
-    _validate_dag_task_names(data['tasks'])
+    _validate_dag_task_names(data['parameters']['tasks'])
 
 
 _ILLEGAL_TASK_NAMES = {'input connector', 'output connector'}

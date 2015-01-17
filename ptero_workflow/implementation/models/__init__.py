@@ -1,5 +1,5 @@
 from .base import *
-from .edge import *
+from .link import *
 from .execution import *
 from .input_source import *
 from .methods import *

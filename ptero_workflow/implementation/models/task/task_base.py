@@ -291,11 +291,11 @@ class Task(Base):
 
     @property
     def input_names(self):
-        return [e.destination_property for e in self.input_edges]
+        return [e.destination_property for e in self.input_links]
 
     @property
     def output_names(self):
-        return [e.source_property for e in self.output_edges]
+        return [e.source_property for e in self.output_links]
 
     @classmethod
     def from_dict(cls, type, **kwargs):
@@ -331,7 +331,7 @@ class Task(Base):
 
     @property
     def input_tasks(self):
-        source_ids = set([l.source_id for l in self.input_edges])
+        source_ids = set([l.source_id for l in self.input_links])
         if source_ids:
             s = object_session(self)
             return s.query(Task).filter(Task.id.in_(source_ids)).all()
@@ -340,7 +340,7 @@ class Task(Base):
 
     @property
     def output_tasks(self):
-        destination_ids = set([l.destination_id for l in self.output_edges])
+        destination_ids = set([l.destination_id for l in self.output_links])
         if destination_ids:
             s = object_session(self)
             return s.query(Task).filter(
@@ -389,7 +389,7 @@ class Task(Base):
         else:
             pdepths = parallel_depths
 
-        for e in self.input_edges:
+        for e in self.input_links:
             if e.destination_property == name:
                 return e.source_task.resolve_output_source(session,
                         e.source_property, pdepths)
@@ -399,7 +399,7 @@ class Task(Base):
 
     def create_input_sources(self, session, parallel_depths):
         LOG.debug('Creating input sources for %s', self.name)
-        for e in self.input_edges:
+        for e in self.input_links:
             source_task, source_property, source_parallel_depths = \
                     self.resolve_input_source(session, e.destination_property,
                             parallel_depths)

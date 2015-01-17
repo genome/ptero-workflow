@@ -6,10 +6,10 @@
     "properties": {
         "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
-        "edges": { "$ref": "#/definitions/edgeList" },
+        "links": { "$ref": "#/definitions/linkList" },
         "parallelBy": { "$ref": "#/definitions/name" }
     },
-    "required": ["inputs", "tasks", "edges"],
+    "required": ["inputs", "tasks", "links"],
     "additionalProperties": false,
 
     "definitions": {
@@ -42,38 +42,55 @@
         },
 
         "method": { "oneOf": [
-            { "$ref": "#/definitions/workflow" },
-            { "$ref": "#/definitions/execution" }
+            { "$ref": "#/definitions/workflowMethod" },
+            { "$ref": "#/definitions/shellCommandMethod" }
         ]},
 
-        "workflow": {
+        "workflowMethod": {
             "type": "object",
             "properties": {
-                "tasks": { "$ref": "#/definitions/taskDictionary" },
-                "edges": { "$ref": "#/definitions/edgeList" }
+                "name": { "$ref": "#/definitions/name" },
+                "parameters": { "$ref": "#/definitions/workflowParameters" },
+                "service": {
+                    "type": "string",
+                    "pattern": "^workflow$"
+                }
             },
-            "required": ["tasks", "edges"],
+            "required": ["name", "parameters", "service"],
             "additionalProperties": false
         },
 
-        "execution": {
+        "workflowParameters": {
+            "type": "object",
+            "properties": {
+                "tasks": { "$ref": "#/definitions/taskDictionary" },
+                "links": { "$ref": "#/definitions/linkList" }
+            },
+            "required": ["tasks", "links"],
+            "additionalProperties": false
+        },
+
+        "shellCommandMethod": {
             "type": "object",
             "properties": {
                 "name": { "$ref": "#/definitions/name" },
                 "parameters": { "type": "object" },
-                "service": { "$ref": "#/definitions/name" }
+                "service": {
+                    "type": "string",
+                    "pattern": "^shell-command$"
+                }
             },
-            "required": ["service"],
+            "required": ["name", "parameters", "service"],
             "additionalProperties": false
         },
 
-        "edgeList": {
+        "linkList": {
             "type": "array",
             "minItems": 2,
-            "items": { "$ref": "#/definitions/edge" }
+            "items": { "$ref": "#/definitions/link" }
         },
 
-        "edge": {
+        "link": {
             "type": "object",
             "properties": {
                 "destination": { "$ref": "#/definitions/name" },

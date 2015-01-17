@@ -44,7 +44,7 @@ class DAGMethod(Method):
 
             if child.input_tasks:
                 transitions.append({
-                    'inputs': [self._edge_place_name(t, child)
+                    'inputs': [self._link_place_name(t, child)
                         for t in child.input_tasks],
                     'outputs': [child_start_place],
                 })
@@ -52,7 +52,7 @@ class DAGMethod(Method):
             if child.output_tasks:
                 transitions.append({
                     'inputs': [child_success_place],
-                    'outputs': [self._edge_place_name(child, t)
+                    'outputs': [self._link_place_name(child, t)
                         for t in child.output_tasks],
                 })
 
@@ -74,8 +74,8 @@ class DAGMethod(Method):
     def _child_start_place(self, child_name):
         return '%s:%s-start' % (self.unique_name, child_name)
 
-    def _edge_place_name(self, source, destination):
-        return '%s:%s-to-%s-edge' % (self.unique_name, source.unique_name,
+    def _link_place_name(self, source, destination):
+        return '%s:%s-to-%s-link' % (self.unique_name, source.unique_name,
                 destination.unique_name)
 
     @property

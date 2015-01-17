@@ -4,7 +4,7 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "ShellCommand",
+                    "service": "shell-command",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -18,7 +18,7 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "ShellCommand",
+                    "service": "shell-command",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -33,7 +33,7 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "ShellCommand",
+                    "service": "shell-command",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -45,7 +45,7 @@
         }
     },
 
-    "edges": [
+    "links": [
         {
             "source": "input connector",
             "destination": "start",

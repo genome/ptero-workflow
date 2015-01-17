@@ -21,7 +21,7 @@ class RoundTripSuccess(object):
 
     def test_get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
-        key_names = ['tasks', 'edges', 'inputs']
+        key_names = ['tasks', 'links', 'inputs']
         for key in key_names:
             self.assertItemsEqual(self.post_data[key], get_response.DATA[key])
 
@@ -33,7 +33,7 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'service': 'ShellCommand',
+                        'service': 'shell-command',
                         'parameters': {
                             'commandLine': ['cat']
                         }
@@ -41,7 +41,7 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
                 ]
             },
         },
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -65,37 +65,41 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
         'tasks': {
             'Inner': {
                 'methods': [{
-                    'tasks': {
-                        'A': {
-                            'methods': [
-                                {
-                                    'name': 'execute',
-                                    'service': 'ShellCommand',
-                                    'parameters': {
-                                        'commandLine': ['cat']
+                    'name': 'some_workflow',
+                    'parameters': {
+                        'tasks': {
+                            'A': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'shell-command',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            },
                         },
+                        'links': [
+                            {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            }, {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            },
+                        ],
                     },
-                    'edges': [
-                        {
-                            'source': 'input connector',
-                            'destination': 'A',
-                            'sourceProperty': 'inner_input',
-                            'destinationProperty': 'param',
-                        }, {
-                            'source': 'A',
-                            'destination': 'output connector',
-                            'sourceProperty': 'result',
-                            'destinationProperty': 'inner_output',
-                        },
-                    ],
+                    'service': 'workflow',
                 }]
             },
         },
 
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
@@ -121,7 +125,7 @@ class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                 'methods': [
                     {
                         'name': 'execute',
-                        'service': 'ShellCommand',
+                        'service': 'shell-command',
                         'parameters': {
                             'commandLine': ['cat']
                         }
@@ -129,7 +133,7 @@ class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                 ]
             },
         },
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'A',
@@ -153,37 +157,41 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
         'tasks': {
             'Inner': {
                 'methods': [{
-                    'tasks': {
-                        'A': {
-                            'methods': [
-                                {
-                                    'name': 'execute',
-                                    'service': 'ShellCommand',
-                                    'parameters': {
-                                        'commandLine': ['cat']
+                    'name': 'some_workflow',
+                    'parameters': {
+                        'tasks': {
+                            'A': {
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'shell-command',
+                                        'parameters': {
+                                            'commandLine': ['cat']
+                                        }
                                     }
-                                }
-                            ]
+                                ]
+                            },
                         },
+                        'links': [
+                            {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            }, {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            },
+                        ],
                     },
-                    'edges': [
-                        {
-                            'source': 'input connector',
-                            'destination': 'A',
-                            'sourceProperty': 'inner_input',
-                            'destinationProperty': 'param',
-                        }, {
-                            'source': 'A',
-                            'destination': 'output connector',
-                            'sourceProperty': 'result',
-                            'destinationProperty': 'inner_output',
-                        },
-                    ],
+                    'service': 'workflow',
                 }],
             },
         },
 
-        'edges': [
+        'links': [
             {
                 'source': 'input connector',
                 'destination': 'Inner',
