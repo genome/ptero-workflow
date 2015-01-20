@@ -9,7 +9,7 @@ __all__ = ['MethodList']
 
 
 class MethodList(Task):
-    __tablename__ = 'method-list'
+    __tablename__ = 'method_list'
 
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)
 
