@@ -158,6 +158,9 @@ class ShellCommand(Method):
     def _shell_command_submit_data(self, colors, begins, execution_id):
         submit_data = self.parameters
 
+        if 'environment' not in submit_data:
+            submit_data['environment'] = {}
+
         submit_data['environment'].update({
             'PTERO_WORKFLOW_EXECUTION_URL': self.execution_url(execution_id),
         })
