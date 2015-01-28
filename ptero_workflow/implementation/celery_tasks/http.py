@@ -2,7 +2,7 @@ import celery
 import logging
 import requests
 import json
-
+from ptero_common.logging_configuration import logged_request
 
 __all__ = ['HTTP']
 
@@ -14,12 +14,10 @@ class HTTP(celery.Task):
     ignore_result = True
 
     def run(self, method, url, **kwargs):
-        response = requests.request(method, url, data=self.body(kwargs),
-                headers={'Content-Type': 'application/json'})
+        response = getattr(logged_request, method.lower())(url, data=self.body(kwargs),
+                headers={'Content-Type': 'application/json'}, logger=LOG)
 
         if response.status_code >= 500:
-            LOG.info('HTTP %s failed for url %s.  Scheduling retry.',
-                    method, url)
             raise celery.exceptions.Retry('status_code == %s'
                     % response.status_code)
 

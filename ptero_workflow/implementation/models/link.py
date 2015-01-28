@@ -8,7 +8,7 @@ import logging
 __all__ = ['Link']
 
 
-LOG = logging.getLogger(__file__)
+LOG = logging.getLogger(__name__)
 
 
 class Link(Base):

@@ -1,9 +1,10 @@
 from . import celery_tasks
-from celery.signals import worker_process_init
+from celery.signals import worker_process_init, setup_logging
 import celery
 import os
 import sqlalchemy
 import time
+from ptero_common.logging_configuration import configure_celery_logging
 
 
 app = celery.Celery('PTero-workflow-celery',
@@ -27,6 +28,11 @@ for var, default in _DEFAULT_CELERY_CONFIG.iteritems():
 
 
 app.Session = sqlalchemy.orm.sessionmaker()
+
+
+@setup_logging.connect
+def setup_celery_logging(**kwargs):
+    configure_celery_logging("WORKFLOW")
 
 
 @worker_process_init.connect
