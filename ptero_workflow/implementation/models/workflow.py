@@ -10,7 +10,7 @@ import uuid
 __all__ = ['Workflow']
 
 
-LOG = logging.getLogger(__file__)
+LOG = logging.getLogger(__name__)
 
 
 
