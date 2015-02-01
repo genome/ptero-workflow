@@ -17,6 +17,7 @@ import yaml
 
 _POLLING_DELAY = 0.5
 _TERMINATE_WAIT_TIME = 0.05
+_MAX_WAIT_TIME = 300
 
 _MAX_RETRIES = 10
 _RETRY_DELAY = 0.15
@@ -57,15 +58,11 @@ class TestCaseMixin(object):
         return response.headers['Location']
 
     def _wait_for_completion(self, workflow_url):
-        max_loops = int(self._max_wait_time/_POLLING_DELAY)
+        max_loops = int(_MAX_WAIT_TIME/_POLLING_DELAY)
         for iteration in xrange(max_loops):
             if self._workflow_complete(workflow_url):
                 return
             time.sleep(_POLLING_DELAY)
-
-    @property
-    def _max_wait_time(self):
-        return 20
 
     def _verify_result(self, workflow_url):
         actual_result = self._get_actual_result(workflow_url)
