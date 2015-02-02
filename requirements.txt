@@ -6,6 +6,5 @@ jsonschema == 2.4.0
 librabbitmq == 1.6.1
 psycopg2 == 2.5.4
 redis == 2.10.3
-requests == 2.4.3
 sqlalchemy == 0.9.8
 -e git+https://github.com/genome/ptero-common.git@master#egg=ptero_common
