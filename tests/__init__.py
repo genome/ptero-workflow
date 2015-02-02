@@ -4,7 +4,7 @@ import signal
 import time
 
 
-STARTUP_WAIT = int(os.environ.get('PTERO_WORKFLOW_TEST_STARTUP_WAIT', 15))
+STARTUP_WAIT = int(os.environ.get('PTERO_WORKFLOW_TEST_STARTUP_WAIT', 5))
 SERVICE_COMMAND = ['./devserver', '--num-workers', '2', '--logdir', 'var/log']
 
 
