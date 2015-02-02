@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+from ptero_common import devserver
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--num-workers', type=int, default=2)
+    parser.add_argument('--logdir', default='-')
+    return parser.parse_args()
+
+def procfile_path():
+    this_dir = os.path.dirname(__file__)
+    return os.path.join(this_dir, 'tests', 'scripts', 'Procfile')
+
+if __name__ == '__main__':
+    arguments = parse_args()
+    devserver.run(logdir=arguments.logdir, procfile_path=procfile_path(),
+            workers={'worker':arguments.num_workers})

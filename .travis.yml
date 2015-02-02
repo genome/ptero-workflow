@@ -19,7 +19,7 @@ env:
         - PTERO_WORKFLOW_DB_STRING=postgres://postgres@localhost/ptero_workflow
 
 script:
-    - tox
+    - tox -e py27
 
 after_success:
     - pip install coveralls
