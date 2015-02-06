@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+set -o nounset
+
+readonly LOG_BASE=var/log
+readonly HONCHO_LOG=${LOG_BASE}/honcho.out
+declare DEVSERVER_PID
+
+function collect_test_names_dry_run() {
+  local FAILURES=$(nosetests --collect-only -v 2>&1 |grep '^Failure:')
+  if ! test -z "${FAILURES}"; then
+      printf "Failed to collect tests to run:\n%s" ${FAILURES}
+      exit 1
+  fi
+}
+
+function capture_test_log() {
+  local INITIAL_LOG_LENGTH=$1
+  local TEST_NAME=$2
+  local FINAL_LOG_LENGTH=$(wc -l ${HONCHO_LOG}|awk '{ print $1 }')
+  tail -n $(expr ${FINAL_LOG_LENGTH} - ${INITIAL_LOG_LENGTH}) ${HONCHO_LOG} \
+      > ${LOG_BASE}/${TEST_NAME}.log
+}
+
+function run_tests() {
+  local TEST_NAMES=$(nosetests --collect-only -v 2>&1 |grep 'test_'|cut -d\( -f2|cut -d\) -f1)
+  for TEST_NAME in ${TEST_NAMES}; do
+    local INITIAL_LOG_LENGTH=$(wc -l ${HONCHO_LOG}|awk '{ print $1 }')
+    local NOSE_TEST_NAME=$(                     \
+        perl -e '$ARGV[0] =~ s/\.([^.]+)$/:$1/; \
+        print $ARGV[0]' ${TEST_NAME})
+
+    printf "%s ... " ${NOSE_TEST_NAME}
+    if coverage run $(which nosetests) -q ${NOSE_TEST_NAME} 2> /dev/null; then
+      printf "OK\n"
+      capture_test_log ${INITIAL_LOG_LENGTH} ${TEST_NAME}
+    else
+      capture_test_log ${INITIAL_LOG_LENGTH} ${TEST_NAME}
+      printf "FAIL\n"
+      cat ${LOG_BASE}/${TEST_NAME}.log
+    fi
+
+  done
+}
+
+collect_test_names_dry_run
+run_tests
