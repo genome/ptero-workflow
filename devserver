@@ -9,6 +9,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--num-workers', type=int, default=2)
     parser.add_argument('--logdir', default='-')
+    parser.add_argument('--pidfile')
     return parser.parse_args()
 
 def procfile_path():
@@ -18,4 +19,4 @@ def procfile_path():
 if __name__ == '__main__':
     arguments = parse_args()
     devserver.run(logdir=arguments.logdir, procfile_path=procfile_path(),
-            workers={'worker':arguments.num_workers})
+            workers={'worker':arguments.num_workers}, pidfile=arguments.pidfile)
