@@ -8,6 +8,8 @@ trap 'exit 1' SIGINT SIGTERM
 readonly LOG_BASE=var/log
 readonly HONCHO_LOG=${LOG_BASE}/honcho.out
 declare DEVSERVER_PID
+EXIT_CODE=0
+
 
 function collect_test_names_dry_run() {
   local FAILURES=$(nosetests --collect-only -v 2>&1 |grep '^Failure:')
@@ -41,6 +43,7 @@ function run_tests() {
       capture_test_log ${INITIAL_LOG_LENGTH} ${TEST_NAME}
       printf "FAIL\n"
       cat ${LOG_BASE}/${TEST_NAME}.log
+      EXIT_CODE=1
     fi
 
   done
@@ -48,3 +51,4 @@ function run_tests() {
 
 collect_test_names_dry_run
 run_tests
+exit $EXIT_CODE
