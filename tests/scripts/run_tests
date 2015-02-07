@@ -3,6 +3,8 @@ set -e
 set -o pipefail
 set -o nounset
 
+trap 'exit 1' SIGINT SIGTERM
+
 readonly LOG_BASE=var/log
 readonly HONCHO_LOG=${LOG_BASE}/honcho.out
 declare DEVSERVER_PID
