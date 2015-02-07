@@ -140,15 +140,20 @@ class ShellCommand(Method):
     def _submit_to_shell_command(self, colors, begins, execution_id):
         body_data = self._shell_command_submit_data(colors, begins,
                 execution_id)
-        response = logged_request.post(self._shell_command_submit_url,
-                data=json.dumps(body_data),
-                headers={'Content-Type': 'application/json'}, logger=LOG)
-        return response.json()['jobId']
+        result = self.http_with_result.delay('POST', self._shell_command_submit_url,
+                **body_data)
+        response_data = result.wait()
+        return response_data['jobId']
 
     @property
     def http(self):
         return celery.current_app.tasks[
                 'ptero_workflow.implementation.celery_tasks.http.HTTP']
+
+    @property
+    def http_with_result(self):
+        return celery.current_app.tasks[
+                'ptero_workflow.implementation.celery_tasks.http.HTTPWithResult']
 
     @property
     def _shell_command_submit_url(self):

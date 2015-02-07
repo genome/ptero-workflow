@@ -5,7 +5,7 @@ import json
 from requests.exceptions import ConnectionError
 from ptero_common.logging_configuration import logged_request
 
-__all__ = ['HTTP']
+__all__ = ['HTTP', 'HTTPWithResult']
 
 
 LOG = logging.getLogger(__name__)
@@ -30,5 +30,10 @@ class HTTP(celery.Task):
             raise celery.exceptions.Retry('status_code == %s'
                     % response.status_code)
 
+        return response.json()
+
     def body(self, kwargs):
         return json.dumps(kwargs)
+
+class HTTPWithResult(HTTP):
+    ignore_result = False
