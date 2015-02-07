@@ -1,4 +1,3 @@
-from . import celery_tasks
 from celery.signals import worker_process_init, setup_logging
 import celery
 import os
@@ -25,6 +24,11 @@ for var, default in _DEFAULT_CELERY_CONFIG.iteritems():
         app.conf[var] = os.environ[var]
     else:
         app.conf[var] = default
+
+# This has to be imported AFTER the app.conf is set up or
+# the tasks will default to using pickle serialization which is forbidden by
+# this configuration.
+from . import celery_tasks
 
 
 app.Session = sqlalchemy.orm.sessionmaker()
