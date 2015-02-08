@@ -40,6 +40,10 @@ class Execution(Base):
         'outputs': 'update_outputs',
     }
 
+    def __init__(self, *args, **kwargs):
+        Base.__init__(self, *args, **kwargs)
+        self.append_status('new')
+
     def append_status(self, status):
         return ExecutionStatusHistory(execution=self, status=status)
 
