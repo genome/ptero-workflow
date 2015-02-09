@@ -1,13 +1,15 @@
 from ..execution import Execution
 from ..json_type import JSON
 from .method_base import Method
+from ptero_common.logging_configuration import logged_request
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import celery
+import logging
 import os
-import requests
 import json
 
+LOG = logging.getLogger(__name__)
 
 __all__ = ['ShellCommand']
 
@@ -138,15 +140,20 @@ class ShellCommand(Method):
     def _submit_to_shell_command(self, colors, begins, execution_id):
         body_data = self._shell_command_submit_data(colors, begins,
                 execution_id)
-        response = requests.post(self._shell_command_submit_url,
-                data=json.dumps(body_data),
-                headers={'Content-Type': 'application/json'})
-        return response.json()['jobId']
+        result = self.http_with_result.delay('POST', self._shell_command_submit_url,
+                **body_data)
+        response_data = result.wait()
+        return response_data['jobId']
 
     @property
     def http(self):
         return celery.current_app.tasks[
                 'ptero_workflow.implementation.celery_tasks.http.HTTP']
+
+    @property
+    def http_with_result(self):
+        return celery.current_app.tasks[
+                'ptero_workflow.implementation.celery_tasks.http.HTTPWithResult']
 
     @property
     def _shell_command_submit_url(self):

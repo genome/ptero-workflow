@@ -18,5 +18,7 @@ def parse_args():
 
 
 if __name__ == '__main__':
+    import signal
+    signal.signal(signal.SIGTERM, signal.getsignal(signal.SIGINT))
     args = parse_args()
     app.run(port=args.port, debug=args.debug)

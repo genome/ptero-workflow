@@ -46,7 +46,7 @@ And in the ptero-workflow directory:
 
 Now, you can run the tests using tox:
 
-    tox
+    tox -e py27
 
 To see a coverage report after successfully running the tests:
 

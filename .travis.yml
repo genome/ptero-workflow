@@ -7,6 +7,7 @@ addons:
 install: pip install tox
 
 before_script:
+    - sudo update-alternatives --install /bin/sh sh /bin/bash 100
     - sudo rabbitmq-plugins disable rabbitmq_management
     - git clone --depth 1 https://github.com/genome/ptero-petri.git
     - git clone --depth 1 https://github.com/genome/ptero-shell-command.git
@@ -14,17 +15,15 @@ before_script:
 
 env:
     global:
+        - PTERO_WORKFLOW_TEST_STARTUP_WAIT=15
         - PTERO_SHELL_COMMAND_HOME=./ptero-shell-command
         - PTERO_PETRI_HOME=./ptero-petri
         - PTERO_WORKFLOW_DB_STRING=postgres://postgres@localhost/ptero_workflow
+        - TRAVIS_WAIT_TIME=120
 
 script:
-    - tox
+    - tox -e py27
 
 after_success:
     - pip install coveralls
     - coveralls
-
-after_script:
-    - ps -efl > var/log/ps.out
-    - bash -c 'for f in var/log/*; do echo; echo "============================================"; echo $f; echo "============================================"; cat $f; done'
