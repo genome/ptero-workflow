@@ -12,7 +12,6 @@ configure_web_logging("WORKFLOW")
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--port', type=int, default=5000)
     parser.add_argument('--debug', action='store_true', default=False)
     return parser.parse_args()
 
@@ -21,4 +20,6 @@ if __name__ == '__main__':
     import signal
     signal.signal(signal.SIGTERM, signal.getsignal(signal.SIGINT))
     args = parse_args()
-    app.run(port=args.port, debug=args.debug)
+    app.run(
+        host=os.environ['PTERO_WORKFLOW_HOST'],
+        port=os.environ['PTERO_WORKFLOW_PORT'], debug=args.debug)
