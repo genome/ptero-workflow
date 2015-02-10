@@ -21,5 +21,5 @@ if __name__ == '__main__':
     signal.signal(signal.SIGTERM, signal.getsignal(signal.SIGINT))
     args = parse_args()
     app.run(
-        host=os.environ.get('PTERO_WORKFLOW_HOST'),
-        port=os.environ.get('PTERO_WORKFLOW_PORT'), debug=args.debug)
+        host=os.environ['PTERO_WORKFLOW_HOST'],
+        port=os.environ['PTERO_WORKFLOW_PORT'], debug=args.debug)
