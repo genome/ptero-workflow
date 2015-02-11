@@ -1,5 +1,5 @@
-shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -e dev-noenv
-petri: cd $PTERO_PETRI_HOME; tox -e dev-noenv
+shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -r -e dev-noenv
+petri: cd $PTERO_PETRI_HOME; tox -r -e dev-noenv
 web: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run ptero_workflow/api/wsgi.py
 redis: redis-server --port $PTERO_WORKFLOW_REDIS_PORT
 rabbit: RABBITMQ_NODE_PORT=$PTERO_WORKFLOW_AMQP_PORT RABBITMQ_NODENAME=ptero-workflow-rabbitmq RABBITMQ_LOG_BASE=$PWD/var/log RABBITMQ_MNESIA_BASE=$PWD/var/rabbitmq-data rabbitmq-server
