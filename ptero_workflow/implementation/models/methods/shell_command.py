@@ -148,12 +148,12 @@ class ShellCommand(Method):
     @property
     def http(self):
         return celery.current_app.tasks[
-                'ptero_workflow.implementation.celery_tasks.http.HTTP']
+                'ptero_common.celery.http.HTTP']
 
     @property
     def http_with_result(self):
         return celery.current_app.tasks[
-                'ptero_workflow.implementation.celery_tasks.http.HTTPWithResult']
+                'ptero_common.celery.http.HTTPWithResult']
 
     @property
     def _shell_command_submit_url(self):

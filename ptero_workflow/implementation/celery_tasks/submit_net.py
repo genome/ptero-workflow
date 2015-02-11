@@ -22,7 +22,7 @@ class SubmitNet(celery.Task):
     @property
     def http(self):
         return celery.current_app.tasks[
-                'ptero_workflow.implementation.celery_tasks.http.HTTP']
+                'ptero_common.celery.http.HTTP']
 
     def _submit_net(self, petri_data, net_key):
         self.http.delay('PUT', self._petri_submit_url(net_key), **petri_data)

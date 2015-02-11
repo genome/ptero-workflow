@@ -420,7 +420,7 @@ class Task(Base):
     @property
     def http(self):
         return celery.current_app.tasks[
-                'ptero_workflow.implementation.celery_tasks.http.HTTP']
+                'ptero_common.celery.http.HTTP']
 
     def get_outputs(self, color):
         s = object_session(self)
