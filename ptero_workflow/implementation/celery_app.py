@@ -9,6 +9,13 @@ from ptero_common.logging_configuration import configure_celery_logging
 app = celery.Celery('PTero-workflow-celery',
         include='ptero_workflow.implementation.celery_tasks')
 
+app.conf['CELERY_ROUTES'] = (
+    {
+        'ptero_workflow.implementation.celery_tasks.submit_net.SubmitNet': {'queue': 'submit'},
+        'ptero_common.celery.http.HTTP': {'queue': 'http'},
+        'ptero_common.celery.http.HTTPWithResult': {'queue': 'http'},
+    },
+)
 
 _DEFAULT_CELERY_CONFIG = {
     'CELERY_BROKER_URL': 'amqp://localhost',
