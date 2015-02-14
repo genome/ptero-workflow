@@ -8,6 +8,7 @@ import celery
 import logging
 import os
 import json
+from pprint import pformat
 
 LOG = logging.getLogger(__name__)
 
@@ -142,8 +143,12 @@ class ShellCommand(Method):
                 execution_id)
         result = self.http_with_result.delay('POST', self._shell_command_submit_url,
                 **body_data)
-        response_data = result.wait()
-        return response_data['jobId']
+        response_info = result.wait()
+        if 'json' in response_info:
+            return response_info['json']['jobId']
+        else:
+            raise RuntimeError("Cannot submit to shell-command:\n%s" %
+                    pformat(response_info))
 
     @property
     def http(self):
