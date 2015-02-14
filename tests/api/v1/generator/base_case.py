@@ -21,7 +21,7 @@ _TERMINATE_WAIT_TIME = 0.05
 _MAX_WAIT_TIME = 300
 
 _MAX_RETRIES = 10
-_RETRY_DELAY = 0.15
+_RETRY_DELAY = 1.0
 
 LOG = logging.getLogger(__name__)
 
