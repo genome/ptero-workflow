@@ -39,6 +39,10 @@ class TestCaseMixin(object):
     def api_port(self):
         return int(os.environ['PTERO_WORKFLOW_PORT'])
 
+    @property
+    def api_host(self):
+        return os.environ['PTERO_WORKFLOW_HOST']
+
     @abc.abstractproperty
     def directory(self):
         pass
@@ -79,7 +83,7 @@ class TestCaseMixin(object):
 
     @property
     def _submit_url(self):
-        return 'http://localhost:%d/v1/workflows' % self.api_port
+        return 'http://%s:%d/v1/workflows' % (self.api_host, self.api_port)
 
     @property
     def _workflow_body(self):
