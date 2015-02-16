@@ -13,6 +13,7 @@ import time
 import urllib
 import urlparse
 import yaml
+import logging
 
 
 _POLLING_DELAY = 0.5
@@ -20,7 +21,9 @@ _TERMINATE_WAIT_TIME = 0.05
 _MAX_WAIT_TIME = 300
 
 _MAX_RETRIES = 10
-_RETRY_DELAY = 0.15
+_RETRY_DELAY = 1.0
+
+LOG = logging.getLogger(__name__)
 
 
 def validate_json(text):
@@ -35,6 +38,10 @@ class TestCaseMixin(object):
     @property
     def api_port(self):
         return int(os.environ['PTERO_WORKFLOW_PORT'])
+
+    @property
+    def api_host(self):
+        return os.environ['PTERO_WORKFLOW_HOST']
 
     @abc.abstractproperty
     def directory(self):
@@ -61,8 +68,11 @@ class TestCaseMixin(object):
         max_loops = int(_MAX_WAIT_TIME/_POLLING_DELAY)
         for iteration in xrange(max_loops):
             if self._workflow_complete(workflow_url):
+                LOG.info("Workflow completed... checking outputs")
                 return
             time.sleep(_POLLING_DELAY)
+        LOG.warning("Workflow failed to complete... "
+                    "checking outputs but they're probably empty")
 
     def _verify_result(self, workflow_url):
         actual_result = self._get_actual_result(workflow_url)
@@ -73,7 +83,7 @@ class TestCaseMixin(object):
 
     @property
     def _submit_url(self):
-        return 'http://localhost:%d/v1/workflows' % self.api_port
+        return 'http://%s:%d/v1/workflows' % (self.api_host, self.api_port)
 
     @property
     def _workflow_body(self):
@@ -107,6 +117,7 @@ class TestCaseMixin(object):
     def _workflow_complete(self, url):
         data = self._get_workflow_data(url)
         if data.get('status') in ['success', 'failure', 'error']:
+            LOG.info("Workflow status was: %s", data.get('status'))
             return True
         else:
             return False

@@ -35,7 +35,9 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
                         'name': 'execute',
                         'service': 'shell-command',
                         'parameters': {
-                            'commandLine': ['cat']
+                            'commandLine': ['cat'],
+                            'user': 'testuser',
+                            'workingDirectory': '/test/working/directory'
                         }
                     }
                 ]
@@ -74,7 +76,9 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
                                         'name': 'execute',
                                         'service': 'shell-command',
                                         'parameters': {
-                                            'commandLine': ['cat']
+                                            'commandLine': ['cat'],
+                                            'user': 'testuser',
+                                            'workingDirectory': '/test/working/directory'
                                         }
                                     }
                                 ]
@@ -127,7 +131,9 @@ class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                         'name': 'execute',
                         'service': 'shell-command',
                         'parameters': {
-                            'commandLine': ['cat']
+                            'commandLine': ['cat'],
+                            'user': 'testuser',
+                            'workingDirectory': '/test/working/directory'
                         }
                     }
                 ]
@@ -166,7 +172,9 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                                         'name': 'execute',
                                         'service': 'shell-command',
                                         'parameters': {
-                                            'commandLine': ['cat']
+                                            'commandLine': ['cat'],
+                                            'user': 'testuser',
+                                            'workingDirectory': '/test/working/directory'
                                         }
                                     }
                                 ]
