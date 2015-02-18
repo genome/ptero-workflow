@@ -1,52 +1,93 @@
 {
-    "parallelBy": "in_parallel",
-    "tasks": {
-        "A": {
-            "methods": [
-                {
-                    "name": "execute",
-                    "service": "shell-command",
-                    "parameters": {
-                        "commandLine": ["./echo_command"],
-                        "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}",
-                        "environment": {{ environment }}
-                    }
-                }
-            ]
-        }
+  "links": [
+    {
+      "destination": "A",
+      "destinationProperty": "in_constant",
+      "source": "input connector",
+      "sourceProperty": "in_constant"
     },
-
-    "links": [
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_constant",
-            "destinationProperty": "const_param"
-        },
-        {
-            "source": "A",
-            "destination": "output connector",
-            "sourceProperty": "const_param",
-            "destinationProperty": "out_constant"
-        },
-
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_parallel",
-            "destinationProperty": "parallel_param"
-        },
-        {
-            "source": "A",
-            "destination": "output connector",
-            "sourceProperty": "parallel_param",
-            "destinationProperty": "out_parallel"
-        }
-    ],
-
-    "inputs": {
-        "in_constant": "kittens",
-        "in_parallel": ["Simba", "Tabby", "Emilio"]
+    {
+      "destination": "output connector",
+      "destinationProperty": "out_constant",
+      "source": "A",
+      "sourceProperty": "out_constant"
+    },
+    {
+      "destination": "A",
+      "destinationProperty": "in_parallel",
+      "source": "input connector",
+      "sourceProperty": "in_parallel"
+    },
+    {
+      "destination": "output connector",
+      "destinationProperty": "out_parallel",
+      "source": "A",
+      "sourceProperty": "out_parallel"
     }
+  ],
+  "tasks": {
+    "A": {
+      "methods": [
+        {
+          "name": "inner",
+          "parameters": {
+            "links": [
+              {
+                "destination": "A",
+                "destinationProperty": "const_param",
+                "source": "input connector",
+                "sourceProperty": "in_constant"
+              },
+              {
+                "destination": "output connector",
+                "destinationProperty": "out_constant",
+                "source": "A",
+                "sourceProperty": "const_param"
+              },
+              {
+                "destination": "A",
+                "destinationProperty": "parallel_param",
+                "source": "input connector",
+                "sourceProperty": "in_parallel"
+              },
+              {
+                "destination": "output connector",
+                "destinationProperty": "out_parallel",
+                "source": "A",
+                "sourceProperty": "parallel_param"
+              }
+            ],
+            "tasks": {
+              "A": {
+                "methods": [
+                  {
+                    "name": "execute",
+                    "parameters": {
+                      "commandLine": [
+                        "./echo_command"
+                      ],
+                      "environment": {{ environment }},
+                      "user": "{{ user }}",
+                      "workingDirectory": "{{ workingDirectory }}"
+                    },
+                    "service": "shell-command"
+                  }
+                ]
+              }
+            }
+          },
+          "service": "workflow"
+        }
+      ],
+      "parallelBy": "in_parallel"
+    }
+  },
+  "inputs": {
+    "in_constant": "kittens",
+    "in_parallel": [
+      "Simba",
+      "Tabby",
+      "Emilio"
+    ]
+  }
 }
