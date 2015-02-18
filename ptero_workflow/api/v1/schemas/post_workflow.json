@@ -6,8 +6,7 @@
     "properties": {
         "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
-        "links": { "$ref": "#/definitions/linkList" },
-        "parallelBy": { "$ref": "#/definitions/name" }
+        "links": { "$ref": "#/definitions/linkList" }
     },
     "required": ["inputs", "tasks", "links"],
     "additionalProperties": false,

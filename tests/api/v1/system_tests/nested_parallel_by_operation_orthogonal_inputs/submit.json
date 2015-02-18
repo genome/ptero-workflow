@@ -1,54 +1,97 @@
 {
-    "parallelBy": "in_outer_parallel",
-
-    "tasks": {
-        "A": {
-            "methods": [
-                {
-                    "name": "execute",
-                    "service": "shell-command",
-                    "parameters": {
-                        "commandLine": ["./echo_command"],
-                        "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}",
-                        "environment": {{ environment }}
-                    }
-                }
-            ],
-            "parallelBy": "kitten_name"
-        }
+  "links": [
+    {
+      "destination": "A",
+      "destinationProperty": "in_outer_parallel",
+      "source": "input connector",
+      "sourceProperty": "in_outer_parallel"
     },
-
-    "links": [
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_outer_parallel",
-            "destinationProperty": "animal_type"
-        },
-        {
-            "source": "A",
-            "destination": "output connector",
-            "sourceProperty": "animal_type",
-            "destinationProperty": "out_outer_parallel"
-        },
-
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_inner_parallel",
-            "destinationProperty": "kitten_name"
-        },
-        {
-            "source": "A",
-            "destination": "output connector",
-            "sourceProperty": "kitten_name",
-            "destinationProperty": "out_inner_parallel"
-        }
-    ],
-
-    "inputs": {
-        "in_outer_parallel": ["kittens", "puppies"],
-        "in_inner_parallel": ["Simba", "Tabby", "Emilio"]
+    {
+      "destination": "output connector",
+      "destinationProperty": "out_outer_parallel",
+      "source": "A",
+      "sourceProperty": "out_outer_parallel"
+    },
+    {
+      "destination": "A",
+      "destinationProperty": "in_inner_parallel",
+      "source": "input connector",
+      "sourceProperty": "in_inner_parallel"
+    },
+    {
+      "destination": "output connector",
+      "destinationProperty": "out_inner_parallel",
+      "source": "A",
+      "sourceProperty": "out_inner_parallel"
     }
+  ],
+  "tasks": {
+    "A": {
+      "methods": [
+        {
+          "name": "inner",
+          "parameters": {
+            "links": [
+              {
+                "destination": "A",
+                "destinationProperty": "animal_type",
+                "source": "input connector",
+                "sourceProperty": "in_outer_parallel"
+              },
+              {
+                "destination": "output connector",
+                "destinationProperty": "out_outer_parallel",
+                "source": "A",
+                "sourceProperty": "animal_type"
+              },
+              {
+                "destination": "A",
+                "destinationProperty": "kitten_name",
+                "source": "input connector",
+                "sourceProperty": "in_inner_parallel"
+              },
+              {
+                "destination": "output connector",
+                "destinationProperty": "out_inner_parallel",
+                "source": "A",
+                "sourceProperty": "kitten_name"
+              }
+            ],
+            "tasks": {
+              "A": {
+                "methods": [
+                  {
+                    "name": "execute",
+                    "parameters": {
+                      "commandLine": [
+                        "./echo_command"
+                      ],
+                      "environment": {{ environment }},
+                      "user": "{{ user }}",
+                      "workingDirectory": "{{ workingDirectory }}"
+                    },
+                    "service": "shell-command"
+                  }
+                ],
+                "parallelBy": "kitten_name"
+              }
+            }
+          },
+          "service": "workflow"
+        }
+      ],
+      "parallelBy": "in_outer_parallel"
+    }
+  },
+  "inputs": {
+    "in_outer_parallel": [
+      "kittens",
+      "puppies"
+    ],
+    "in_inner_parallel": [
+      "Simba",
+      "Tabby",
+      "Emilio"
+    ]
+  }
 }

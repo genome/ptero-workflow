@@ -40,7 +40,6 @@ class Backend(object):
                     'service': 'workflow',
                 },
             ],
-            'parallelBy': workflow_data.get('parallelBy'),
         }
 
         workflow.root_task = tasks.build_task('root', root_data)

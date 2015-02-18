@@ -1,44 +1,75 @@
 {
-    "parallelBy": "in_matrix",
-
-    "tasks": {
-        "A": {
-            "methods": [
-                {
-                    "name": "execute",
-                    "service": "shell-command",
-                    "parameters": {
-                        "commandLine": ["./echo_command"],
-                        "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}",
-                        "environment": {{ environment }}
-                    }
-                }
-            ],
-            "parallelBy": "name"
-        }
+  "links": [
+    {
+      "destination": "A",
+      "destinationProperty": "in_matrix",
+      "source": "input connector",
+      "sourceProperty": "in_matrix"
     },
-
-    "links": [
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_matrix",
-            "destinationProperty": "name"
-        },
-
-        {
-            "source": "A",
-            "destination": "output connector",
-            "sourceProperty": "name",
-            "destinationProperty": "out_matrix"
-        }
-    ],
-
-    "inputs": {
-        "in_matrix": [
-            ["Simba", "Tabby", "Emilio"],
-            ["Pluto", "Snoopy"]
-        ]
+    {
+      "destination": "output connector",
+      "destinationProperty": "out_matrix",
+      "source": "A",
+      "sourceProperty": "out_matrix"
     }
+  ],
+  "tasks": {
+    "A": {
+      "methods": [
+        {
+          "name": "inner",
+          "parameters": {
+            "links": [
+              {
+                "destination": "A",
+                "destinationProperty": "name",
+                "source": "input connector",
+                "sourceProperty": "in_matrix"
+              },
+              {
+                "destination": "output connector",
+                "destinationProperty": "out_matrix",
+                "source": "A",
+                "sourceProperty": "name"
+              }
+            ],
+            "tasks": {
+              "A": {
+                "methods": [
+                  {
+                    "name": "execute",
+                    "parameters": {
+                      "commandLine": [
+                        "./echo_command"
+                      ],
+                      "environment": {{ environment }},
+                      "user": "{{ user }}",
+                      "workingDirectory": "{{ workingDirectory }}"
+                    },
+                    "service": "shell-command"
+                  }
+                ],
+                "parallelBy": "name"
+              }
+            }
+          },
+          "service": "workflow"
+        }
+      ],
+      "parallelBy": "in_matrix"
+    }
+  },
+  "inputs": {
+    "in_matrix": [
+      [
+        "Simba",
+        "Tabby",
+        "Emilio"
+      ],
+      [
+        "Pluto",
+        "Snoopy"
+      ]
+    ]
+  }
 }
