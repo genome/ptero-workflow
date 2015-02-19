@@ -53,6 +53,10 @@ class Workflow(Base):
         return self.root_task.method_list[0].children
 
     @property
+    def status(self):
+        return self.root_task.status
+
+    @property
     def as_dict(self):
         tasks = {name: task.as_dict for name,task in self.tasks.iteritems()
                 if name not in ['input connector', 'output connector']}
@@ -63,8 +67,9 @@ class Workflow(Base):
             'links': links,
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
         }
-        if self.root_task.status is not None:
-            data['status'] = self.root_task.status
+        if self.status is not None:
+            data['status'] = self.status
+
         return data
 
     def get_petri_transitions(self):
