@@ -19,8 +19,8 @@ class WorkflowListView(Resource):
     def post(self):
         try:
             data = validators.get_workflow_post_data()
-            workflow_id = g.backend.create_workflow(data)
-            return '', 201, {
+            workflow_id, workflow_as_dict = g.backend.create_workflow(data)
+            return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
                 'Location': url_for('workflow-detail', workflow_id=workflow_id)
             }
 
@@ -35,10 +35,8 @@ class WorkflowListView(Resource):
 class WorkflowDetailView(Resource):
     @logged_response(logger=LOG)
     def get(self, workflow_id):
-        workflow_data = g.backend.get_workflow(workflow_id)
-
-        workflow_data['reports'] = _generate_report_links(workflow_id)
-        return workflow_data, 200
+        workflow_as_dict = g.backend.get_workflow(workflow_id)
+        return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
 class ExecutionDetailView(Resource):
     @logged_response(logger=LOG)
@@ -57,6 +55,13 @@ class ExecutionDetailView(Resource):
             LOG.exception('ImmutableUpdateError occured while updating '
                 'execution (%d) with update_data=%s', execution_id, update_data)
             return e.message, 409
+
+
+def _prepare_workflow_data(workflow_id, workflow_as_dict):
+    result = workflow_as_dict.copy()  # do not modify the passed in arg
+    result['reports'] = _generate_report_links(workflow_id)
+    return result
+
 
 # XXX I think that the report generators should be instantiated here into a
 #     static dict.  That will allow us to write a url generation function for

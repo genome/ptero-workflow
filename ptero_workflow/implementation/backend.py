@@ -24,7 +24,7 @@ class Backend(object):
 
         self.submit_net_task.delay(workflow.id)
 
-        return workflow.id
+        return workflow.id, workflow.as_dict
 
     def _save_workflow(self, workflow_data):
         workflow = models.Workflow()
