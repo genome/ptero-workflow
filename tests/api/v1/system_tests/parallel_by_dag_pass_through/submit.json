@@ -12,7 +12,8 @@
                                         "name": "execute",
                                         "service": "shell-command",
                                         "parameters": {
-                                            "commandLine": ["false"],
+                                            "commandLine": ["./echo_command"],
+                                            "user": "{{ user }}",
                                             "workingDirectory": "{{ workingDirectory }}",
                                             "environment": {{ environment }}
                                         }
@@ -29,9 +30,21 @@
                             },
                             {
                                 "source": "input connector",
+                                "sourceProperty": "constant_param_in",
+                                "destination": "michael",
+                                "destinationProperty": "constant_param_in"
+                            },
+                            {
+                                "source": "input connector",
                                 "sourceProperty": "parallel_param_in",
                                 "destination": "output connector",
                                 "destinationProperty": "parallel_param_out"
+                            },
+                            {
+                                "source": "michael",
+                                "sourceProperty": "constant_param_in",
+                                "destination": "output connector",
+                                "destinationProperty": "michael_param_out"
                             }
                         ]
                     },
