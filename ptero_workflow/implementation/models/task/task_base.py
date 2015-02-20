@@ -42,6 +42,9 @@ class Task(Base):
         'polymorphic_on': 'type',
     }
 
+    def all_tasks_iterator(self):
+        return []
+
     @property
     def as_dict(self):
         result = {

@@ -32,6 +32,9 @@ class Method(Base):
 
     VALID_CALLBACK_TYPES = set()
 
+    def all_tasks_iterator(self):
+        return []
+
     def handle_callback(self, callback_type, body_data, query_string_data):
         if callback_type in self.VALID_CALLBACK_TYPES:
             return getattr(self, callback_type)(body_data, query_string_data)
