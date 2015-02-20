@@ -64,9 +64,13 @@ class Method(Base):
         pass
 
     @property
+    def parameters(self):
+        raise NotImplementedError
+
+    @property
     def as_dict(self):
         return {
             'name': self.name,
             'service': self.service,
-            'task': self.task.as_dict,
+            'parameters': self.parameters,
         }

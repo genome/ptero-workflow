@@ -1,4 +1,6 @@
 from .method_base import Method
+from ptero_workflow.implementation.models.link import Link
+from ptero_workflow.implementation.models.task import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -118,6 +120,22 @@ class DAGMethod(Method):
     @property
     def success_place_name(self):
         return '%s-success' % self.unique_name
+
+    @property
+    def parameters(self):
+        return {
+            'tasks': [t.as_dict for t in self.children.itervalues()
+                if t.type not in ['input connector', 'output connector']],
+            'links': [l.as_dict for l in self.links],
+        }
+
+    @property
+    def links(self):
+        s = object_session(self)
+        task_query = s.query(Task.id).filter_by(parent_id = self.id)
+        return s.query(Link).filter(
+                Link.source_id.in_(task_query)).filter(
+                    Link.destination_id.in_(task_query)).all()
 
 
 def _get_parent_color(colors):
