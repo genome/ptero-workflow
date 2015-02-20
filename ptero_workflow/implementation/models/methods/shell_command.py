@@ -85,9 +85,12 @@ class ShellCommand(Method):
         s.add(execution)
         s.commit()
 
-        job_id = self._submit_to_shell_command(colors, begins, execution.id)
+        if (self.task.is_canceled):
+            execution.append_status('canceled')
+        else:
+            job_id = self._submit_to_shell_command(colors, begins, execution.id)
+            execution.data['job_id'] = job_id
 
-        execution.data['job_id'] = job_id
         s.commit()
 
     def begun(self, body_data, query_string_data):

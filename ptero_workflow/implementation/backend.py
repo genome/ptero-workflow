@@ -69,6 +69,11 @@ class Backend(object):
     def get_workflow(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).as_dict
 
+    def cancel_workflow(self, workflow_id):
+        workflow = self.session.query(models.Workflow).get(workflow_id)
+        workflow.cancel()
+        self.session.commit()
+
     def get_workflow_status(self, workflow_id):
         return self.session.query(models.Workflow).get(workflow_id).status
 

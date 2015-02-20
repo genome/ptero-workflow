@@ -62,6 +62,17 @@ class Workflow(Base):
             yield task
 
     @property
+    def is_canceled(self):
+        return self.root_task.is_canceled
+
+    def cancel(self):
+        if self.is_canceled:
+            return
+        else:
+            for task in self.all_tasks_iterator():
+                task.cancel()
+
+    @property
     def as_dict(self):
         tasks = {name: task.as_dict for name,task in self.tasks.iteritems()
                 if name not in ['input connector', 'output connector']}

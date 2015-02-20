@@ -38,6 +38,20 @@ class WorkflowDetailView(Resource):
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
+    @logged_response(logger=LOG)
+    def patch(self, workflow_id):
+        update_data = request.get_json()
+        forbidden_fields = set(update_data.keys()) - set(['is_canceled'])
+        if forbidden_fields:
+            msg = 'Cannot patch workflow fields: %s' % str(forbidden_fields)
+            return msg, 409
+        elif ('is_canceled' in update_data and update_data['is_canceled']):
+            g.backend.cancel_workflow(workflow_id)
+
+            workflow_as_dict = g.backend.get_workflow(workflow_id)
+            return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
+
+
 class ExecutionDetailView(Resource):
     @logged_response(logger=LOG)
     def get(self, execution_id):
