@@ -27,8 +27,12 @@ function capture_test_log() {
       > ${LOG_BASE}/${TEST_NAME}.log
 }
 
+function collect_test_names() {
+  echo "$(nosetests --collect-only -v 2>&1 |grep 'test_'|cut -d\( -f2|cut -d\) -f1)"
+}
+
 function run_tests() {
-  local TEST_NAMES=$(nosetests --collect-only -v 2>&1 |grep 'test_'|cut -d\( -f2|cut -d\) -f1)
+  local TEST_NAMES=$(collect_test_names | uniq)
   for TEST_NAME in ${TEST_NAMES}; do
     local INITIAL_LOG_LENGTH=$(wc -l ${HONCHO_LOG}|awk '{ print $1 }')
     local NOSE_TEST_NAME=$(                     \
