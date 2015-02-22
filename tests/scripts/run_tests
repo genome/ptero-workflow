@@ -31,7 +31,17 @@ function collect_test_names() {
   echo "$(nosetests --collect-only -v 2>&1 |grep 'test_'|cut -d\( -f2|cut -d\) -f1)"
 }
 
+function collect_number_of_tests() {
+  echo "$(collect_test_names)" | wc -l
+}
+
+function collect_number_of_unique_tests() {
+  echo "$(collect_test_names | uniq)" | wc -l
+}
+
 function run_tests() {
+echo "Found $(collect_number_of_tests) tests in $(collect_number_of_unique_tests) test classes to run"
+
   local TEST_NAMES=$(collect_test_names | uniq)
   for TEST_NAME in ${TEST_NAMES}; do
     local INITIAL_LOG_LENGTH=$(wc -l ${HONCHO_LOG}|awk '{ print $1 }')
