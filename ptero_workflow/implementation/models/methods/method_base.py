@@ -25,9 +25,9 @@ class Method(Base):
 
     index = Column(Integer, nullable=True, index=True)
 
-    service = Column(Text, nullable=False)
+    _service = Column(Text, nullable=False)
     __mapper_args__ = {
-        'polymorphic_on': 'service',
+        'polymorphic_on': '_service',
     }
 
     VALID_CALLBACK_TYPES = set()
@@ -63,12 +63,9 @@ class Method(Base):
     def create_input_sources(self, session, parallel_depths):
         pass
 
-    def _service_name(self):
-        return self.service
-
     @property
-    def service_name(self):
-        return self._service_name()
+    def service(self):
+        return self._service
 
     @property
     def parameters(self):
@@ -78,6 +75,6 @@ class Method(Base):
     def as_dict(self):
         return {
             'name': self.name,
-            'service': self.service_name,
+            'service': self.service,
             'parameters': self.parameters,
         }
