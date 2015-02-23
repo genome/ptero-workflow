@@ -101,15 +101,15 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
                         },
                         'links': [
                             {
-                                'source': 'input connector',
-                                'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
-                            }, {
                                 'source': 'A',
                                 'destination': 'output connector',
                                 'sourceProperty': 'result',
                                 'destinationProperty': 'inner_output',
+                            }, {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
                             },
                         ],
                     },
@@ -197,15 +197,15 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                         },
                         'links': [
                             {
-                                'source': 'input connector',
-                                'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
-                            }, {
                                 'source': 'A',
                                 'destination': 'output connector',
                                 'sourceProperty': 'result',
                                 'destinationProperty': 'inner_output',
+                            }, {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
                             },
                         ],
                     },

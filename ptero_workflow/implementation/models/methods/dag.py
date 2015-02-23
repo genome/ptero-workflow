@@ -2,7 +2,7 @@ from .method_base import Method
 from ptero_workflow.implementation.models.link import Link
 from ptero_workflow.implementation.models.task import Task
 from sqlalchemy import Column, ForeignKey, Integer
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import backref, aliased, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 
@@ -135,10 +135,14 @@ class DAGMethod(Method):
     @property
     def links(self):
         s = object_session(self)
-        task_query = s.query(Task.id).filter_by(parent_id = self.id)
-        return s.query(Link).filter(
-                Link.source_id.in_(task_query)).filter(
-                    Link.destination_id.in_(task_query)).all()
+        source_task = aliased(Task)
+        destination_task = aliased(Task)
+        return s.query(Link).\
+            join(source_task,source_task.id==Link.source_id).\
+            join(destination_task,destination_task.id==Link.destination_id).\
+            filter(destination_task.parent_id==self.id, source_task.parent_id==self.id).\
+            order_by(source_task.name,destination_task.name,
+                    Link.source_property,Link.destination_property).all()
 
 
 def _get_parent_color(colors):
