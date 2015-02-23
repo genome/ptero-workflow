@@ -21,10 +21,10 @@ function collect_test_names_dry_run() {
 
 function capture_test_log() {
   local INITIAL_LOG_LENGTH=$1
-  local TEST_NAME=$2
+  local LOG_OUTPUT_FILE=$2
   local FINAL_LOG_LENGTH=$(wc -l ${HONCHO_LOG}|awk '{ print $1 }')
   tail -n $(expr ${FINAL_LOG_LENGTH} - ${INITIAL_LOG_LENGTH}) ${HONCHO_LOG} \
-      > ${LOG_BASE}/${TEST_NAME}.log
+      > ${LOG_OUTPUT_FILE}
 }
 
 function collect_test_names() {
@@ -53,13 +53,17 @@ function run_tests() {
         print $ARGV[0]' ${TEST_NAME})
 
     printf "%s ... " ${NOSE_TEST_NAME}
-    if coverage run $(which nosetests) -q ${NOSE_TEST_NAME} 2> /dev/null; then
+
+    local LOG_OUTPUT_FILE=${LOG_BASE}/${TEST_NAME}.log
+    local TEST_OUTPUT_FILE=${LOG_BASE}/${TEST_NAME}.test
+    if coverage run $(which nosetests) -q ${NOSE_TEST_NAME} 2> ${TEST_OUTPUT_FILE}; then
       printf "OK\n"
-      capture_test_log ${INITIAL_LOG_LENGTH} ${TEST_NAME}
+      capture_test_log ${INITIAL_LOG_LENGTH} ${LOG_OUTPUT_FILE}
     else
-      capture_test_log ${INITIAL_LOG_LENGTH} ${TEST_NAME}
+      capture_test_log ${INITIAL_LOG_LENGTH} ${LOG_OUTPUT_FILE}
       printf "FAIL\n"
-      cp ${LOG_BASE}/${TEST_NAME}.log ${FAIL_LOG_DIR}
+      cp ${LOG_OUTPUT_FILE} ${FAIL_LOG_DIR}
+      cp ${TEST_OUTPUT_FILE} ${FAIL_LOG_DIR}
       EXIT_CODE=1
     fi
 
