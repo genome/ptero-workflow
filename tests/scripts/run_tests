@@ -40,7 +40,7 @@ function collect_number_of_unique_tests() {
 }
 
 function run_tests() {
-echo "Found $(collect_number_of_tests) tests in $(collect_number_of_unique_tests) test classes to run"
+  echo "Found $(collect_number_of_tests) tests in $(collect_number_of_unique_tests) test classes to run"
 
   local TEST_NAMES=$(collect_test_names | uniq)
   for TEST_NAME in ${TEST_NAMES}; do
