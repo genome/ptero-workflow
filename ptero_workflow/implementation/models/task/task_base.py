@@ -2,7 +2,7 @@ from ..base import Base
 from .. import result
 from .. import input_source
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy import ForeignKey, Integer, Text
+from sqlalchemy import ForeignKey, Integer, Text, Boolean
 from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
@@ -36,11 +36,27 @@ class Task(Base):
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
     status = Column(Text)
+    is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }
+
+    def cancel(self):
+        if self.parent is not None:
+            parent_info = " in DAG ID:%s with name (%s)" %\
+                    (self.parent.id, self.parent.name)
+        else:
+            parent_info = ''
+        LOG.info(
+            "Canceling task ID:%s with name (%s)%s",
+            self.id, self.name, parent_info)
+        self.is_canceled = True
+        self.status = 'canceled'
+
+    def all_tasks_iterator(self):
+        return []
 
     @property
     def as_dict(self):

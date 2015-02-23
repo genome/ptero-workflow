@@ -26,6 +26,12 @@ class DAGMethod(Method):
         'polymorphic_identity': 'DAG',
     }
 
+    def all_tasks_iterator(self):
+        for child in self.child_list:
+            yield child
+            for task in child.all_tasks_iterator():
+                yield task
+
     def attach_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._child_start_place(child.name)

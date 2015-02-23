@@ -61,6 +61,22 @@ class Workflow(Base):
     def status(self):
         return self.root_task.status
 
+    def all_tasks_iterator(self):
+        yield self.root_task
+        for task in self.root_task.all_tasks_iterator():
+            yield task
+
+    @property
+    def is_canceled(self):
+        return self.root_task.is_canceled
+
+    def cancel(self):
+        if self.is_canceled:
+            return
+        else:
+            for task in self.all_tasks_iterator():
+                task.cancel()
+
     @property
     def as_dict(self):
         tasks = {name: task.as_dict for name,task in self.tasks.iteritems()
