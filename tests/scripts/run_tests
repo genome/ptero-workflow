@@ -42,6 +42,9 @@ function collect_number_of_unique_tests() {
 function run_tests() {
   echo "Found $(collect_number_of_tests) tests in $(collect_number_of_unique_tests) test classes to run"
 
+  local FAIL_LOG_DIR=${LOG_BASE}/fail
+  mkdir ${FAIL_LOG_DIR}
+
   local TEST_NAMES=$(collect_test_names | uniq)
   for TEST_NAME in ${TEST_NAMES}; do
     local INITIAL_LOG_LENGTH=$(wc -l ${HONCHO_LOG}|awk '{ print $1 }')
@@ -56,7 +59,7 @@ function run_tests() {
     else
       capture_test_log ${INITIAL_LOG_LENGTH} ${TEST_NAME}
       printf "FAIL\n"
-      cat ${LOG_BASE}/${TEST_NAME}.log
+      cp ${LOG_BASE}/${TEST_NAME}.log ${FAIL_LOG_DIR}
       EXIT_CODE=1
     fi
 
