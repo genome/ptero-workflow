@@ -46,6 +46,11 @@ class Workflow(Base):
         for name,task in self.tasks.iteritems():
             results.extend(task.input_links)
 
+        return sorted(results,
+                key=lambda l: l.source_task.name\
+                    + l.destination_task.name\
+                    + l.source_property\
+                    + l.destination_property)
         return results
 
     @property

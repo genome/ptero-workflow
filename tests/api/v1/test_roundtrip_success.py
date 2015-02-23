@@ -60,15 +60,15 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
         },
         'links': [
             {
-                'source': 'input connector',
-                'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
-            }, {
                 'source': 'A',
                 'destination': 'output connector',
                 'sourceProperty': 'result',
                 'destinationProperty': 'out_a',
+            }, {
+                'source': 'input connector',
+                'destination': 'A',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             },
         ],
         'inputs': {
@@ -120,15 +120,15 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
 
         'links': [
             {
-                'source': 'input connector',
-                'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
-            }, {
                 'source': 'Inner',
                 'destination': 'output connector',
                 'sourceProperty': 'inner_output',
                 'destinationProperty': 'outer_output',
+            }, {
+                'source': 'input connector',
+                'destination': 'Inner',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             },
         ],
         'inputs': {
@@ -156,15 +156,15 @@ class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
         },
         'links': [
             {
-                'source': 'input connector',
-                'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
-            }, {
                 'source': 'A',
                 'destination': 'output connector',
                 'sourceProperty': 'result',
                 'destinationProperty': 'out_a',
+            }, {
+                'source': 'input connector',
+                'destination': 'A',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
             },
         ],
         'inputs': {
@@ -216,15 +216,15 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
 
         'links': [
             {
-                'source': 'input connector',
-                'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
-            }, {
                 'source': 'Inner',
                 'destination': 'output connector',
                 'sourceProperty': 'inner_output',
                 'destinationProperty': 'outer_output',
+            }, {
+                'source': 'input connector',
+                'destination': 'Inner',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
             },
         ],
         'inputs': {
