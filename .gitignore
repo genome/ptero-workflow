@@ -2,7 +2,8 @@
 /*.egg
 /*.egg-info
 /.eggs
-/.coverage*
+/.coverage
+/.coverage.*
 /.tox
 /AUTHORS
 /ChangeLog
