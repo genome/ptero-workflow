@@ -44,3 +44,12 @@ class MethodList(Task):
         super(MethodList, self).create_input_sources(session, parallel_depths)
         for method in self.method_list:
             method.create_input_sources(session, parallel_depths)
+
+    @property
+    def as_dict(self):
+        result = {
+            'methods': [m.as_dict for m in self.method_list],
+        }
+        if self.parallel_by is not None:
+            result['parallelBy'] = self.parallel_by
+        return result
