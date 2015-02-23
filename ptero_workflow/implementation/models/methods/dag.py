@@ -129,6 +129,9 @@ class DAGMethod(Method):
             'links': [l.as_dict for l in self.links],
         }
 
+    def _service_name(self):
+        return 'workflow'
+
     @property
     def links(self):
         s = object_session(self)

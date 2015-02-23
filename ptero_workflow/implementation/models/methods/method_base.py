@@ -63,6 +63,13 @@ class Method(Base):
     def create_input_sources(self, session, parallel_depths):
         pass
 
+    def _service_name(self):
+        return self.service
+
+    @property
+    def service_name(self):
+        return self._service_name()
+
     @property
     def parameters(self):
         raise NotImplementedError
@@ -71,6 +78,6 @@ class Method(Base):
     def as_dict(self):
         return {
             'name': self.name,
-            'service': self.service,
+            'service': self.service_name,
             'parameters': self.parameters,
         }
