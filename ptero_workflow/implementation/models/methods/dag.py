@@ -7,10 +7,10 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 
 
-__all__ = ['DAGMethod']
+__all__ = ['DAG']
 
 
-class DAGMethod(Method):
+class DAG(Method):
     __tablename__ = 'dag'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
@@ -99,7 +99,7 @@ class DAGMethod(Method):
         return oc.resolve_input_source(session, name, parallel_depths)
 
     def create_input_sources(self, session, parallel_depths):
-        super(DAGMethod, self).create_input_sources(session, parallel_depths)
+        super(DAG, self).create_input_sources(session, parallel_depths)
 
         for child_name in self.children:
             self.children[child_name].create_input_sources(session,
