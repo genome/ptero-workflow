@@ -22,7 +22,6 @@ class Workflow(Base):
     __tablename__ = 'workflow'
 
     id          = Column(Integer, primary_key=True)
-    environment = Column(Text)
 
     net_key = Column(Text, unique=True, default=_generate_net_key)
 
