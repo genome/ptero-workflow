@@ -4,6 +4,7 @@
 /.eggs
 /.coverage
 /.coverage.*
+/.pip-cache
 /.tox
 /AUTHORS
 /ChangeLog
