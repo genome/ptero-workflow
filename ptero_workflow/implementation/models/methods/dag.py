@@ -11,7 +11,7 @@ __all__ = ['DAGMethod']
 
 
 class DAGMethod(Method):
-    __tablename__ = 'method_dag'
+    __tablename__ = 'dag'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
