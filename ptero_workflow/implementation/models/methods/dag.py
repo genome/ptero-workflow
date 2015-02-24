@@ -23,7 +23,7 @@ class DAGMethod(Method):
     child_list = relationship('Task')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'DAG',
+        'polymorphic_identity': 'dag',
     }
 
     def all_tasks_iterator(self):
