@@ -31,8 +31,8 @@ class Task(Base):
     ])
 
     id        = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('method_dag.id', use_alter=True,
-        name='fk_task_parent_method_dag'), nullable=True)
+    parent_id = Column(Integer, ForeignKey('dag.id', use_alter=True,
+        name='fk_task_parent_dag'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
     status = Column(Text)

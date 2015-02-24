@@ -11,7 +11,7 @@ __all__ = ['DAGMethod']
 
 
 class DAGMethod(Method):
-    __tablename__ = 'method_dag'
+    __tablename__ = 'dag'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
@@ -23,7 +23,7 @@ class DAGMethod(Method):
     child_list = relationship('Task')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'DAG',
+        'polymorphic_identity': 'dag',
     }
 
     def all_tasks_iterator(self):

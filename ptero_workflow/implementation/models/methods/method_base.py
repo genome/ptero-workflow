@@ -25,9 +25,9 @@ class Method(Base):
 
     index = Column(Integer, nullable=True, index=True)
 
-    _service = Column(Text, nullable=False)
+    type = Column(Text, nullable=False)
     __mapper_args__ = {
-        'polymorphic_on': '_service',
+        'polymorphic_on': 'type',
     }
 
     VALID_CALLBACK_TYPES = set()
@@ -68,7 +68,7 @@ class Method(Base):
 
     @property
     def service(self):
-        return self._service
+        return self.type
 
     @property
     def parameters(self):
