@@ -12,6 +12,7 @@ __all__ = ['DAG']
 
 class DAG(Method):
     __tablename__ = 'dag'
+    service = 'workflow'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
@@ -134,10 +135,6 @@ class DAG(Method):
                     if t.type not in ['InputConnector', 'OutputConnector']},
             'links': [l.as_dict for l in self.links],
         }
-
-    @property
-    def service(self):
-        return 'workflow'
 
     @property
     def links(self):

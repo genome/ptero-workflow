@@ -17,6 +17,7 @@ __all__ = ['ShellCommand']
 
 class ShellCommand(Method):
     __tablename__ = 'shell_command'
+    service = 'shell-command'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
