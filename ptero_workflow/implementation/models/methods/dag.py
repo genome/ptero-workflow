@@ -131,7 +131,7 @@ class DAGMethod(Method):
     def parameters(self):
         return {
             'tasks': {t.name: t.as_dict for t in self.children.itervalues()
-                    if t.type not in ['input connector', 'output connector']},
+                    if t.type not in ['InputConnector', 'OutputConnector']},
             'links': [l.as_dict for l in self.links],
         }
 

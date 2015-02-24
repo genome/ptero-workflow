@@ -20,7 +20,7 @@ class MethodList(Task):
     method_list = relationship('Method', order_by='Method.index')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'method-list',
+        'polymorphic_identity': 'MethodList',
     }
 
     def all_tasks_iterator(self):

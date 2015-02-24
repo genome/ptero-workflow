@@ -17,7 +17,7 @@ class InputConnector(Task):
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'input connector',
+        'polymorphic_identity': 'InputConnector',
     }
 
     def resolve_output_source(self, session, name, parallel_depths):
