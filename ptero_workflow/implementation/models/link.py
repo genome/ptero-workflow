@@ -25,8 +25,6 @@ class Link(Base):
     source_property      = Column(Text, nullable=False)
     destination_property = Column(Text, nullable=False)
 
-    parallel_by = Column(Boolean, nullable=False, default=False)
-
     source_task = relationship('Task',
             backref=backref('output_links'),
             foreign_keys=[source_id])
