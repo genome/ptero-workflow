@@ -11,6 +11,7 @@ __all__ = ['Method']
 
 class Method(Base):
     __tablename__ = 'method'
+    service = 'NotImplementedError'
 
     __table_args__ = (
         UniqueConstraint('task_id', 'name'),
@@ -65,10 +66,6 @@ class Method(Base):
 
     def create_input_sources(self, session, parallel_depths):
         pass
-
-    @property
-    def service(self):
-        return self.type
 
     @property
     def parameters(self):

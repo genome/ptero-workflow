@@ -24,7 +24,7 @@ def build_method(data, index=None, parent_task=None):
 def _build_dag_method(data, index, parent_task):
     _validate_dag_data(data)
 
-    method = models.DAGMethod(name=data['name'], index=index,
+    method = models.DAG(name=data['name'], index=index,
             task=parent_task)
 
     children = {}

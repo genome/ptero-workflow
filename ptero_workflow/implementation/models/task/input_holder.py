@@ -11,5 +11,5 @@ class InputHolder(Task):
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': '__input_holder',
+        'polymorphic_identity': 'InputHolder',
     }

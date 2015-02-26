@@ -17,13 +17,14 @@ __all__ = ['ShellCommand']
 
 class ShellCommand(Method):
     __tablename__ = 'shell_command'
+    service = 'shell-command'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
     parameters = Column(JSON, nullable=False)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'shell-command',
+        'polymorphic_identity': 'ShellCommand',
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(

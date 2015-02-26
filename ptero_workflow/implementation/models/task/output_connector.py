@@ -16,7 +16,7 @@ class OutputConnector(Task):
     id = Column(Integer, ForeignKey('task.id'), primary_key=True)
 
     __mapper_args__ = {
-        'polymorphic_identity': 'output connector',
+        'polymorphic_identity': 'OutputConnector',
     }
 
     VALID_CALLBACK_TYPES = Task.VALID_CALLBACK_TYPES.union({

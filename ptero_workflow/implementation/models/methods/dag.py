@@ -7,11 +7,12 @@ from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 
 
-__all__ = ['DAGMethod']
+__all__ = ['DAG']
 
 
-class DAGMethod(Method):
+class DAG(Method):
     __tablename__ = 'dag'
+    service = 'workflow'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
@@ -23,7 +24,7 @@ class DAGMethod(Method):
     child_list = relationship('Task')
 
     __mapper_args__ = {
-        'polymorphic_identity': 'dag',
+        'polymorphic_identity': 'DAG',
     }
 
     def all_tasks_iterator(self):
@@ -99,7 +100,7 @@ class DAGMethod(Method):
         return oc.resolve_input_source(session, name, parallel_depths)
 
     def create_input_sources(self, session, parallel_depths):
-        super(DAGMethod, self).create_input_sources(session, parallel_depths)
+        super(DAG, self).create_input_sources(session, parallel_depths)
 
         for child_name in self.children:
             self.children[child_name].create_input_sources(session,
@@ -131,13 +132,9 @@ class DAGMethod(Method):
     def parameters(self):
         return {
             'tasks': {t.name: t.as_dict for t in self.children.itervalues()
-                    if t.type not in ['input connector', 'output connector']},
+                    if t.type not in ['InputConnector', 'OutputConnector']},
             'links': [l.as_dict for l in self.links],
         }
-
-    @property
-    def service(self):
-        return 'workflow'
 
     @property
     def links(self):
