@@ -27,14 +27,10 @@ class Workflow(Base):
 
     root_task_id = Column(Integer, ForeignKey('task.id',
         use_alter=True, name='fk_workflow_root_task'))
-    input_holder_id = Column(Integer, ForeignKey('input_holder.id',
-        use_alter=True, name='fk_input_holder'))
 
 
     root_task = relationship('Task', post_update=True,
             foreign_keys=[root_task_id])
-    input_holder = relationship('InputHolder',
-            post_update=True, foreign_keys=[input_holder_id])
 
     start_place_name = 'workflow-start-place'
 

@@ -44,8 +44,7 @@ class Backend(object):
 
         workflow.root_task = tasks.build_task('root', root_data)
 
-        workflow.input_holder_task = tasks.create_input_holder(
-                workflow.root_task, workflow_data['inputs'], color=0)
+        tasks.create_input_holder(workflow.root_task, workflow_data['inputs'], color=0)
 
         dummy_output_task = models.InputHolder(name='dummy output task')
         self.session.add(dummy_output_task)
