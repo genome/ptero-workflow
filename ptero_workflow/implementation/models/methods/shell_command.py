@@ -1,4 +1,4 @@
-from ..execution import Execution
+from ..execution.method_execution import MethodExecution
 from ..json_type import JSON
 from .method_base import Method
 from ptero_common.logging_configuration import logged_request
@@ -78,7 +78,7 @@ class ShellCommand(Method):
         parent_color = _get_parent_color(colors)
 
         s = object_session(self)
-        execution = Execution(method=self, color=color,
+        execution = MethodExecution(method=self, color=color,
                 colors=colors, begins=begins,
                 parent_color=parent_color, data={
                     'petri_response_links': response_links,
@@ -98,7 +98,7 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('begun')
@@ -108,7 +108,7 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('succeeded')
@@ -121,7 +121,7 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('failed')
@@ -134,7 +134,7 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('errored')
