@@ -34,6 +34,11 @@ class Workflow(Base):
 
     start_place_name = 'workflow-start-place'
 
+    # This is the convention of the Petri service that the first token has
+    # color 0 and parent_color None
+    color = 0
+    parent_color = None
+
     @property
     def links(self):
         results = []
