@@ -53,29 +53,33 @@ class TestCaseMixin(object):
 
 
     def test_got_expected_result(self):
-        workflow_url = self._submit_workflow()
-        self._wait_for_completion(workflow_url)
-        self._verify_result(workflow_url)
+        workflow_url, workflow_data = self._submit_workflow()
+
+        status_report_url = workflow_data['reports']['workflow-status']
+        self._wait_for_completion(status_report_url)
+
+        outputs_report_url = workflow_data['reports']['workflow-outputs']
+        self._verify_result(outputs_report_url)
 
 
     def _submit_workflow(self):
         response = _retry(requests.post, self._submit_url, self._workflow_body,
                 headers={'content-type': 'application/json'})
         self.assertEqual(201, response.status_code)
-        return response.headers['Location']
+        return response.headers['Location'], response.json()
 
-    def _wait_for_completion(self, workflow_url):
+    def _wait_for_completion(self, status_url):
         max_loops = int(_MAX_WAIT_TIME/_POLLING_DELAY)
         for iteration in xrange(max_loops):
-            if self._workflow_complete(workflow_url):
+            if self._workflow_complete(status_url):
                 LOG.info("Workflow completed... checking outputs")
                 return
             time.sleep(_POLLING_DELAY)
         LOG.warning("Workflow failed to complete... "
                     "checking outputs but they're probably empty")
 
-    def _verify_result(self, workflow_url):
-        actual_result = self._get_actual_result(workflow_url)
+    def _verify_result(self, outputs_url):
+        actual_result = self._get_actual_result(outputs_url)
         expected_result = self._expected_result
 
         self.assertEqual(expected_result, actual_result)
@@ -126,9 +130,8 @@ class TestCaseMixin(object):
         response = _retry(requests.get, url)
         return response.json()
 
-    def _get_actual_result(self, workflow_url):
-        data = self._get_workflow_data(workflow_url)
-        response = _retry(requests.get, data['reports']['workflow-outputs'])
+    def _get_actual_result(self, outputs_url):
+        response = _retry(requests.get, outputs_url)
         return response.json()
 
 
