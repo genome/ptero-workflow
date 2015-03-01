@@ -30,43 +30,32 @@ class ShellCommand(Method):
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
             ['begun', 'error', 'execute', 'failure', 'success'])
 
-    def _place_name(self, kind):
-        return '%s-%s-%s' % (self.task.unique_name, self.name, kind)
-
     def attach_transitions(self, transitions, input_place_name):
-        success_place_name = self._place_name('success')
-        failure_place_name = self._place_name('failure')
-
-        wait_place_name = self._place_name('wait')
-
-        success_callback_place_name = self._place_name('success-callback')
-        failure_callback_place_name = self._place_name('failure-callback')
-
         transitions.append({
             'inputs': [input_place_name],
-            'outputs': [wait_place_name],
+            'outputs': [self._pn('wait')],
             'action': {
                 'type': 'notify',
                 'url': self.callback_url('execute'),
                 'response_places': {
-                    'success': success_callback_place_name,
-                    'failure': failure_callback_place_name,
+                    'success': self._pn('callback-success'),
+                    'failure': self._pn('callback-failure'),
                 },
             }
         })
 
         transitions.extend([
             {
-                'inputs': [wait_place_name, success_callback_place_name],
-                'outputs': [success_place_name],
+                'inputs': [self._pn('wait'), self._pn('callback-success')],
+                'outputs': [self._pn('success')],
             },
             {
-                'inputs': [wait_place_name, failure_callback_place_name],
-                'outputs': [failure_place_name],
+                'inputs': [self._pn('wait'), self._pn('callback-failure')],
+                'outputs': [self._pn('failure')],
             }
         ])
 
-        return success_place_name, failure_place_name
+        return self._pn('success'), self._pn('failure')
 
     def execute(self, body_data, query_string_data):
         color = body_data['color']

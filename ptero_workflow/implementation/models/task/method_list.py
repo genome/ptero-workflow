@@ -40,10 +40,10 @@ class MethodList(Task):
         for sp in success_places:
             transitions.append({
                 'inputs': [sp],
-                'outputs': [self.success_place_name],
+                'outputs': [self._pn('success')],
             })
 
-        return self.success_place_name, last_failure_place
+        return self._pn('success'), last_failure_place
 
     def create_input_sources(self, session, parallel_depths):
         super(MethodList, self).create_input_sources(session, parallel_depths)

@@ -27,30 +27,22 @@ class OutputConnector(Task):
         transitions.extend([
             {
                 'inputs': [start_place],
-                'outputs': [self.wait_place_name],
+                'outputs': [self._pn('wait')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('copy_outputs_to_parent'),
                     'response_places': {
-                        'continue': self.response_place_name,
+                        'continue': self._pn('response'),
                     },
                 },
             },
             {
-                'inputs': [self.wait_place_name, self.response_place_name],
-                'outputs': [self.success_place_name],
+                'inputs': [self._pn('wait'), self._pn('response')],
+                'outputs': [self._pn('success')],
             },
         ])
 
-        return self.success_place_name, None
-
-    @property
-    def wait_place_name(self):
-        return '%s-wait' % self.unique_name
-
-    @property
-    def response_place_name(self):
-        return '%s-response' % self.unique_name
+        return self._pn('success'), None
 
     def copy_outputs_to_parent(self, body_data, query_string_data):
         color = body_data['color']

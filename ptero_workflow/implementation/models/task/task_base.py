@@ -55,6 +55,10 @@ class Task(Base):
         self.is_canceled = True
         self.status = 'canceled'
 
+    def _pn(self, *args):
+        name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
+        return '-'.join([name_base] + list(args))
+
     def all_tasks_iterator(self):
         return []
 
@@ -94,37 +98,37 @@ class Task(Base):
         transitions.extend([
             {
                 'inputs': [start_place],
-                'outputs': [self.split_size_wait_place_name,
-                    self.join_fail_wait_place_name],
+                'outputs': [self._pn('split_size_wait'),
+                    self._pn('join_fail_wait')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('get_split_size'),
                     'requested_data': ['color_group_size'],
                     'response_places': {
-                        'send_data': self.split_size_place_name,
+                        'send_data': self._pn('split_size'),
                     },
                 },
             },
 
             {
-                'inputs': [self.split_size_wait_place_name,
-                    self.split_size_place_name],
-                'outputs': [self.color_group_created_place_name],
+                'inputs': [self._pn('split_size_wait'),
+                    self._pn('split_size')],
+                'outputs': [self._pn('color_group_created')],
                 'action': {
                     'type': 'create-color-group',
                 },
             },
 
             {
-                'inputs': [self.color_group_created_place_name],
-                'outputs': [self.split_place_name],
+                'inputs': [self._pn('color_group_created')],
+                'outputs': [self._pn('split')],
                 'action': {
                     'type': 'split',
                 },
             },
         ])
 
-        return self.split_place_name
+        return self._pn('split')
 
 
     def _attach_join_transitions(self, transitions, subclass_success_place,
@@ -132,55 +136,55 @@ class Task(Base):
         transitions.extend([
             {
                 'inputs': [subclass_success_place],
-                'outputs': [self.joined_place_name],
+                'outputs': [self._pn('joined')],
                 'type': 'barrier',
                 'action': {
                     'type': 'join',
                 }
             },
             {
-                'inputs': [self.joined_place_name],
-                'outputs': [self.array_result_wait_place_name],
+                'inputs': [self._pn('joined')],
+                'outputs': [self._pn('array_result_wait')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('create_array_result'),
                     'response_places': {
-                        'created': self.array_result_callback_place_name,
+                        'created': self._pn('array_result_callback'),
                     }
                 },
             },
             {
-                'inputs': [self.array_result_wait_place_name,
-                    self.array_result_callback_place_name],
-                'outputs': [self.join_success_place_name],
+                'inputs': [self._pn('array_result_wait'),
+                    self._pn('array_result_callback')],
+                'outputs': [self._pn('join_success')],
             },
 
             {
                 'inputs': [subclass_failure_place],
-                'outputs': [self.join_fail_convert_place_name],
+                'outputs': [self._pn('join_fail_convert')],
                 'action': {
                     'type': 'convert-to-parent-color',
                 },
             },
             {
-                'inputs': [self.join_fail_convert_place_name,
-                    self.join_fail_wait_place_name],
-                'outputs': [self.join_fail_place_name],
+                'inputs': [self._pn('join_fail_convert'),
+                    self._pn('join_fail_wait')],
+                'outputs': [self._pn('join_fail')],
             },
         ])
 
-        return self.join_success_place_name, self.join_fail_place_name
+        return self._pn('join_success'), self._pn('join_fail')
 
     def _attach_status_update_actions(self, transitions, action_success_place,
             action_failure_place):
         transitions.append({
                 'inputs': [action_success_place],
-                'outputs': [self.update_status_success_place_name],
+                'outputs': [self._pn('update_status_success')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='success')
                 }})
-        success_place = self.update_status_success_place_name
+        success_place = self._pn('update_status_success')
 
 
         if action_failure_place is None:
@@ -189,66 +193,14 @@ class Task(Base):
         else:
             transitions.append({
                 'inputs': [action_failure_place],
-                    'outputs': [self.update_status_failure_place_name],
+                    'outputs': [self._pn('update_status_failure')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='failure')
                 }})
-            failure_place = self.update_status_failure_place_name
+            failure_place = self._pn('update_status_failure')
 
         return success_place, failure_place
-
-    @property
-    def update_status_success_place_name(self):
-        return '%s-update-status-success' % self.unique_name
-
-    @property
-    def update_status_failure_place_name(self):
-        return '%s-update-status-failure' % self.unique_name
-
-    @property
-    def array_result_wait_place_name(self):
-        return '%s-array-result-wait' % self.unique_name
-
-    @property
-    def array_result_callback_place_name(self):
-        return '%s-array-result-callback' % self.unique_name
-
-    @property
-    def join_success_place_name(self):
-        return '%s-join-success-place' % self.unique_name
-
-    @property
-    def split_size_wait_place_name(self):
-        return '%s-split-size-wait' % self.unique_name
-
-    @property
-    def split_size_place_name(self):
-        return '%s-split-size' % self.unique_name
-
-    @property
-    def color_group_created_place_name(self):
-        return '%s-color-group-created-place' % self.unique_name
-
-    @property
-    def split_place_name(self):
-        return '%s-split' % self.unique_name
-
-    @property
-    def joined_place_name(self):
-        return '%s-joined' % self.unique_name
-
-    @property
-    def join_fail_wait_place_name(self):
-        return '%s-join-fail-wait' % self.unique_name
-
-    @property
-    def join_fail_convert_place_name(self):
-        return '%s-join-fail-convert' % self.unique_name
-
-    @property
-    def join_fail_place_name(self):
-        return '%s-join-fail' % self.unique_name
 
     @property
     def parallel_depth(self):
@@ -323,14 +275,6 @@ class Task(Base):
         mapper = inspect(cls)
         return mapper.polymorphic_map[type].class_
 
-    @property
-    def unique_name(self):
-        return '-'.join(['task', str(self.id), self.name.replace(' ', '_')])
-
-    @property
-    def success_place_name(self):
-        return '%s-success' % self.unique_name
-
     def callback_url(self, callback_type, **params):
         if params:
             query_string = '?%s' % urllib.urlencode(params)
@@ -393,10 +337,6 @@ class Task(Base):
         self.status = query_string_data['status']
         s = object_session(self)
         s.commit()
-
-    @property
-    def failure_place_name(self):
-        return '%s-failure' % self.unique_name
 
     def resolve_input_source(self, session, name, parallel_depths):
         if self.parallel_by == name:

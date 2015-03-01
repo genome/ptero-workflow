@@ -33,6 +33,11 @@ class Method(Base):
 
     VALID_CALLBACK_TYPES = set()
 
+
+    def _pn(self, *args):
+        name_base = '-'.join(['method', str(self.id), self.name.replace(' ','_')])
+        return '-'.join([name_base] + list(args))
+
     def all_tasks_iterator(self):
         return []
 
