@@ -18,17 +18,24 @@ __all__ = ['Execution']
 class Execution(Base):
     __tablename__ = 'execution'
 
-    id = Column(Integer, primary_key=True)
+    __table_args__ = (
+        UniqueConstraint('method_id', 'color'),
+        UniqueConstraint('task_id', 'color'),
+    )
 
-    type = Column(String, nullable=False)
+    id = Column(Integer, primary_key=True)
 
     color = Column(Integer, index=True, nullable=False)
     parent_color = Column(Integer, index=True, nullable=True)
+
+    method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
+    task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
 
     data = Column(JSON)
     colors = Column(JSON)
     begins = Column(JSON)
 
+    type = Column(String, nullable=False)
     __mapper_args__ = {
             'polymorphic_on': 'type',
     }
