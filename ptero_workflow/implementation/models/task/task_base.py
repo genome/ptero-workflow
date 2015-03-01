@@ -1,6 +1,7 @@
 from ..base import Base
 from .. import result
 from .. import input_source
+from ..execution.task_execution import TaskExecution
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text, Boolean
 from sqlalchemy.inspection import inspect
@@ -26,6 +27,7 @@ class Task(Base):
 
     VALID_CALLBACK_TYPES = set([
         'create_array_result',
+        'create_execution',
         'get_split_size',
         'set_status',
     ])
@@ -73,13 +75,17 @@ class Task(Base):
         return result
 
     def attach_transitions(self, transitions, start_place):
+        execution_created_place = \
+                self.attach_execution_transitions(transitions, start_place)
+
         if self.parallel_by is None:
             action_success_place, action_failure_place = \
-                    self.attach_subclass_transitions(transitions, start_place)
+                    self.attach_subclass_transitions(transitions,
+                            execution_created_place)
 
         else:
             split_place = self._attach_split_transitions(
-                    transitions, start_place)
+                    transitions, execution_created_place)
             subclass_success_place, subclass_failure_place = \
                     self.attach_subclass_transitions(transitions, split_place)
             action_success_place, action_failure_place = \
@@ -90,6 +96,28 @@ class Task(Base):
                 transitions, action_success_place, action_failure_place)
 
         return success_place, failure_place
+
+    def attach_execution_transitions(self, transitions, start_place):
+        transitions.extend([
+            {
+                'inputs': [start_place],
+                'outputs': [self._pn('create_execution_wait')],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('create_execution'),
+                    'response_places': {
+                        'created': self._pn('create_execution_success'),
+                    },
+                },
+            },
+
+            {
+                'inputs': [self._pn('create_execution_wait'),
+                    self._pn('create_execution_success')],
+                'outputs': [self._pn('execution_created_success')],
+            },
+        ])
+        return self._pn('execution_created_success')
 
     def attach_subclass_transitions(self, transitions, start_place):
         return start_place, None
@@ -331,6 +359,26 @@ class Task(Base):
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
+    def create_execution(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
+
+        colors = group.get('color_lineage', []) + [color]
+        begins = group.get('begin_lineage', []) + [group['begin']]
+        parent_color = _get_parent_color(colors)
+
+        s = object_session(self)
+        execution = TaskExecution(task=self, color=color,
+                colors=colors, begins=begins,
+                parent_color=parent_color, data={
+                    'petri_response_links': response_links,
+        })
+        s.add(execution)
+        s.commit()
+
+        self.http.delay('PUT', response_links['created'])
+
     def set_status(self, body_data, query_string_data):
         LOG.debug('Setting status on task %s (%s) from %s to "%s"',
                 self.id, self.name, self.status, query_string_data['status'])
@@ -383,3 +431,10 @@ class Task(Base):
         results = s.query(result.Result).filter_by(task=self, color=color).all()
         if results:
             return {r.name: r.data for r in results}
+
+def _get_parent_color(colors):
+    if len(colors) == 1:
+        return None
+
+    else:
+        return colors[-2]
