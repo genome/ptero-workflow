@@ -168,26 +168,14 @@ class TestCaseMixin(object):
             return None
 
     def _compare_task_details(self, expected, actual):
-        actual_executions = actual['executions']
-
-        for color, execution in expected.get('executions', {}).iteritems():
-            self.assertTrue(color in actual_executions)
-            for field in execution:
-                self.assertEqual(execution[field],
-                        actual_executions[color][field])
+        self._compare_executions(expected, actual)
 
         for expected_method, actual_method in itertools.izip(
                 expected['methods'], actual['methods']):
             self._compare_method_details(expected_method, actual_method)
 
     def _compare_method_details(self, expected, actual):
-        actual_executions = actual['executions']
-
-        for color, execution in expected.get('executions', {}).iteritems():
-            self.assertTrue(color in actual_executions)
-            for field in execution:
-                self.assertEqual(execution[field],
-                        actual_executions[color][field])
+        self._compare_executions(expected, actual)
 
         if expected['service'] == 'workflow':
             expected_parameters = expected_result['parameters']
@@ -195,6 +183,15 @@ class TestCaseMixin(object):
             for name, task in expected_parameters['tasks'].iteritems():
                 self._compare_task_details(task,
                         actual_parameters['tasks'][name])
+
+    def _compare_executions(self, expected, actual):
+        actual_executions = actual['executions']
+        for color, execution in expected.get('executions', {}).iteritems():
+            self.assertTrue(color in actual_executions)
+            for field in execution:
+                self.assertEqual(execution[field],
+                        actual_executions[color][field])
+
 
 def _retry(func, *args, **kwargs):
     for attempt in xrange(_MAX_RETRIES):
