@@ -25,7 +25,7 @@ class Backend(object):
 
         self.submit_net_task.delay(workflow.id)
 
-        return workflow.id, workflow.as_dict
+        return workflow.id, workflow.as_dict(detailed=False)
 
     def _save_workflow(self, workflow_data):
         workflow = models.Workflow()
@@ -68,7 +68,8 @@ class Backend(object):
         return workflow
 
     def get_workflow(self, workflow_id):
-        return self.session.query(models.Workflow).get(workflow_id).as_dict
+        return self.session.query(models.Workflow).get(workflow_id).as_dict(
+                detailed=False)
 
     def cancel_workflow(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
@@ -79,8 +80,8 @@ class Backend(object):
         return self.session.query(models.Workflow).get(workflow_id).status
 
     def get_workflow_details(self, workflow_id):
-        # This is not being used yet, but will be used in the future
-        workflow = self.session.query(models.Workflow).get(workflow_id)
+        return self.session.query(models.Workflow).get(
+                workflow_id).as_detailed_dict
 
     def get_workflow_outputs(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
@@ -88,7 +89,7 @@ class Backend(object):
 
     def get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)
-        return execution.as_dict
+        return execution.as_dict(detailed=False)
 
     def update_execution(self, execution_id, update_data):
         execution = self.session.query(Execution).get(execution_id)
@@ -98,7 +99,7 @@ class Backend(object):
         except IntegrityError:
             self.session.rollback()
             raise OutputsAlreadySet
-        return execution.as_dict
+        return execution.as_dict(detailed=False)
 
     def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):

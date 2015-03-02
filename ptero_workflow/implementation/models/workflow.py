@@ -77,11 +77,11 @@ class Workflow(Base):
             for task in self.all_tasks_iterator():
                 task.cancel()
 
-    @property
-    def as_dict(self):
-        tasks = {name: task.as_dict for name,task in self.tasks.iteritems()
+    def as_dict(self, detailed):
+        tasks = {name: task.as_dict(detailed=detailed)
+            for name,task in self.tasks.iteritems()
                 if name not in ['input connector', 'output connector']}
-        links = [l.as_dict for l in self.links]
+        links = [l.as_dict(detailed=detailed) for l in self.links]
 
         data = {
             'tasks': tasks,

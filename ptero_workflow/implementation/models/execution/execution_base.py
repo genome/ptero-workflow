@@ -57,15 +57,15 @@ class Execution(Base):
     def status(self):
         return self.status_history[-1].status
 
-    @property
-    def as_dict(self):
+    def as_dict(self, detailed):
         result = {name: getattr(self, name) for name in ['color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
-        result['method'] = self.method.as_dict
+        if not detailed:
+            result['method'] = self.method.as_dict(detailed=detailed)
         result['inputs'] = self.get_inputs()
         result['outputs'] = self.get_outputs()
-        result['status_history'] = [h.as_dict for h in self.status_history]
+        result['status_history'] = [h.as_dict(detailed=detailed) for h in self.status_history]
 
         return result
 
@@ -80,7 +80,7 @@ class Execution(Base):
         return {r.name: r.data for r in query_results}
 
     def update(self, update_data):
-        old_data = self.as_dict
+        old_data = self.as_dict(detailed=False)
         needs_updating = [name for name, new_value in update_data.iteritems()
                 if old_data[name] != new_value]
 
@@ -123,6 +123,5 @@ class ExecutionStatusHistory(Base):
     execution = relationship(Execution,
             backref=backref('status_history', order_by=timestamp))
 
-    @property
-    def as_dict(self):
+    def as_dict(self, detailed):
         return {'timestamp': str(self.timestamp), 'status': self.status}

@@ -64,8 +64,7 @@ class Task(Base):
     def all_tasks_iterator(self):
         return []
 
-    @property
-    def as_dict(self):
+    def as_dict(self, detailed):
         result = {
             'name': self.name,
             'type': self.type,

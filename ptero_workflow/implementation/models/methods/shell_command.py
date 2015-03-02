@@ -171,3 +171,6 @@ class ShellCommand(Method):
             },
         })
         return submit_data
+
+    def get_parameters(self, detailed=False):
+        return self.parameters

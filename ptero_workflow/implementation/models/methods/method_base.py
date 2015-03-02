@@ -136,12 +136,11 @@ class Method(Base):
     def parameters(self):
         raise NotImplementedError
 
-    @property
-    def as_dict(self):
+    def as_dict(self, detailed):
         return {
             'name': self.name,
             'service': self.service,
-            'parameters': self.parameters,
+            'parameters': self.get_parameters(detailed=detailed),
         }
 
 def _get_parent_color(colors):
