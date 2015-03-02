@@ -81,7 +81,7 @@ class Backend(object):
 
     def get_workflow_details(self, workflow_id):
         return self.session.query(models.Workflow).get(
-                workflow_id).as_detailed_dict
+                workflow_id).as_dict(detailed=True)
 
     def get_workflow_outputs(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
