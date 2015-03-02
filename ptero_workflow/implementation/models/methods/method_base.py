@@ -1,7 +1,10 @@
 from ..base import Base
+from ..execution.method_execution import MethodExecution
 from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.session import object_session
+import celery
 import os
 import urllib
 
@@ -17,6 +20,10 @@ class Method(Base):
         UniqueConstraint('task_id', 'name'),
     )
 
+    VALID_CALLBACK_TYPES = set([
+        'create_execution',
+    ])
+
     id = Column(Integer, primary_key=True)
 
     task_id = Column(Integer, ForeignKey('task.id'))
@@ -31,8 +38,6 @@ class Method(Base):
         'polymorphic_on': 'type',
     }
 
-    VALID_CALLBACK_TYPES = set()
-
 
     def _pn(self, *args):
         name_base = '-'.join(['method', str(self.id), self.name.replace(' ','_')])
@@ -40,6 +45,61 @@ class Method(Base):
 
     def all_tasks_iterator(self):
         return []
+
+    def attach_transitions(self, transitions, start_place):
+        execution_created_place = \
+                self.attach_execution_transitions(transitions, start_place)
+
+        return self.attach_subclass_transitions(transitions,
+                        execution_created_place)
+
+    def attach_execution_transitions(self, transitions, start_place):
+        transitions.extend([
+            {
+                'inputs': [start_place],
+                'outputs': [self._pn('create_execution_wait')],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('create_execution'),
+                    'response_places': {
+                        'created': self._pn('create_execution_success'),
+                    },
+                },
+            },
+
+            {
+                'inputs': [self._pn('create_execution_wait'),
+                    self._pn('create_execution_success')],
+                'outputs': [self._pn('execution_created_success')],
+            },
+        ])
+        return self._pn('execution_created_success')
+
+    def create_execution(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+
+        colors = group.get('color_lineage', []) + [color]
+        begins = group.get('begin_lineage', []) + [group['begin']]
+        parent_color = _get_parent_color(colors)
+
+        s = object_session(self)
+        execution = MethodExecution(method=self, color=color,
+                colors=colors, begins=begins,
+                parent_color=parent_color,
+                data={
+                    'petri_response_links': body_data['response_links']
+        })
+        s.add(execution)
+        s.commit()
+
+        response_links = body_data['response_links']
+        self.http.delay('PUT', response_links['created'])
+
+    @property
+    def http(self):
+        return celery.current_app.tasks[
+                'ptero_common.celery.http.HTTP']
 
     def handle_callback(self, callback_type, body_data, query_string_data):
         if callback_type in self.VALID_CALLBACK_TYPES:
@@ -83,3 +143,10 @@ class Method(Base):
             'service': self.service,
             'parameters': self.parameters,
         }
+
+def _get_parent_color(colors):
+    if len(colors) == 1:
+        return None
+
+    else:
+        return colors[-2]

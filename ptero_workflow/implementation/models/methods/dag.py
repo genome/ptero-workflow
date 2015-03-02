@@ -33,7 +33,7 @@ class DAG(Method):
             for task in child.all_tasks_iterator():
                 yield task
 
-    def attach_transitions(self, transitions, start_place):
+    def attach_subclass_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._pn(child.name, 'start')
             child_success_place, child_failure_place = child.attach_transitions(
