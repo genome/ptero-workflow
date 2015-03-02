@@ -1,5 +1,5 @@
 from ..base import Base
-from ..json_type import JSON
+from ..json_type import JSON, MutableJSONDict
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, String
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
@@ -31,7 +31,7 @@ class Execution(Base):
     method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
     task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
 
-    data = Column(JSON)
+    data = Column(MutableJSONDict)
     colors = Column(JSON)
     begins = Column(JSON)
 
