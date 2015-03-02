@@ -38,19 +38,19 @@ class ShellCommand(Method):
                 'type': 'notify',
                 'url': self.callback_url('execute'),
                 'response_places': {
-                    'success': self._pn('callback-success'),
-                    'failure': self._pn('callback-failure'),
+                    'success': self._pn('execute_success'),
+                    'failure': self._pn('execute_failure'),
                 },
             }
         })
 
         transitions.extend([
             {
-                'inputs': [self._pn('wait'), self._pn('callback-success')],
+                'inputs': [self._pn('wait'), self._pn('execute_success')],
                 'outputs': [self._pn('success')],
             },
             {
-                'inputs': [self._pn('wait'), self._pn('callback-failure')],
+                'inputs': [self._pn('wait'), self._pn('execute_failure')],
                 'outputs': [self._pn('failure')],
             }
         ])
