@@ -1,6 +1,7 @@
 import abc
 import collections
 import errno
+import itertools
 import jinja2
 import json
 import os
@@ -61,6 +62,10 @@ class TestCaseMixin(object):
         outputs_report_url = workflow_data['reports']['workflow-outputs']
         self._verify_result(outputs_report_url)
 
+        if self._expected_details is not None:
+            details_url = workflow_data['reports']['workflow-details']
+            self._verify_workflow_details(details_url)
+
 
     def _submit_workflow(self):
         response = _retry(requests.post, self._submit_url, self._workflow_body,
@@ -84,6 +89,12 @@ class TestCaseMixin(object):
 
         self.assertEqual(expected_result, actual_result)
 
+    def _verify_workflow_details(self, details_url):
+        actual_result = self._get_actual_result(details_url)
+        expected_result = self._expected_details
+
+        for name, task in expected_result['tasks'].iteritems():
+            self._compare_task_details(task, actual_result['tasks'][name])
 
     @property
     def _submit_url(self):
@@ -144,6 +155,46 @@ class TestCaseMixin(object):
         return os.path.abspath(os.path.join(os.path.dirname(__file__),
                 '..', '..', '..', '..'))
 
+    @property
+    def _expected_details_path(self):
+        return os.path.join(self.directory, 'workflow_details.json')
+
+    @property
+    def _expected_details(self):
+        try:
+            with open(self._expected_details_path) as f:
+                return json.load(f)
+        except IOError:
+            return None
+
+    def _compare_task_details(self, expected, actual):
+        actual_executions = actual['executions']
+
+        for color, execution in expected.get('executions', {}).iteritems():
+            self.assertTrue(color in actual_executions)
+            for field in execution:
+                self.assertEqual(execution[field],
+                        actual_executions[color][field])
+
+        for expected_method, actual_method in itertools.izip(
+                expected['methods'], actual['methods']):
+            self._compare_method_details(expected_method, actual_method)
+
+    def _compare_method_details(self, expected, actual):
+        actual_executions = actual['executions']
+
+        for color, execution in expected.get('executions', {}).iteritems():
+            self.assertTrue(color in actual_executions)
+            for field in execution:
+                self.assertEqual(execution[field],
+                        actual_executions[color][field])
+
+        if expected['service'] == 'workflow':
+            expected_parameters = expected_result['parameters']
+            actual_parameters = actual_result['parameters']
+            for name, task in expected_parameters['tasks'].iteritems():
+                self._compare_task_details(task,
+                        actual_parameters['tasks'][name])
 
 def _retry(func, *args, **kwargs):
     for attempt in xrange(_MAX_RETRIES):
