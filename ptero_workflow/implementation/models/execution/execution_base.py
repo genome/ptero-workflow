@@ -70,16 +70,6 @@ class Execution(Base):
 
         return result
 
-    def get_inputs(self):
-        return self.method.task.get_inputs(colors=self.colors,
-                begins=self.begins)
-
-    def get_outputs(self):
-        s = object_session(self)
-        query_results = s.query(result.Result).filter_by(task=self.method.task,
-            color=self.color, parent_color=self.parent_color).all()
-        return {r.name: r.data for r in query_results}
-
     def update(self, update_data):
         old_data = self.as_dict(detailed=False)
         needs_updating = [name for name, new_value in update_data.iteritems()
