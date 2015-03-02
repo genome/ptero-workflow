@@ -56,9 +56,9 @@ def _build_service_method(data, index, parent_task, cls):
             parameters=data.get('parameters', {}))
 
 
-def create_input_holder(root, inputs, color):
+def create_input_holder(root, inputs, color, parent_color):
     task = models.InputHolder(name='input_holder')
-    task.set_outputs(inputs, color=color, parent_color=None)
+    task.set_outputs(inputs, color=color, parent_color=parent_color)
     for i in inputs.iterkeys():
         models.Link(source_task=task, destination_task=root,
                 source_property=i, destination_property=i)

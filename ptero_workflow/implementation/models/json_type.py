@@ -1,6 +1,7 @@
 from sqlalchemy import Integer
 from sqlalchemy.types import TypeDecorator, VARCHAR
 from sqlalchemy.dialects.postgresql import JSON as psqlJSON
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.sql.functions import GenericFunction
 import json
@@ -76,11 +77,13 @@ def get_data_size_postgres_extensions(task, indexes):
 if os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'
         ).startswith('postgres'):
 
+    MutableJSONDict = MutableDict.as_mutable(psqlJSON)
     JSON = psqlJSON
     get_data_element = get_data_element_postgres_extensions
     get_data_size = get_data_size_postgres_extensions
 
 else:
+    MutableJSONDict = MutableDict.as_mutable(JSONEncodedDict(1000))
     JSON = JSONEncodedDict(1000)
     get_data_element = get_data_element_brute_force
     get_data_size = get_data_size_brute_force

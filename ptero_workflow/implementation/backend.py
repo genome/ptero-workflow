@@ -1,4 +1,5 @@
 from . import models
+from .models.execution.execution_base import Execution
 from . import tasks
 from sqlalchemy.exc import IntegrityError
 from ptero_workflow.implementation.exceptions import OutputsAlreadySet
@@ -44,8 +45,8 @@ class Backend(object):
 
         workflow.root_task = tasks.build_task('root', root_data)
 
-        workflow.input_holder_task = tasks.create_input_holder(
-                workflow.root_task, workflow_data['inputs'], color=0)
+        tasks.create_input_holder(workflow.root_task, workflow_data['inputs'],
+                color=workflow.color, parent_color=workflow.parent_color)
 
         dummy_output_task = models.InputHolder(name='dummy output task')
         self.session.add(dummy_output_task)
@@ -86,11 +87,11 @@ class Backend(object):
         return workflow.get_outputs()
 
     def get_execution(self, execution_id):
-        execution = self.session.query(models.Execution).get(execution_id)
+        execution = self.session.query(Execution).get(execution_id)
         return execution.as_dict
 
     def update_execution(self, execution_id, update_data):
-        execution = self.session.query(models.Execution).get(execution_id)
+        execution = self.session.query(Execution).get(execution_id)
         execution.update(update_data)
         try:
             self.session.commit()

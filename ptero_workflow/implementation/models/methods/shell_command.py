@@ -1,4 +1,4 @@
-from ..execution import Execution
+from ..execution.method_execution import MethodExecution
 from ..json_type import JSON
 from .method_base import Method
 from ptero_common.logging_configuration import logged_request
@@ -30,65 +30,51 @@ class ShellCommand(Method):
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
             ['begun', 'error', 'execute', 'failure', 'success'])
 
-    def _place_name(self, kind):
-        return '%s-%s-%s' % (self.task.unique_name, self.name, kind)
-
-    def attach_transitions(self, transitions, input_place_name):
-        success_place_name = self._place_name('success')
-        failure_place_name = self._place_name('failure')
-
-        wait_place_name = self._place_name('wait')
-
-        success_callback_place_name = self._place_name('success-callback')
-        failure_callback_place_name = self._place_name('failure-callback')
-
+    def attach_subclass_transitions(self, transitions, input_place_name):
         transitions.append({
             'inputs': [input_place_name],
-            'outputs': [wait_place_name],
+            'outputs': [self._pn('wait')],
             'action': {
                 'type': 'notify',
                 'url': self.callback_url('execute'),
                 'response_places': {
-                    'success': success_callback_place_name,
-                    'failure': failure_callback_place_name,
+                    'success': self._pn('execute_success'),
+                    'failure': self._pn('execute_failure'),
                 },
             }
         })
 
         transitions.extend([
             {
-                'inputs': [wait_place_name, success_callback_place_name],
-                'outputs': [success_place_name],
+                'inputs': [self._pn('wait'), self._pn('execute_success')],
+                'outputs': [self._pn('success')],
             },
             {
-                'inputs': [wait_place_name, failure_callback_place_name],
-                'outputs': [failure_place_name],
+                'inputs': [self._pn('wait'), self._pn('execute_failure')],
+                'outputs': [self._pn('failure')],
             }
         ])
 
-        return success_place_name, failure_place_name
+        return self._pn('success'), self._pn('failure')
 
     def execute(self, body_data, query_string_data):
-        color = body_data['color']
-        group = body_data['group']
-        response_links = body_data['response_links']
-
-        colors = group.get('color_lineage', []) + [color]
-        begins = group.get('begin_lineage', []) + [group['begin']]
-        parent_color = _get_parent_color(colors)
-
         s = object_session(self)
-        execution = Execution(method=self, color=color,
-                colors=colors, begins=begins,
-                parent_color=parent_color, data={
-                    'petri_response_links': response_links,
-        })
-        s.add(execution)
+
+        color = body_data['color']
+        execution = s.query(MethodExecution).filter(
+                MethodExecution.method==self,
+                MethodExecution.color==color).one()
+        execution.data['petri_response_links_for_shell_command'] = \
+                body_data['response_links']
         s.commit()
 
         if (self.task.is_canceled):
             execution.append_status('canceled')
         else:
+            group = body_data['group']
+            colors = group.get('color_lineage', []) + [color]
+            begins = group.get('begin_lineage', []) + [group['begin']]
+
             job_id = self._submit_to_shell_command(colors, begins, execution.id)
             execution.data['job_id'] = job_id
 
@@ -98,7 +84,7 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('begun')
@@ -108,12 +94,12 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('succeeded')
         s.commit()
-        response_url = execution.data['petri_response_links']['success']
+        response_url = execution.data['petri_response_links_for_shell_command']['success']
 
         self.http.delay('PUT', response_url)
 
@@ -121,12 +107,12 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('failed')
         s.commit()
-        response_url = execution.data['petri_response_links']['failure']
+        response_url = execution.data['petri_response_links_for_shell_command']['failure']
 
         self.http.delay('PUT', response_url)
 
@@ -134,12 +120,12 @@ class ShellCommand(Method):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
-        execution = s.query(Execution).filter_by(id=execution_id,
+        execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
         execution.append_status('errored')
         s.commit()
-        response_url = execution.data['petri_response_links']['failure']
+        response_url = execution.data['petri_response_links_for_shell_command']['failure']
         self.http.delay('PUT', response_url)
 
     def _submit_to_shell_command(self, colors, begins, execution_id):
@@ -153,11 +139,6 @@ class ShellCommand(Method):
         else:
             raise RuntimeError("Cannot submit to shell-command:\n%s" %
                     pformat(response_info))
-
-    @property
-    def http(self):
-        return celery.current_app.tasks[
-                'ptero_common.celery.http.HTTP']
 
     @property
     def http_with_result(self):
@@ -190,10 +171,3 @@ class ShellCommand(Method):
             },
         })
         return submit_data
-
-def _get_parent_color(colors):
-    if len(colors) == 1:
-        return None
-
-    else:
-        return colors[-2]

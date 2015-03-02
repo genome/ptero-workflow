@@ -33,27 +33,27 @@ class DAG(Method):
             for task in child.all_tasks_iterator():
                 yield task
 
-    def attach_transitions(self, transitions, start_place):
+    def attach_subclass_transitions(self, transitions, start_place):
         for child in self.child_list:
-            child_start_place = self._child_start_place(child.name)
+            child_start_place = self._pn(child.name, 'start')
             child_success_place, child_failure_place = child.attach_transitions(
                     transitions, child_start_place)
 
             if child.name == 'output connector':
                 transitions.append({
                     'inputs': [child_success_place],
-                    'outputs': [self.success_place_name],
+                    'outputs': [self._pn('success')],
                 })
 
             if child_failure_place is not None:
                 transitions.append({
                     'inputs': [child_failure_place],
-                    'outputs': [self._failure_collection_place_name],
+                    'outputs': [self._pn('failure_collection')],
                 })
 
             if child.input_tasks:
                 transitions.append({
-                    'inputs': [self._link_place_name(t, child)
+                    'inputs': [self._link_pn(t, child)
                         for t in child.input_tasks],
                     'outputs': [child_start_place],
                 })
@@ -61,39 +61,28 @@ class DAG(Method):
             if child.output_tasks:
                 transitions.append({
                     'inputs': [child_success_place],
-                    'outputs': [self._link_place_name(child, t)
+                    'outputs': [self._link_pn(child, t)
                         for t in child.output_tasks],
                 })
 
         transitions.extend([
             {
                 'inputs': [start_place],
-                'outputs': [self._child_start_place('input connector'),
-                    self._failure_limit_place_name],
+                'outputs': [self._pn('input connector', 'start'),
+                    self._pn('failure_limit')],
             },
             {
-                'inputs': [self._failure_collection_place_name,
-                    self._failure_limit_place_name],
-                'outputs': [self.failure_place_name],
+                'inputs': [self._pn('failure_collection'),
+                    self._pn('failure_limit')],
+                'outputs': [self._pn('failure')],
             },
         ])
 
-        return (self.success_place_name, self.failure_place_name)
+        return (self._pn('success'), self._pn('failure'))
 
-    def _child_start_place(self, child_name):
-        return '%s:%s-start' % (self.unique_name, child_name)
-
-    def _link_place_name(self, source, destination):
-        return '%s:%s-to-%s-link' % (self.unique_name, source.unique_name,
-                destination.unique_name)
-
-    @property
-    def _failure_collection_place_name(self):
-        return '%s-failure-collection' % self.unique_name
-
-    @property
-    def _failure_limit_place_name(self):
-        return '%s-failure-limit' % self.unique_name
+    def _link_pn(self, source, destination):
+        return '%s:%s-to-%s-link' % (self._pn(), source._pn(),
+                destination._pn())
 
     def resolve_output_source(self, session, name, parallel_depths):
         oc = self.children['output connector']
@@ -114,19 +103,6 @@ class DAG(Method):
     def output_names(self):
         oc = self.children['output connector']
         return oc.input_names
-
-    @property
-    def unique_name(self):
-        name = self.name or ''
-        return '-'.join(['task', str(self.id), name.replace(' ', '_')])
-
-    @property
-    def failure_place_name(self):
-        return '%s-failure' % self.unique_name
-
-    @property
-    def success_place_name(self):
-        return '%s-success' % self.unique_name
 
     @property
     def parameters(self):

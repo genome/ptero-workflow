@@ -1,6 +1,7 @@
 from ..base import Base
 from .. import result
 from .. import input_source
+from ..execution.task_execution import TaskExecution
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text, Boolean
 from sqlalchemy.inspection import inspect
@@ -26,6 +27,7 @@ class Task(Base):
 
     VALID_CALLBACK_TYPES = set([
         'create_array_result',
+        'create_execution',
         'get_split_size',
         'set_status',
     ])
@@ -55,6 +57,10 @@ class Task(Base):
         self.is_canceled = True
         self.status = 'canceled'
 
+    def _pn(self, *args):
+        name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
+        return '-'.join([name_base] + list(args))
+
     def all_tasks_iterator(self):
         return []
 
@@ -69,13 +75,17 @@ class Task(Base):
         return result
 
     def attach_transitions(self, transitions, start_place):
+        execution_created_place = \
+                self.attach_execution_transitions(transitions, start_place)
+
         if self.parallel_by is None:
             action_success_place, action_failure_place = \
-                    self.attach_subclass_transitions(transitions, start_place)
+                    self.attach_subclass_transitions(transitions,
+                            execution_created_place)
 
         else:
             split_place = self._attach_split_transitions(
-                    transitions, start_place)
+                    transitions, execution_created_place)
             subclass_success_place, subclass_failure_place = \
                     self.attach_subclass_transitions(transitions, split_place)
             action_success_place, action_failure_place = \
@@ -87,6 +97,28 @@ class Task(Base):
 
         return success_place, failure_place
 
+    def attach_execution_transitions(self, transitions, start_place):
+        transitions.extend([
+            {
+                'inputs': [start_place],
+                'outputs': [self._pn('create_execution_wait')],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('create_execution'),
+                    'response_places': {
+                        'created': self._pn('create_execution_success'),
+                    },
+                },
+            },
+
+            {
+                'inputs': [self._pn('create_execution_wait'),
+                    self._pn('create_execution_success')],
+                'outputs': [self._pn('execution_created_success')],
+            },
+        ])
+        return self._pn('execution_created_success')
+
     def attach_subclass_transitions(self, transitions, start_place):
         return start_place, None
 
@@ -94,37 +126,37 @@ class Task(Base):
         transitions.extend([
             {
                 'inputs': [start_place],
-                'outputs': [self.split_size_wait_place_name,
-                    self.join_fail_wait_place_name],
+                'outputs': [self._pn('split_size_wait'),
+                    self._pn('join_fail_wait')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('get_split_size'),
                     'requested_data': ['color_group_size'],
                     'response_places': {
-                        'send_data': self.split_size_place_name,
+                        'send_data': self._pn('split_size'),
                     },
                 },
             },
 
             {
-                'inputs': [self.split_size_wait_place_name,
-                    self.split_size_place_name],
-                'outputs': [self.color_group_created_place_name],
+                'inputs': [self._pn('split_size_wait'),
+                    self._pn('split_size')],
+                'outputs': [self._pn('color_group_created')],
                 'action': {
                     'type': 'create-color-group',
                 },
             },
 
             {
-                'inputs': [self.color_group_created_place_name],
-                'outputs': [self.split_place_name],
+                'inputs': [self._pn('color_group_created')],
+                'outputs': [self._pn('split')],
                 'action': {
                     'type': 'split',
                 },
             },
         ])
 
-        return self.split_place_name
+        return self._pn('split')
 
 
     def _attach_join_transitions(self, transitions, subclass_success_place,
@@ -132,55 +164,55 @@ class Task(Base):
         transitions.extend([
             {
                 'inputs': [subclass_success_place],
-                'outputs': [self.joined_place_name],
+                'outputs': [self._pn('joined')],
                 'type': 'barrier',
                 'action': {
                     'type': 'join',
                 }
             },
             {
-                'inputs': [self.joined_place_name],
-                'outputs': [self.array_result_wait_place_name],
+                'inputs': [self._pn('joined')],
+                'outputs': [self._pn('array_result_wait')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('create_array_result'),
                     'response_places': {
-                        'created': self.array_result_callback_place_name,
+                        'created': self._pn('array_result_callback'),
                     }
                 },
             },
             {
-                'inputs': [self.array_result_wait_place_name,
-                    self.array_result_callback_place_name],
-                'outputs': [self.join_success_place_name],
+                'inputs': [self._pn('array_result_wait'),
+                    self._pn('array_result_callback')],
+                'outputs': [self._pn('join_success')],
             },
 
             {
                 'inputs': [subclass_failure_place],
-                'outputs': [self.join_fail_convert_place_name],
+                'outputs': [self._pn('join_fail_convert')],
                 'action': {
                     'type': 'convert-to-parent-color',
                 },
             },
             {
-                'inputs': [self.join_fail_convert_place_name,
-                    self.join_fail_wait_place_name],
-                'outputs': [self.join_fail_place_name],
+                'inputs': [self._pn('join_fail_convert'),
+                    self._pn('join_fail_wait')],
+                'outputs': [self._pn('join_fail')],
             },
         ])
 
-        return self.join_success_place_name, self.join_fail_place_name
+        return self._pn('join_success'), self._pn('join_fail')
 
     def _attach_status_update_actions(self, transitions, action_success_place,
             action_failure_place):
         transitions.append({
                 'inputs': [action_success_place],
-                'outputs': [self.update_status_success_place_name],
+                'outputs': [self._pn('update_status_success')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='success')
                 }})
-        success_place = self.update_status_success_place_name
+        success_place = self._pn('update_status_success')
 
 
         if action_failure_place is None:
@@ -189,66 +221,14 @@ class Task(Base):
         else:
             transitions.append({
                 'inputs': [action_failure_place],
-                    'outputs': [self.update_status_failure_place_name],
+                    'outputs': [self._pn('update_status_failure')],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='failure')
                 }})
-            failure_place = self.update_status_failure_place_name
+            failure_place = self._pn('update_status_failure')
 
         return success_place, failure_place
-
-    @property
-    def update_status_success_place_name(self):
-        return '%s-update-status-success' % self.unique_name
-
-    @property
-    def update_status_failure_place_name(self):
-        return '%s-update-status-failure' % self.unique_name
-
-    @property
-    def array_result_wait_place_name(self):
-        return '%s-array-result-wait' % self.unique_name
-
-    @property
-    def array_result_callback_place_name(self):
-        return '%s-array-result-callback' % self.unique_name
-
-    @property
-    def join_success_place_name(self):
-        return '%s-join-success-place' % self.unique_name
-
-    @property
-    def split_size_wait_place_name(self):
-        return '%s-split-size-wait' % self.unique_name
-
-    @property
-    def split_size_place_name(self):
-        return '%s-split-size' % self.unique_name
-
-    @property
-    def color_group_created_place_name(self):
-        return '%s-color-group-created-place' % self.unique_name
-
-    @property
-    def split_place_name(self):
-        return '%s-split' % self.unique_name
-
-    @property
-    def joined_place_name(self):
-        return '%s-joined' % self.unique_name
-
-    @property
-    def join_fail_wait_place_name(self):
-        return '%s-join-fail-wait' % self.unique_name
-
-    @property
-    def join_fail_convert_place_name(self):
-        return '%s-join-fail-convert' % self.unique_name
-
-    @property
-    def join_fail_place_name(self):
-        return '%s-join-fail' % self.unique_name
 
     @property
     def parallel_depth(self):
@@ -323,14 +303,6 @@ class Task(Base):
         mapper = inspect(cls)
         return mapper.polymorphic_map[type].class_
 
-    @property
-    def unique_name(self):
-        return '-'.join(['task', str(self.id), self.name.replace(' ', '_')])
-
-    @property
-    def success_place_name(self):
-        return '%s-success' % self.unique_name
-
     def callback_url(self, callback_type, **params):
         if params:
             query_string = '?%s' % urllib.urlencode(params)
@@ -387,16 +359,32 @@ class Task(Base):
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
+    def create_execution(self, body_data, query_string_data):
+        color = body_data['color']
+        group = body_data['group']
+        response_links = body_data['response_links']
+
+        colors = group.get('color_lineage', []) + [color]
+        begins = group.get('begin_lineage', []) + [group['begin']]
+        parent_color = _get_parent_color(colors)
+
+        s = object_session(self)
+        execution = TaskExecution(task=self, color=color,
+                colors=colors, begins=begins,
+                parent_color=parent_color, data={
+                    'petri_response_links': response_links,
+        })
+        s.add(execution)
+        s.commit()
+
+        self.http.delay('PUT', response_links['created'])
+
     def set_status(self, body_data, query_string_data):
         LOG.debug('Setting status on task %s (%s) from %s to "%s"',
                 self.id, self.name, self.status, query_string_data['status'])
         self.status = query_string_data['status']
         s = object_session(self)
         s.commit()
-
-    @property
-    def failure_place_name(self):
-        return '%s-failure' % self.unique_name
 
     def resolve_input_source(self, session, name, parallel_depths):
         if self.parallel_by == name:
@@ -443,3 +431,10 @@ class Task(Base):
         results = s.query(result.Result).filter_by(task=self, color=color).all()
         if results:
             return {r.name: r.data for r in results}
+
+def _get_parent_color(colors):
+    if len(colors) == 1:
+        return None
+
+    else:
+        return colors[-2]

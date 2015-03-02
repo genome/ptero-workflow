@@ -1,12 +1,12 @@
-from .base import Base
-from .json_type import JSON
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text
+from ..base import Base
+from ..json_type import JSON, MutableJSONDict
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, String
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.session import object_session
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError)
-from . import result
+from .. import result
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -20,19 +20,25 @@ class Execution(Base):
 
     __table_args__ = (
         UniqueConstraint('method_id', 'color'),
+        UniqueConstraint('task_id', 'color'),
     )
 
     id = Column(Integer, primary_key=True)
 
-    method_id = Column(Integer, ForeignKey('method.id'), nullable=False)
-    method = relationship('Method', backref='executions')
-
     color = Column(Integer, index=True, nullable=False)
     parent_color = Column(Integer, index=True, nullable=True)
 
-    data = Column(JSON)
+    method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
+    task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
+
+    data = Column(MutableJSONDict)
     colors = Column(JSON)
     begins = Column(JSON)
+
+    type = Column(String, nullable=False)
+    __mapper_args__ = {
+            'polymorphic_on': 'type',
+    }
 
     UPDATE_METHODS = {
         'status': 'update_status',

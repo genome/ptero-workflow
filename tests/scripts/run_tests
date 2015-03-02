@@ -14,7 +14,8 @@ EXIT_CODE=0
 function collect_test_names_dry_run() {
   local FAILURES=$(nosetests --collect-only -v 2>&1 |grep '^Failure:')
   if ! test -z "${FAILURES}"; then
-      printf "Failed to collect tests to run:\n%s" ${FAILURES}
+      echo "Failed to collect tests to run:"
+      echo "$FAILURES"
       exit 1
   fi
 }
