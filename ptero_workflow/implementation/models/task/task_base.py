@@ -38,7 +38,6 @@ class Task(Base):
         name='fk_task_parent_dag'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
-    status = Column(Text)
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
 
@@ -50,6 +49,9 @@ class Task(Base):
             backref=backref('task', uselist=False),
             collection_class=attribute_mapped_collection('color'),
             cascade='all, delete-orphan')
+
+    def status(self, color):
+        return self.executions[color].status
 
     def cancel(self):
         if self.parent is not None:
@@ -379,10 +381,14 @@ class Task(Base):
         self.http.delay('PUT', response_links['created'])
 
     def set_status(self, body_data, query_string_data):
-        LOG.debug('Setting status on task %s (%s) from %s to "%s"',
-                self.id, self.name, self.status, query_string_data['status'])
-        self.status = query_string_data['status']
         s = object_session(self)
+
+        color = body_data['color']
+        execution = s.query(TaskExecution).filter(
+                TaskExecution.task==self,
+                TaskExecution.color==color).one()
+        execution.append_status(query_string_data['status'])
+
         s.commit()
 
     def resolve_input_source(self, session, name, parallel_depths):

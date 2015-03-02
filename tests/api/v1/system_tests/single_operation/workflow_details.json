@@ -17,7 +17,7 @@
                 }
             ],
             "executions": {
-                "0": { "status": "new" }
+                "0": { "status": "succeeded" }
             }
         }
     },

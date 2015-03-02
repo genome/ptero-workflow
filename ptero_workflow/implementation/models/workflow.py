@@ -59,7 +59,7 @@ class Workflow(Base):
 
     @property
     def status(self):
-        return self.root_task.status
+        return self.root_task.status(color=self.color)
 
     def all_tasks_iterator(self):
         yield self.root_task
