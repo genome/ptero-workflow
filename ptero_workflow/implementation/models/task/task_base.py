@@ -65,13 +65,7 @@ class Task(Base):
         return []
 
     def as_dict(self, detailed):
-        result = {
-            'name': self.name,
-            'type': self.type,
-        }
-        if (self.parallel_by is not None):
-            result['parallel_by'] = self.parallel_by
-        return result
+        raise NotImplementedError
 
     def attach_transitions(self, transitions, start_place):
         execution_created_place = \
