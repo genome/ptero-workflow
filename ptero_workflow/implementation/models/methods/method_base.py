@@ -2,7 +2,8 @@ from ..base import Base
 from ..execution.method_execution import MethodExecution
 from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import celery
 import os
@@ -32,6 +33,11 @@ class Method(Base):
     name = Column(Text)
 
     index = Column(Integer, nullable=True, index=True)
+
+    executions = relationship('MethodExecution',
+            backref=backref('method', uselist=False),
+            collection_class=attribute_mapped_collection('color'),
+            cascade='all, delete-orphan')
 
     type = Column(Text, nullable=False)
     __mapper_args__ = {
