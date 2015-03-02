@@ -143,11 +143,18 @@ class Method(Base):
         raise NotImplementedError
 
     def as_dict(self, detailed):
-        return {
+        result = {
             'name': self.name,
             'service': self.service,
             'parameters': self.get_parameters(detailed=detailed),
         }
+
+        if detailed:
+            result['executions'] = {
+                    color: execution.as_dict(detailed=detailed)
+                    for color, execution in self.executions.iteritems()}
+
+        return result
 
 def _get_parent_color(colors):
     if len(colors) == 1:
