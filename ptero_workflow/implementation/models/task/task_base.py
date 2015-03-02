@@ -5,7 +5,8 @@ from ..execution.task_execution import TaskExecution
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text, Boolean
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
@@ -44,6 +45,11 @@ class Task(Base):
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }
+
+    executions = relationship('TaskExecution',
+            backref=backref('task', uselist=False),
+            collection_class=attribute_mapped_collection('color'),
+            cascade='all, delete-orphan')
 
     def cancel(self):
         if self.parent is not None:
