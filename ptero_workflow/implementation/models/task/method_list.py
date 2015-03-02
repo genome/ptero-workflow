@@ -57,4 +57,8 @@ class MethodList(Task):
         }
         if self.parallel_by is not None:
             result['parallelBy'] = self.parallel_by
+        if detailed:
+            result['executions'] = {
+                    color: execution.as_dict(detailed=detailed)
+                    for color, execution in self.executions.iteritems()}
         return result
