@@ -104,12 +104,12 @@ class DAG(Method):
         oc = self.children['output connector']
         return oc.input_names
 
-    @property
-    def parameters(self):
+    def get_parameters(self,detailed=False):
         return {
-            'tasks': {t.name: t.as_dict for t in self.children.itervalues()
+            'tasks': {t.name: t.as_dict(detailed=detailed)
+                for t in self.children.itervalues()
                     if t.type not in ['InputConnector', 'OutputConnector']},
-            'links': [l.as_dict for l in self.links],
+            'links': [l.as_dict(detailed=detailed) for l in self.links],
         }
 
     @property

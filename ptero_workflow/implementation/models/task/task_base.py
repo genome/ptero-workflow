@@ -5,7 +5,8 @@ from ..execution.task_execution import TaskExecution
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text, Boolean
 from sqlalchemy.inspection import inspect
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
@@ -45,6 +46,11 @@ class Task(Base):
         'polymorphic_on': 'type',
     }
 
+    executions = relationship('TaskExecution',
+            backref=backref('task', uselist=False),
+            collection_class=attribute_mapped_collection('color'),
+            cascade='all, delete-orphan')
+
     def cancel(self):
         if self.parent is not None:
             parent_info = " in DAG ID:%s with name (%s)" %\
@@ -64,15 +70,8 @@ class Task(Base):
     def all_tasks_iterator(self):
         return []
 
-    @property
-    def as_dict(self):
-        result = {
-            'name': self.name,
-            'type': self.type,
-        }
-        if (self.parallel_by is not None):
-            result['parallel_by'] = self.parallel_by
-        return result
+    def as_dict(self, detailed):
+        raise NotImplementedError
 
     def attach_transitions(self, transitions, start_place):
         execution_created_place = \

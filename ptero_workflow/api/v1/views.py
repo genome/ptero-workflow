@@ -115,4 +115,4 @@ class ReportDetailView(Resource):
     @logged_response(logger=LOG)
     def get(self, report_type):
         generator = reports.get_report_generator(report_type)
-        return generator(**request.args)
+        return generator(**request.args), 200

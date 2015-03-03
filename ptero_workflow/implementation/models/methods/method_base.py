@@ -2,7 +2,8 @@ from ..base import Base
 from ..execution.method_execution import MethodExecution
 from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 import celery
 import os
@@ -32,6 +33,11 @@ class Method(Base):
     name = Column(Text)
 
     index = Column(Integer, nullable=True, index=True)
+
+    executions = relationship('MethodExecution',
+            backref=backref('method', uselist=False),
+            collection_class=attribute_mapped_collection('color'),
+            cascade='all, delete-orphan')
 
     type = Column(Text, nullable=False)
     __mapper_args__ = {
@@ -136,13 +142,19 @@ class Method(Base):
     def parameters(self):
         raise NotImplementedError
 
-    @property
-    def as_dict(self):
-        return {
+    def as_dict(self, detailed):
+        result = {
             'name': self.name,
             'service': self.service,
-            'parameters': self.parameters,
+            'parameters': self.get_parameters(detailed=detailed),
         }
+
+        if detailed:
+            result['executions'] = {
+                    color: execution.as_dict(detailed=detailed)
+                    for color, execution in self.executions.iteritems()}
+
+        return result
 
 def _get_parent_color(colors):
     if len(colors) == 1:
