@@ -25,6 +25,7 @@ class RoundTripSuccess(object):
     def test_get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
         del(get_response.DATA['reports'])
+        del(get_response.DATA['status'])
         self.assertTrue(self.compareDictAsJSON(expected=self.post_data,
             actual=get_response.DATA))
 

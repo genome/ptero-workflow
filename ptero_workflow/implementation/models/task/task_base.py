@@ -50,8 +50,17 @@ class Task(Base):
             collection_class=attribute_mapped_collection('color'),
             cascade='all, delete-orphan')
 
+    def __init__(self, *args, **kwargs):
+        Base.__init__(self, *args, **kwargs)
+        TaskExecution(task=self, color=0, parent_color=None,
+                colors=[0], begins=[0])
+
     def status(self, color):
-        return self.executions[color].status
+        try:
+            return self.executions[color].status
+        except KeyError:
+            # if task hasn't created any Executions of this color yet
+            return None
 
     def cancel(self):
         if self.parent is not None:
@@ -362,21 +371,26 @@ class Task(Base):
 
     def create_execution(self, body_data, query_string_data):
         color = body_data['color']
-        group = body_data['group']
         response_links = body_data['response_links']
+        if color != 0:
+            group = body_data['group']
 
-        colors = group.get('color_lineage', []) + [color]
-        begins = group.get('begin_lineage', []) + [group['begin']]
-        parent_color = _get_parent_color(colors)
+            colors = group.get('color_lineage', []) + [color]
+            begins = group.get('begin_lineage', []) + [group['begin']]
+            parent_color = _get_parent_color(colors)
 
-        s = object_session(self)
-        execution = TaskExecution(task=self, color=color,
-                colors=colors, begins=begins,
-                parent_color=parent_color, data={
-                    'petri_response_links': response_links,
-        })
-        s.add(execution)
-        s.commit()
+            s = object_session(self)
+            execution = TaskExecution(task=self, color=color,
+                    colors=colors, begins=begins,
+                    parent_color=parent_color, data={
+                        'petri_response_links': response_links,
+            })
+            s.add(execution)
+            s.commit()
+
+            if self.is_canceled:
+                execution.status = 'canceled'
+                s.commit()
 
         self.http.delay('PUT', response_links['created'])
 
