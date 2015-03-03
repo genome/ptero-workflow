@@ -1,0 +1,56 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "shortcut",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["false"],
+                        "user": "",
+                        "workingDirectory": "",
+                        "environment": ""
+                    },
+                    "executions": {
+                        "0": { "status": "failed" }
+                    }
+                },
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./echo_command"],
+                        "user": "",
+                        "workingDirectory": "",
+                        "environment": ""
+                    },
+                    "executions": {
+                        "0": { "status": "succeeded" }
+                    }
+                }
+            ],
+            "executions": {
+                "0": { "status": "succeeded" }
+            }
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_a",
+            "destinationProperty": "param"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "param",
+            "destinationProperty": "out_a"
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens"
+    }
+}
