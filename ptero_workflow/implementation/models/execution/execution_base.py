@@ -3,10 +3,8 @@ from ..json_type import JSON, MutableJSONDict
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, String
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
-from sqlalchemy.orm.session import object_session
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError)
-from .. import result
 import logging
 
 LOG = logging.getLogger(__name__)
