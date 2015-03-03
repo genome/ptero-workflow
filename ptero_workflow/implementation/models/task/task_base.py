@@ -72,7 +72,8 @@ class Task(Base):
             "Canceling task ID:%s with name (%s)%s",
             self.id, self.name, parent_info)
         self.is_canceled = True
-        self.status = 'canceled'
+        for execution in self.executions.values():
+            execution.status = 'canceled'
 
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
