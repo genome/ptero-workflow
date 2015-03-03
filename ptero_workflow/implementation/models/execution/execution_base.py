@@ -4,14 +4,24 @@ from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, String
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
-        ImmutableUpdateError)
+        ImmutableUpdateError, InvalidStatusError)
 import logging
 
 LOG = logging.getLogger(__name__)
 
+VALID_STATUS_TRANSITIONS = {
+    'new': ('scheduled', 'running', 'failed', 'errored', 'succeeded',
+        'canceled'),
+    'scheduled': ('running', 'failed', 'errored', 'succeeded' ,'canceled'),
+    'running': ('failed', 'errored', 'succeeded' ,'canceled'),
+    'failed': tuple(),
+    'errored': tuple(),
+    'succeeded': tuple(),
+    'canceled': tuple(),
+}
+VALID_STATUS_VALUES = VALID_STATUS_TRANSITIONS.keys()
 
 __all__ = ['Execution']
-
 
 class Execution(Base):
     __tablename__ = 'execution'
@@ -46,14 +56,24 @@ class Execution(Base):
 
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
-        self.append_status('new')
-
-    def append_status(self, status):
-        return ExecutionStatusHistory(execution=self, status=status)
+        ExecutionStatusHistory(execution=self, status='new')
 
     @property
     def status(self):
         return self.status_history[-1].status
+
+    @status.setter
+    def status(self, status):
+        if status not in VALID_STATUS_VALUES:
+            raise InvalidStatusError(
+                    "Status (%s) isn't one of the valid status values: %s" %
+                    (status, str(VALID_STATUS_VALUES)))
+        else:
+            if status not in VALID_STATUS_TRANSITIONS[self.status]:
+                LOG.debug("Refusing to change status from (%s) to (%s), valid status transitions are: %s",
+                    self.status, status, str(VALID_STATUS_TRANSITIONS[status]))
+            else:
+                return ExecutionStatusHistory(execution=self, status=status)
 
     def as_dict(self, detailed):
         result = {name: getattr(self, name) for name in ['color',
@@ -82,7 +102,7 @@ class Execution(Base):
                 getattr(self, self.UPDATE_METHODS[name])(old_data[name], update_data[name])
 
     def update_status(self, old_status, new_status):
-        self.append_status(new_status)
+        self.status = new_status
 
     def update_data(self, old_data, new_data):
         updated_data = old_data.copy()

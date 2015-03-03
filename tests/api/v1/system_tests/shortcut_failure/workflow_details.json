@@ -3,6 +3,19 @@
         "A": {
             "methods": [
                 {
+                    "name": "shortcut",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["false"],
+                        "user": "",
+                        "workingDirectory": "",
+                        "environment": ""
+                    },
+                    "executions": {
+                        "0": { "status": "failed" }
+                    }
+                },
+                {
                     "name": "execute",
                     "service": "shell-command",
                     "parameters": {

@@ -1,4 +1,9 @@
 from ..base import BaseAPITest
+import time
+import logging
+from pprint import pformat
+
+LOG = logging.getLogger(__name__)
 
 
 class TestCancelWorkflow(BaseAPITest):
@@ -44,11 +49,17 @@ class TestCancelWorkflow(BaseAPITest):
         post_response = self.post(self.post_url, self.post_data)
 
         self.assertEqual(201, post_response.status_code)
-        self.assertTrue(post_response.DATA.get('status') is None)
 
         workflow_url = post_response.headers['Location']
         self.patch(workflow_url, data={'is_canceled':True})
 
-        get_response = self.get(workflow_url)
-        self.assertEqual(200, get_response.status_code)
-        self.assertEqual(get_response.DATA['status'], 'canceled')
+        details_url = post_response.json()['reports']['workflow-details']
+        details_response = self.get(details_url)
+        self.assertEqual(200, details_response.status_code)
+        LOG.warning(pformat(details_response.json()))
+
+        status_url = post_response.json()['reports']['workflow-status']
+        status_response = self.get(status_url)
+        self.assertEqual(200, status_response.status_code)
+        self.assertEqual(status_response.json()['status'], 'canceled')
+

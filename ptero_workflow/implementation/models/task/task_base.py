@@ -38,7 +38,6 @@ class Task(Base):
         name='fk_task_parent_dag'), nullable=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
-    status = Column(Text)
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
 
@@ -51,6 +50,18 @@ class Task(Base):
             collection_class=attribute_mapped_collection('color'),
             cascade='all, delete-orphan')
 
+    def __init__(self, *args, **kwargs):
+        Base.__init__(self, *args, **kwargs)
+        TaskExecution(task=self, color=0, parent_color=None,
+                colors=[0], begins=[0])
+
+    def status(self, color):
+        try:
+            return self.executions[color].status
+        except KeyError:
+            # if task hasn't created any Executions of this color yet
+            return None
+
     def cancel(self):
         if self.parent is not None:
             parent_info = " in DAG ID:%s with name (%s)" %\
@@ -61,7 +72,8 @@ class Task(Base):
             "Canceling task ID:%s with name (%s)%s",
             self.id, self.name, parent_info)
         self.is_canceled = True
-        self.status = 'canceled'
+        for execution in self.executions.values():
+            execution.status = 'canceled'
 
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
@@ -209,7 +221,7 @@ class Task(Base):
                 'outputs': [self._pn('update_status_success')],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='success')
+                    'url': self.callback_url('set_status', status='succeeded')
                 }})
         success_place = self._pn('update_status_success')
 
@@ -223,7 +235,7 @@ class Task(Base):
                     'outputs': [self._pn('update_status_failure')],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='failure')
+                    'url': self.callback_url('set_status', status='failed')
                 }})
             failure_place = self._pn('update_status_failure')
 
@@ -360,29 +372,38 @@ class Task(Base):
 
     def create_execution(self, body_data, query_string_data):
         color = body_data['color']
-        group = body_data['group']
         response_links = body_data['response_links']
+        if color != 0:
+            group = body_data['group']
 
-        colors = group.get('color_lineage', []) + [color]
-        begins = group.get('begin_lineage', []) + [group['begin']]
-        parent_color = _get_parent_color(colors)
+            colors = group.get('color_lineage', []) + [color]
+            begins = group.get('begin_lineage', []) + [group['begin']]
+            parent_color = _get_parent_color(colors)
 
-        s = object_session(self)
-        execution = TaskExecution(task=self, color=color,
-                colors=colors, begins=begins,
-                parent_color=parent_color, data={
-                    'petri_response_links': response_links,
-        })
-        s.add(execution)
-        s.commit()
+            s = object_session(self)
+            execution = TaskExecution(task=self, color=color,
+                    colors=colors, begins=begins,
+                    parent_color=parent_color, data={
+                        'petri_response_links': response_links,
+            })
+            s.add(execution)
+            s.commit()
+
+            if self.is_canceled:
+                execution.status = 'canceled'
+                s.commit()
 
         self.http.delay('PUT', response_links['created'])
 
     def set_status(self, body_data, query_string_data):
-        LOG.debug('Setting status on task %s (%s) from %s to "%s"',
-                self.id, self.name, self.status, query_string_data['status'])
-        self.status = query_string_data['status']
         s = object_session(self)
+
+        color = body_data['color']
+        execution = s.query(TaskExecution).filter(
+                TaskExecution.task==self,
+                TaskExecution.color==color).one()
+        execution.status = query_string_data['status']
+
         s.commit()
 
     def resolve_input_source(self, session, name, parallel_depths):
