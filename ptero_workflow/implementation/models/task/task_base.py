@@ -387,7 +387,7 @@ class Task(Base):
         execution = s.query(TaskExecution).filter(
                 TaskExecution.task==self,
                 TaskExecution.color==color).one()
-        execution.append_status(query_string_data['status'])
+        execution.status = query_string_data['status']
 
         s.commit()
 

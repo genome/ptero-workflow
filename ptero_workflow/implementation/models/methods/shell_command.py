@@ -69,7 +69,9 @@ class ShellCommand(Method):
         s.commit()
 
         if (self.task.is_canceled):
-            execution.append_status('canceled')
+            execution.status = 'canceled'
+            response_url = body_data['response_links']['failure']
+            self.http.delay('PUT', response_url)
         else:
             group = body_data['group']
             colors = group.get('color_lineage', []) + [color]
@@ -87,7 +89,7 @@ class ShellCommand(Method):
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.append_status('running')
+        execution.status = 'running'
         s.commit()
 
     def success(self, body_data, query_string_data):
@@ -97,7 +99,7 @@ class ShellCommand(Method):
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.append_status('succeeded')
+        execution.status = 'succeeded'
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['success']
 
@@ -110,7 +112,7 @@ class ShellCommand(Method):
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.append_status('failed')
+        execution.status = 'failed'
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
 
@@ -123,7 +125,7 @@ class ShellCommand(Method):
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.append_status('errored')
+        execution.status = 'errored'
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
         self.http.delay('PUT', response_url)

@@ -6,3 +6,6 @@ class ImmutableUpdateError(Exception):
 
 class OutputsAlreadySet(ImmutableUpdateError):
     pass
+
+class InvalidStatusError(RuntimeError):
+    pass
