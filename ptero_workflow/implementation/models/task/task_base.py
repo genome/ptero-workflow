@@ -211,7 +211,7 @@ class Task(Base):
                 'outputs': [self._pn('update_status_success')],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='success')
+                    'url': self.callback_url('set_status', status='succeeded')
                 }})
         success_place = self._pn('update_status_success')
 
@@ -225,7 +225,7 @@ class Task(Base):
                     'outputs': [self._pn('update_status_failure')],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='failure')
+                    'url': self.callback_url('set_status', status='failed')
                 }})
             failure_place = self._pn('update_status_failure')
 

@@ -131,7 +131,7 @@ class TestCaseMixin(object):
 
     def _workflow_complete(self, url):
         data = self._get_workflow_data(url)
-        if data.get('status') in ['success', 'failure', 'error']:
+        if data.get('status') in ['succeeded', 'failed']:
             LOG.info("Workflow status was: %s", data.get('status'))
             return True
         else:

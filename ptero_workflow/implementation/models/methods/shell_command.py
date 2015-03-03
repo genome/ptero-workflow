@@ -87,7 +87,7 @@ class ShellCommand(Method):
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.append_status('begun')
+        execution.append_status('running')
         s.commit()
 
     def success(self, body_data, query_string_data):
