@@ -85,49 +85,54 @@ class Task(Base):
         raise NotImplementedError
 
     def attach_transitions(self, transitions, start_place):
+
         execution_created = \
-                self.attach_execution_transitions(transitions, start_place)
+                self.attach_execution_transitions(transitions, start_place, 'outer')
 
         if self.parallel_by is None:
             action_success, action_failure = \
                     self.attach_subclass_transitions(transitions,
                             execution_created)
-
         else:
             split = self._attach_split_transitions(
                     transitions, execution_created)
+            inner_execution_created = \
+                    self.attach_execution_transitions(transitions, split, 'inner')
             subclass_success, subclass_failure = \
-                    self.attach_subclass_transitions(transitions, split)
+                    self.attach_subclass_transitions(transitions, inner_execution_created)
+            update_success, update_failure = self._attach_status_update_actions(
+                    transitions, subclass_success, subclass_failure, 'inner')
             action_success, action_failure = \
                     self._attach_join_transitions(transitions,
-                            subclass_success, subclass_failure)
+                            update_success, update_failure)
 
         success, failure = self._attach_status_update_actions(
-                transitions, action_success, action_failure)
+                transitions, action_success, action_failure, 'outer')
+
 
         return success, failure
 
-    def attach_execution_transitions(self, transitions, start_place):
+    def attach_execution_transitions(self, transitions, start_place, name):
         transitions.extend([
             {
                 'inputs': [start_place],
-                'outputs': [self._pn('create_execution_wait')],
+                'outputs': [self._pn('create_execution_wait', name)],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('create_execution'),
                     'response_places': {
-                        'created': self._pn('create_execution_success'),
+                        'created': self._pn('create_execution_success', name),
                     },
                 },
             },
 
             {
-                'inputs': [self._pn('create_execution_wait'),
-                    self._pn('create_execution_success')],
-                'outputs': [self._pn('execution_created_success')],
+                'inputs': [self._pn('create_execution_wait', name),
+                    self._pn('create_execution_success', name)],
+                'outputs': [self._pn('execution_created_success', name)],
             },
         ])
-        return self._pn('execution_created_success')
+        return self._pn('execution_created_success', name)
 
     def attach_subclass_transitions(self, transitions, start_place):
         return start_place, None
@@ -214,15 +219,15 @@ class Task(Base):
         return self._pn('join_success'), self._pn('join_fail')
 
     def _attach_status_update_actions(self, transitions, action_success_place,
-            action_failure_place):
+            action_failure_place, name):
         transitions.append({
                 'inputs': [action_success_place],
-                'outputs': [self._pn('update_status_success')],
+                'outputs': [self._pn('update_status_success', name)],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='succeeded')
                 }})
-        success_place = self._pn('update_status_success')
+        success_place = self._pn('update_status_success', name)
 
 
         if action_failure_place is None:
@@ -231,12 +236,12 @@ class Task(Base):
         else:
             transitions.append({
                 'inputs': [action_failure_place],
-                    'outputs': [self._pn('update_status_failure')],
+                    'outputs': [self._pn('update_status_failure', name)],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='failed')
                 }})
-            failure_place = self._pn('update_status_failure')
+            failure_place = self._pn('update_status_failure', name)
 
         return success_place, failure_place
 
