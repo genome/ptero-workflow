@@ -8,6 +8,7 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm.exc import NoResultFound
 import celery
 import logging
 import os
@@ -52,8 +53,6 @@ class Task(Base):
 
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
-        TaskExecution(task=self, color=0, parent_color=None,
-                colors=[0], begins=[0])
 
     def status(self, color):
         try:
@@ -86,49 +85,54 @@ class Task(Base):
         raise NotImplementedError
 
     def attach_transitions(self, transitions, start_place):
-        execution_created_place = \
-                self.attach_execution_transitions(transitions, start_place)
+
+        execution_created = \
+                self.attach_execution_transitions(transitions, start_place, 'outer')
 
         if self.parallel_by is None:
-            action_success_place, action_failure_place = \
+            action_success, action_failure = \
                     self.attach_subclass_transitions(transitions,
-                            execution_created_place)
-
+                            execution_created)
         else:
-            split_place = self._attach_split_transitions(
-                    transitions, execution_created_place)
-            subclass_success_place, subclass_failure_place = \
-                    self.attach_subclass_transitions(transitions, split_place)
-            action_success_place, action_failure_place = \
+            split = self._attach_split_transitions(
+                    transitions, execution_created)
+            inner_execution_created = \
+                    self.attach_execution_transitions(transitions, split, 'inner')
+            subclass_success, subclass_failure = \
+                    self.attach_subclass_transitions(transitions, inner_execution_created)
+            update_success, update_failure = self._attach_status_update_actions(
+                    transitions, subclass_success, subclass_failure, 'inner')
+            action_success, action_failure = \
                     self._attach_join_transitions(transitions,
-                            subclass_success_place, subclass_failure_place)
+                            update_success, update_failure)
 
-        success_place, failure_place = self._attach_status_update_actions(
-                transitions, action_success_place, action_failure_place)
+        success, failure = self._attach_status_update_actions(
+                transitions, action_success, action_failure, 'outer')
 
-        return success_place, failure_place
 
-    def attach_execution_transitions(self, transitions, start_place):
+        return success, failure
+
+    def attach_execution_transitions(self, transitions, start_place, name):
         transitions.extend([
             {
                 'inputs': [start_place],
-                'outputs': [self._pn('create_execution_wait')],
+                'outputs': [self._pn('create_execution_wait', name)],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('create_execution'),
                     'response_places': {
-                        'created': self._pn('create_execution_success'),
+                        'created': self._pn('create_execution_success', name),
                     },
                 },
             },
 
             {
-                'inputs': [self._pn('create_execution_wait'),
-                    self._pn('create_execution_success')],
-                'outputs': [self._pn('execution_created_success')],
+                'inputs': [self._pn('create_execution_wait', name),
+                    self._pn('create_execution_success', name)],
+                'outputs': [self._pn('execution_created_success', name)],
             },
         ])
-        return self._pn('execution_created_success')
+        return self._pn('execution_created_success', name)
 
     def attach_subclass_transitions(self, transitions, start_place):
         return start_place, None
@@ -215,15 +219,15 @@ class Task(Base):
         return self._pn('join_success'), self._pn('join_fail')
 
     def _attach_status_update_actions(self, transitions, action_success_place,
-            action_failure_place):
+            action_failure_place, name):
         transitions.append({
                 'inputs': [action_success_place],
-                'outputs': [self._pn('update_status_success')],
+                'outputs': [self._pn('update_status_success', name)],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='succeeded')
                 }})
-        success_place = self._pn('update_status_success')
+        success_place = self._pn('update_status_success', name)
 
 
         if action_failure_place is None:
@@ -232,12 +236,12 @@ class Task(Base):
         else:
             transitions.append({
                 'inputs': [action_failure_place],
-                    'outputs': [self._pn('update_status_failure')],
+                    'outputs': [self._pn('update_status_failure', name)],
                 'action': {
                     'type': 'notify',
                     'url': self.callback_url('set_status', status='failed')
                 }})
-            failure_place = self._pn('update_status_failure')
+            failure_place = self._pn('update_status_failure', name)
 
         return success_place, failure_place
 
@@ -373,25 +377,30 @@ class Task(Base):
     def create_execution(self, body_data, query_string_data):
         color = body_data['color']
         response_links = body_data['response_links']
-        if color != 0:
+        s = object_session(self)
+
+        try:
+            execution = s.query(TaskExecution).filter(
+                    TaskExecution.task==self,
+                    TaskExecution.color==color).one()
+        except NoResultFound:
             group = body_data['group']
 
             colors = group.get('color_lineage', []) + [color]
             begins = group.get('begin_lineage', []) + [group['begin']]
             parent_color = _get_parent_color(colors)
 
-            s = object_session(self)
             execution = TaskExecution(task=self, color=color,
                     colors=colors, begins=begins,
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
             s.add(execution)
-            s.commit()
 
-            if self.is_canceled:
-                execution.status = 'canceled'
-                s.commit()
+        if self.is_canceled:
+            execution.status = 'canceled'
+
+        s.commit()
 
         self.http.delay('PUT', response_links['created'])
 
