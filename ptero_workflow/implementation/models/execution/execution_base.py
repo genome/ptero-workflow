@@ -39,7 +39,7 @@ class Execution(Base):
     method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
     task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
 
-    data = Column(MutableJSONDict)
+    data = Column(MutableJSONDict, nullable=False)
     colors = Column(JSON)
     begins = Column(JSON)
 
