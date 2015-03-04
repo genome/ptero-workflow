@@ -8,6 +8,7 @@ from sqlalchemy.inspection import inspect
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm.exc import NoResultFound
 import celery
 import logging
 import os
@@ -52,8 +53,6 @@ class Task(Base):
 
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
-        TaskExecution(task=self, color=0, parent_color=None,
-                colors=[0], begins=[0])
 
     def status(self, color):
         try:
@@ -373,25 +372,30 @@ class Task(Base):
     def create_execution(self, body_data, query_string_data):
         color = body_data['color']
         response_links = body_data['response_links']
-        if color != 0:
+        s = object_session(self)
+
+        try:
+            execution = s.query(TaskExecution).filter(
+                    TaskExecution.task==self,
+                    TaskExecution.color==color).one()
+        except NoResultFound:
             group = body_data['group']
 
             colors = group.get('color_lineage', []) + [color]
             begins = group.get('begin_lineage', []) + [group['begin']]
             parent_color = _get_parent_color(colors)
 
-            s = object_session(self)
             execution = TaskExecution(task=self, color=color,
                     colors=colors, begins=begins,
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
             s.add(execution)
-            s.commit()
 
-            if self.is_canceled:
-                execution.status = 'canceled'
-                s.commit()
+        if self.is_canceled:
+            execution.status = 'canceled'
+
+        s.commit()
 
         self.http.delay('PUT', response_links['created'])
 
