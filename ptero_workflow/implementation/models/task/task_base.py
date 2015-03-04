@@ -85,27 +85,27 @@ class Task(Base):
         raise NotImplementedError
 
     def attach_transitions(self, transitions, start_place):
-        execution_created_place = \
+        execution_created = \
                 self.attach_execution_transitions(transitions, start_place)
 
         if self.parallel_by is None:
-            action_success_place, action_failure_place = \
+            action_success, action_failure = \
                     self.attach_subclass_transitions(transitions,
-                            execution_created_place)
+                            execution_created)
 
         else:
-            split_place = self._attach_split_transitions(
-                    transitions, execution_created_place)
-            subclass_success_place, subclass_failure_place = \
-                    self.attach_subclass_transitions(transitions, split_place)
-            action_success_place, action_failure_place = \
+            split = self._attach_split_transitions(
+                    transitions, execution_created)
+            subclass_success, subclass_failure = \
+                    self.attach_subclass_transitions(transitions, split)
+            action_success, action_failure = \
                     self._attach_join_transitions(transitions,
-                            subclass_success_place, subclass_failure_place)
+                            subclass_success, subclass_failure)
 
-        success_place, failure_place = self._attach_status_update_actions(
-                transitions, action_success_place, action_failure_place)
+        success, failure = self._attach_status_update_actions(
+                transitions, action_success, action_failure)
 
-        return success_place, failure_place
+        return success, failure
 
     def attach_execution_transitions(self, transitions, start_place):
         transitions.extend([
