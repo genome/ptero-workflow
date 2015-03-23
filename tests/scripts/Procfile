@@ -1,4 +1,4 @@
-shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -r -e dev-noenv
+shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -r -e dev-noenv -- --num-workers=$PTERO_WORKFLOW_TEST_NUM_SHELL_COMMAND_WORKERS
 petri: cd $PTERO_PETRI_HOME; tox -r -e dev-noenv
 web: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run ptero_workflow/api/wsgi.py
 redis: redis-server --port $PTERO_WORKFLOW_REDIS_PORT
