@@ -100,6 +100,7 @@ class ShellCommand(Method):
                 method_id=self.id).one()
 
         execution.status = 'succeeded'
+        execution.data.update(body_data)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['success']
 
@@ -113,6 +114,7 @@ class ShellCommand(Method):
                 method_id=self.id).one()
 
         execution.status = 'failed'
+        execution.data.update(body_data)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
 
@@ -126,6 +128,7 @@ class ShellCommand(Method):
                 method_id=self.id).one()
 
         execution.status = 'errored'
+        execution.data.update(body_data)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
         self.http.delay('PUT', response_url)
