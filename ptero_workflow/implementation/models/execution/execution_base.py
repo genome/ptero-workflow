@@ -54,6 +54,20 @@ class Execution(Base):
         'outputs': 'update_outputs',
     }
 
+    @property
+    def name(self):
+        if self.method_id is not None:
+            return "%s.%s.%s" % (
+                    self.method.task.name,
+                    self.method.name,
+                    self.id,
+            )
+        else:
+            return "%s.%s" % (
+                    self.task.name,
+                    self.id,
+            )
+
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
         ExecutionStatusHistory(execution=self, status='new')
@@ -76,7 +90,7 @@ class Execution(Base):
                 return ExecutionStatusHistory(execution=self, status=status)
 
     def as_dict(self, detailed):
-        result = {name: getattr(self, name) for name in ['color',
+        result = {name: getattr(self, name) for name in ['name', 'color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
         if not detailed:
