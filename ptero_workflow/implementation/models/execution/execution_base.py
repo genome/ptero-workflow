@@ -93,12 +93,9 @@ class Execution(Base):
         result = {name: getattr(self, name) for name in ['name', 'color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
-        if not detailed:
-            result['method'] = self.method.as_dict(detailed=detailed)
         result['inputs'] = self.get_inputs()
         result['outputs'] = self.get_outputs()
         result['status_history'] = [h.as_dict(detailed=detailed) for h in self.status_history]
-        result['status'] = self.status
 
         return result
 
