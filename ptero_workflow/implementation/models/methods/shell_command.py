@@ -77,8 +77,15 @@ class ShellCommand(Method):
             colors = group.get('color_lineage', []) + [color]
             begins = group.get('begin_lineage', []) + [group['begin']]
 
-            job_id = self._submit_to_shell_command(colors, begins, execution.id)
-            execution.data['job_id'] = job_id
+            try:
+                job_id = self._submit_to_shell_command(colors, begins, execution.id)
+                execution.data['job_id'] = job_id
+            except Exception as e:
+                execution.status = 'errored';
+                execution.data['error_message'] = e.message
+
+                response_url = body_data['response_links']['failure']
+                self.http.delay('PUT', response_url)
 
         s.commit()
 
