@@ -1,2 +1,3 @@
 web: gunicorn ptero_workflow.api.wsgi:app --access-logfile - --error-logfile -
-worker: celery worker --loglevel=INFO -A ptero_workflow.implementation.celery_app
+worker: celery worker -A ptero_workflow.implementation.celery_app -Q submit
+http_worker: celery worker -A ptero_workflow.implementation.celery_app -Q http
