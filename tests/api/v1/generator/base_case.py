@@ -178,8 +178,8 @@ class TestCaseMixin(object):
         self._compare_executions(expected, actual)
 
         if expected['service'] == 'workflow':
-            expected_parameters = expected_result['parameters']
-            actual_parameters = actual_result['parameters']
+            expected_parameters = expected['parameters']
+            actual_parameters = actual['parameters']
             for name, task in expected_parameters['tasks'].iteritems():
                 self._compare_task_details(task,
                         actual_parameters['tasks'][name])
