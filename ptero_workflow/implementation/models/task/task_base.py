@@ -301,6 +301,7 @@ class Task(Base):
                     TaskExecution.color==color).one()
             execution.data['error'] = \
                 'Failed to get split size: %s' % e.message
+            s.commit()
             return
 
         LOG.debug('Split size for %s[%s] colors=%s is %s',
