@@ -19,7 +19,6 @@ env:
         - PTERO_SHELL_COMMAND_HOME=./ptero-shell-command
         - PTERO_PETRI_HOME=./ptero-petri
         - PTERO_WORKFLOW_DB_STRING=postgres://postgres@localhost/ptero_workflow
-        - TRAVIS_WAIT_TIME=120
 
 script:
     - tox -e py27
