@@ -94,7 +94,7 @@ class Task(Base):
                     self.attach_subclass_transitions(transitions,
                             execution_created)
         else:
-            split = self._attach_split_transitions(
+            split, split_failure = self._attach_split_transitions(
                     transitions, execution_created)
             inner_execution_created = \
                     self.attach_execution_transitions(transitions, split, 'inner')
@@ -102,9 +102,12 @@ class Task(Base):
                     self.attach_subclass_transitions(transitions, inner_execution_created)
             update_success, update_failure = self._attach_status_update_actions(
                     transitions, subclass_success, subclass_failure, 'inner')
-            action_success, action_failure = \
+            action_success, join_failure = \
                     self._attach_join_transitions(transitions,
                             update_success, update_failure)
+            action_failure = \
+                    self.attach_or_transitions(transitions,
+                            split_failure, join_failure)
 
         success, failure = self._attach_status_update_actions(
                 transitions, action_success, action_failure, 'outer')
@@ -148,18 +151,25 @@ class Task(Base):
                     'url': self.callback_url('get_split_size'),
                     'requested_data': ['color_group_size'],
                     'response_places': {
-                        'send_data': self._pn('split_size'),
+                        'send_data': self._pn('split_size_success'),
+                        'failure': self._pn('split_size_failure'),
                     },
                 },
             },
 
             {
                 'inputs': [self._pn('split_size_wait'),
-                    self._pn('split_size')],
+                    self._pn('split_size_success')],
                 'outputs': [self._pn('color_group_created')],
                 'action': {
                     'type': 'create-color-group',
                 },
+            },
+
+            {
+                'inputs': [self._pn('split_size_wait'),
+                    self._pn('split_size_failure')],
+                'outputs': [self._pn('split_failure')],
             },
 
             {
@@ -171,7 +181,7 @@ class Task(Base):
             },
         ])
 
-        return self._pn('split')
+        return self._pn('split'), self._pn('split_failure')
 
 
     def _attach_join_transitions(self, transitions, subclass_success_place,
@@ -245,6 +255,17 @@ class Task(Base):
 
         return success_place, failure_place
 
+    def attach_or_transitions(self, transitions, *place_names):
+        result_place = self._pn('or', *place_names)
+        for place_name in place_names:
+            transitions.extend([
+                {
+                    'inputs': [place_name],
+                    'outputs': [result_place],
+                },
+            ])
+        return result_place
+
     @property
     def parallel_depth(self):
         increment = 0
@@ -266,11 +287,23 @@ class Task(Base):
         begins = group.get('begin_lineage', []) + [group['begin']]
 
         s = object_session(self)
-        source = s.query(input_source.InputSource
-                ).filter_by(destination_task=self,
-                        destination_property=self.parallel_by
-                ).one()
-        size = source.get_size(colors, begins)
+        try:
+            source = s.query(input_source.InputSource
+                    ).filter_by(destination_task=self,
+                            destination_property=self.parallel_by
+                    ).one()
+            size = source.get_size(colors, begins)
+        except Exception as e:
+            LOG.exception('Failed to get split size')
+            self.http.delay('PUT', response_links['failure'])
+            execution = s.query(TaskExecution).filter(
+                    TaskExecution.task==self,
+                    TaskExecution.color==color).one()
+            execution.data['error'] = \
+                'Failed to get split size: %s' % e.message
+            s.commit()
+            return
+
         LOG.debug('Split size for %s[%s] colors=%s is %s',
                 self.name, self.parallel_by, colors, size)
         self.http.delay('PUT', response_links['send_data'],

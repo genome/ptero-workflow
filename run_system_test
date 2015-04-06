@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-tox -- tests.api.v1.test_system_tests:$1

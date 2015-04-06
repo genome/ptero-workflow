@@ -57,10 +57,14 @@ class TestCaseMixin(object):
         workflow_url, workflow_data = self._submit_workflow()
 
         status_report_url = workflow_data['reports']['workflow-status']
-        self._wait_for_completion(status_report_url)
+        workflow_status = self._wait_for_completion(status_report_url)
 
-        outputs_report_url = workflow_data['reports']['workflow-outputs']
-        self._verify_result(outputs_report_url)
+        if workflow_status == 'succeeded':
+            outputs_report_url = workflow_data['reports']['workflow-outputs']
+            self._verify_result(outputs_report_url)
+        else:
+            LOG.info("Workflow failed... Checking expected details")
+            self.assertTrue(self._expected_details is not None)
 
         if self._expected_details is not None:
             details_url = workflow_data['reports']['workflow-details']
@@ -76,12 +80,13 @@ class TestCaseMixin(object):
     def _wait_for_completion(self, status_url):
         max_loops = int(_MAX_WAIT_TIME/_POLLING_DELAY)
         for iteration in xrange(max_loops):
-            if self._workflow_complete(status_url):
+            workflow_status = self._workflow_status(status_url)
+            if workflow_status in ['succeeded', 'failed']:
                 LOG.info("Workflow completed... checking outputs")
-                return
+                return workflow_status
             time.sleep(_POLLING_DELAY)
-        LOG.warning("Workflow failed to complete... "
-                    "checking outputs but they're probably empty")
+        LOG.warning("Workflow failed to complete... ")
+        self.assertTrue(False)
 
     def _verify_result(self, outputs_url):
         actual_result = self._get_actual_result(outputs_url)
@@ -129,13 +134,9 @@ class TestCaseMixin(object):
     def _expected_result_path(self):
         return os.path.join(self.directory, 'result.json')
 
-    def _workflow_complete(self, url):
+    def _workflow_status(self, url):
         data = self._get_workflow_data(url)
-        if data.get('status') in ['succeeded', 'failed']:
-            LOG.info("Workflow status was: %s", data.get('status'))
-            return True
-        else:
-            return False
+        return data.get('status')
 
     def _get_workflow_data(self, url):
         response = _retry(requests.get, url)
@@ -178,8 +179,8 @@ class TestCaseMixin(object):
         self._compare_executions(expected, actual)
 
         if expected['service'] == 'workflow':
-            expected_parameters = expected_result['parameters']
-            actual_parameters = actual_result['parameters']
+            expected_parameters = expected['parameters']
+            actual_parameters = actual['parameters']
             for name, task in expected_parameters['tasks'].iteritems():
                 self._compare_task_details(task,
                         actual_parameters['tasks'][name])

@@ -57,7 +57,11 @@ def get_data_size_brute_force(task, indexes):
     d = task.data
     for i in indexes:
         d = d[i]
-    return len(d)
+
+    if not isinstance(d,list):
+        raise RuntimeError('DataError: Data is not a list')
+    else:
+        return len(d)
 
 
 class json_array_length(GenericFunction):
