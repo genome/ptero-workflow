@@ -1,6 +1,8 @@
 from .method_base import Method
 from ptero_workflow.implementation.models.link import Link
 from ptero_workflow.implementation.models.task import Task
+from ptero_workflow.implementation.models.execution.method_execution import \
+        MethodExecution
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import backref, aliased, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -27,6 +29,8 @@ class DAG(Method):
         'polymorphic_identity': 'DAG',
     }
 
+    VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(['set_status'])
+
     def all_tasks_iterator(self):
         for child in self.child_list:
             yield child
@@ -42,7 +46,7 @@ class DAG(Method):
             if child.name == 'output connector':
                 transitions.append({
                     'inputs': [child_success_place],
-                    'outputs': [self._pn('success')],
+                    'outputs': [self._pn('dag_success')],
                 })
 
             if child_failure_place is not None:
@@ -74,15 +78,52 @@ class DAG(Method):
             {
                 'inputs': [self._pn('failure_collection'),
                     self._pn('failure_limit')],
-                'outputs': [self._pn('failure')],
+                'outputs': [self._pn('dag_failure')],
             },
         ])
 
-        return (self._pn('success'), self._pn('failure'))
+        success, failure = self._attach_status_update_actions(
+                transitions, self._pn('dag_success'), self._pn('dag_failure'))
+
+        return success, failure
+
 
     def _link_pn(self, source, destination):
         return '%s:%s-to-%s-link' % (self._pn(), source._pn(),
                 destination._pn())
+
+    def _attach_status_update_actions(self, transitions, action_success_place,
+            action_failure_place):
+        transitions.append({
+                'inputs': [action_success_place],
+                'outputs': [self._pn('update_status_success')],
+                'action': {
+                    'type': 'notify',
+                    'url': self.callback_url('set_status', status='succeeded')
+                }})
+        success_place = self._pn('update_status_success')
+
+        transitions.append({
+            'inputs': [action_failure_place],
+                'outputs': [self._pn('update_status_failure')],
+            'action': {
+                'type': 'notify',
+                'url': self.callback_url('set_status', status='failed')
+            }})
+        failure_place = self._pn('update_status_failure')
+
+        return success_place, failure_place
+
+    def set_status(self, body_data, query_string_data):
+        s = object_session(self)
+
+        color = body_data['color']
+        execution = s.query(MethodExecution).filter(
+                MethodExecution.method==self,
+                MethodExecution.color==color).one()
+        execution.status = query_string_data['status']
+
+        s.commit()
 
     def resolve_output_source(self, session, name, parallel_depths):
         oc = self.children['output connector']
