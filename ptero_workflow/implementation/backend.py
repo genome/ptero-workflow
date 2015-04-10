@@ -2,7 +2,7 @@ from . import models
 from .models.execution.execution_base import Execution
 from . import tasks
 from sqlalchemy.exc import IntegrityError
-from ptero_workflow.implementation.exceptions import OutputsAlreadySet
+from ptero_workflow.implementation import exceptions
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -69,38 +69,49 @@ class Backend(object):
 
         return workflow
 
+    def _get_workflow(self, workflow_id):
+        workflow = self.session.query(models.Workflow).get(workflow_id)
+        if workflow is not None:
+            return workflow
+        else:
+            raise exceptions.NoSuchEntityError(
+                    "Workflow with id %s was not found." % workflow_id)
+
     def get_workflow(self, workflow_id):
-        return self.session.query(models.Workflow).get(workflow_id).as_dict(
-                detailed=False)
+        return self._get_workflow(workflow_id).as_dict(detailed=False)
 
     def cancel_workflow(self, workflow_id):
-        workflow = self.session.query(models.Workflow).get(workflow_id)
-        workflow.cancel()
+        self._get_workflow(workflow_id).cancel()
         self.session.commit()
 
     def get_workflow_status(self, workflow_id):
-        return self.session.query(models.Workflow).get(workflow_id).status
+        return self._get_workflow(workflow_id).status
 
     def get_workflow_details(self, workflow_id):
-        return self.session.query(models.Workflow).get(
-                workflow_id).as_dict(detailed=True)
+        return self._get_workflow(workflow_id).as_dict(detailed=True)
 
     def get_workflow_outputs(self, workflow_id):
-        workflow = self.session.query(models.Workflow).get(workflow_id)
-        return workflow.get_outputs()
+        return self._get_workflow(workflow_id).get_outputs()
+
+    def _get_execution(self, execution_id):
+        execution = self.session.query(Execution).get(execution_id)
+        if execution is not None:
+            return execution
+        else:
+            raise exceptions.NoSuchEntityError(
+                    "Execution with id %s was not found." % execution_id)
 
     def get_execution(self, execution_id):
-        execution = self.session.query(Execution).get(execution_id)
-        return execution.as_dict(detailed=False)
+        return self._get_execution(execution_id).as_dict(detailed=False)
 
     def update_execution(self, execution_id, update_data):
-        execution = self.session.query(Execution).get(execution_id)
+        execution = self._get_execution(execution_id)
         execution.update(update_data)
         try:
             self.session.commit()
         except IntegrityError:
             self.session.rollback()
-            raise OutputsAlreadySet
+            raise exceptions.OutputsAlreadySet
         return execution.as_dict(detailed=False)
 
     def handle_task_callback(self, task_id, callback_type, body_data,
