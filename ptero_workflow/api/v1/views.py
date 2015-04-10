@@ -5,6 +5,7 @@ from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ptero_common.logging_configuration import logged_response
+from functools import wraps
 
 import logging
 import urllib
@@ -13,8 +14,20 @@ import urllib
 LOG = logging.getLogger(__name__)
 
 
+def sends_404(target):
+    @wraps(target)
+    def wrapper(*args, **kwargs):
+        try:
+            result = target(*args, **kwargs)
+        except exceptions.NoSuchEntityError as e:
+            return e.message, 404
+        return result
+    return wrapper
+
+
 class WorkflowListView(Resource):
     @logged_response(logger=LOG)
+    @sends_404
     def post(self):
         try:
             data = validators.get_workflow_post_data()
@@ -33,11 +46,13 @@ class WorkflowListView(Resource):
 
 class WorkflowDetailView(Resource):
     @logged_response(logger=LOG)
+    @sends_404
     def get(self, workflow_id):
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
+    @sends_404
     def patch(self, workflow_id):
         update_data = request.get_json()
         forbidden_fields = set(update_data.keys()) - set(['is_canceled'])
@@ -53,11 +68,13 @@ class WorkflowDetailView(Resource):
 
 class ExecutionDetailView(Resource):
     @logged_response(logger=LOG)
+    @sends_404
     def get(self, execution_id):
         execution_data = g.backend.get_execution(execution_id)
         return execution_data, 200
 
     @logged_response(logger=LOG)
+    @sends_404
     def patch(self, execution_id):
         update_data = request.get_json()
         try:
@@ -92,6 +109,7 @@ def _report_url(workflow_id, report_type):
 
 class TaskCallback(Resource):
     @logged_response(logger=LOG)
+    @sends_404
     def put(self, task_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
@@ -102,6 +120,7 @@ class TaskCallback(Resource):
 
 class MethodCallback(Resource):
     @logged_response(logger=LOG)
+    @sends_404
     def put(self, method_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
@@ -112,6 +131,7 @@ class MethodCallback(Resource):
 
 class ReportDetailView(Resource):
     @logged_response(logger=LOG)
+    @sends_404
     def get(self, report_type):
         generator = reports.get_report_generator(report_type)
         return generator(**request.args), 200
