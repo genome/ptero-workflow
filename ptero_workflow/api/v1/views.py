@@ -4,7 +4,6 @@ from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
-from ptero_workflow.implementation.exceptions import ImmutableUpdateError
 from ptero_common.logging_configuration import logged_response
 
 import logging
@@ -65,7 +64,7 @@ class ExecutionDetailView(Resource):
             execution_data = g.backend.update_execution(execution_id,
                     update_data=update_data)
             return execution_data, 200
-        except ImmutableUpdateError as e:
+        except exceptions.ImmutableUpdateError as e:
             LOG.exception('ImmutableUpdateError occured while updating '
                 'execution (%d) with update_data=%s', execution_id, update_data)
             return e.message, 409
