@@ -1,8 +1,8 @@
 from celery.signals import worker_process_init, setup_logging
 import celery
 import os
-import sqlalchemy
 import time
+from factory import Factory
 from ptero_common.logging_configuration import configure_celery_logging
 
 
@@ -38,24 +38,13 @@ for var, default in _DEFAULT_CELERY_CONFIG.iteritems():
 from . import celery_tasks
 
 
-app.Session = sqlalchemy.orm.sessionmaker()
-
-
 @setup_logging.connect
 def setup_celery_logging(**kwargs):
     configure_celery_logging("WORKFLOW")
 
 
 @worker_process_init.connect
-def initialize_sqlalchemy_session(**kwargs):
-    from . import models
-
-    engine = sqlalchemy.create_engine(os.environ['PTERO_WORKFLOW_DB_STRING'])
-    for i in xrange(3):
-        try:
-            models.Base.metadata.create_all(engine)
-            break
-        except sqlalchemy.exc.SQLAlchemyError:
-            time.sleep(0.5)
-
-    app.Session.configure(bind=engine)
+def initialize_factory(**kwargs):
+    app.factory = Factory(
+        connection_string=os.environ.get('PTERO_WORKFLOW_DB_STRING',
+            'sqlite://'), celery_app=app)

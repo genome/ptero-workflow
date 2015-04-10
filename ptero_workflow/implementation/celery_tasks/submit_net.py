@@ -12,7 +12,8 @@ class SubmitNet(celery.Task):
     ignore_result = True
 
     def run(self, workflow_id):
-        session = celery.current_app.Session()
+        backend = celery.current_app.factory.create_backend()
+        session = backend.session
 
         workflow = session.query(models.Workflow).get(workflow_id)
 
