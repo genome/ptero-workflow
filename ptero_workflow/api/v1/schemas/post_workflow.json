@@ -6,7 +6,8 @@
     "properties": {
         "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
-        "links": { "$ref": "#/definitions/linkList" }
+        "links": { "$ref": "#/definitions/linkList" },
+        "webhooks": { "$ref": "#/definitions/webhook_set" }
     },
     "required": ["inputs", "tasks", "links"],
     "additionalProperties": false,
@@ -34,7 +35,8 @@
                     "minItems": 1,
                     "items": { "$ref": "#/definitions/method" }
                 },
-                "parallelBy": { "$ref": "#/definitions/name" }
+                "parallelBy": { "$ref": "#/definitions/name" },
+                "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["methods"],
             "additionalProperties": false
@@ -44,6 +46,36 @@
             { "$ref": "#/definitions/workflowMethod" },
             { "$ref": "#/definitions/shellCommandMethod" }
         ]},
+
+
+        "webhook": {
+            "type": "string",
+            "description": "TODO does the 'uri' format enforce a non-zero length? do we want to enforce that?",
+            "format": "uri"
+        },
+        "webhook_list": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/webhook" },
+            "minItems": 1
+        },
+        "webhook_entry": { "oneOf": [
+            { "$ref": "#/definitions/webhook" },
+            { "$ref": "#/definitions/webhook_list" }
+        ]},
+
+        "webhook_set": {
+            "type": "object",
+            "properties": {
+                "scheduled": { "$ref": "#/definitions/webhook_entry" },
+                "running":   { "$ref": "#/definitions/webhook_entry" },
+                "succeeded": { "$ref": "#/definitions/webhook_entry" },
+                "failed":    { "$ref": "#/definitions/webhook_entry" },
+                "errored":   { "$ref": "#/definitions/webhook_entry" },
+                "canceled":  { "$ref": "#/definitions/webhook_entry" },
+                "ended":     { "$ref": "#/definitions/webhook_entry" }
+            },
+            "additionalProperties": false
+        },
 
         "workflowMethod": {
             "type": "object",
@@ -63,7 +95,8 @@
             "type": "object",
             "properties": {
                 "tasks": { "$ref": "#/definitions/taskDictionary" },
-                "links": { "$ref": "#/definitions/linkList" }
+                "links": { "$ref": "#/definitions/linkList" },
+                "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["tasks", "links"],
             "additionalProperties": false
