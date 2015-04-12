@@ -10,6 +10,12 @@ readonly HONCHO_LOG=${LOG_BASE}/honcho.out
 declare DEVSERVER_PID
 EXIT_CODE=0
 
+REGEX=${1:-}
+if [[ -z "$REGEX" ]]; then
+    REGEX="test"
+fi
+echo "Looking for tests matching this regex: $REGEX"
+
 
 function collect_test_names_dry_run() {
   local FAILURES=$(nosetests --collect-only -v 2>&1 |grep '^Failure:')
@@ -29,7 +35,7 @@ function capture_test_log() {
 }
 
 function collect_test_names() {
-  echo "$(nosetests --collect-only -v 2>&1 |grep 'test_'|cut -d\( -f2|cut -d\) -f1)"
+  echo "$(nosetests --collect-only -v 2>&1 |grep 'test_'|cut -d\( -f2|cut -d\) -f1 |grep $REGEX)"
 }
 
 function collect_number_of_tests() {
