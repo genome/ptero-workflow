@@ -1,6 +1,7 @@
 from ..base import Base
 from .. import result
 from .. import input_source
+from ..petri_mixin import PetriMixin
 from ..execution.task_execution import TaskExecution
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text, Boolean
@@ -21,7 +22,7 @@ __all__ = ['Task']
 LOG = logging.getLogger(__name__)
 
 
-class Task(Base):
+class Task(Base, PetriMixin):
     __tablename__ = 'task'
     __table_args__ = (
         UniqueConstraint('parent_id', 'name'),
