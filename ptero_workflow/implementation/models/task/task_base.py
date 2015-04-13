@@ -428,6 +428,8 @@ class Task(Base):
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
+            execution.status = 'scheduled'
+            execution.status = 'running'
             s.add(execution)
 
         if self.is_canceled:
