@@ -7,6 +7,12 @@ def build_task(name, data, parent_method=None):
             parallel_by=data.get('parallelBy'),
             parent=parent_method)
 
+    for name, webhooks in data.get('webhooks', {}).items():
+        if not isinstance(webhooks, list):
+            webhooks = [webhooks]
+        for url in webhooks:
+            webhook = models.Webhook(name=name, url=url, task=task)
+
     for index, method_data in enumerate(data.get('methods', [])):
         task.method_list.append(build_method(method_data, index=index,
             parent_task=task))
@@ -15,10 +21,18 @@ def build_task(name, data, parent_method=None):
 
 def build_method(data, index=None, parent_task=None):
     if data['service'] == 'workflow':
-        return _build_dag_method(data, index, parent_task)
+        method = _build_dag_method(data, index, parent_task)
     else:
-        return _build_service_method(data, index, parent_task,
+        method = _build_service_method(data, index, parent_task,
                 models.SUBCLASS_LOOKUP[data['service']])
+
+    for name, webhooks in data['parameters'].get('webhooks', {}).items():
+        if not isinstance(webhooks, list):
+            webhooks = [webhooks]
+        for url in webhooks:
+            webhook = models.Webhook(name=name, url=url, method=method)
+
+    return method
 
 
 def _build_dag_method(data, index, parent_task):

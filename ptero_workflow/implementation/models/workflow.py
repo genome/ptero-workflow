@@ -82,6 +82,9 @@ class Workflow(Base):
             for task in self.all_tasks_iterator():
                 task.cancel()
 
+    def get_webhooks(self, *args, **kwargs):
+        return self.root_task.method_list[0].get_webhooks(*args, **kwargs)
+
     def as_dict(self, detailed):
         tasks = {name: task.as_dict(detailed=detailed)
             for name,task in self.tasks.iteritems()
@@ -94,6 +97,11 @@ class Workflow(Base):
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
             'status': self.status,
         }
+        webhooks = self.get_webhooks()
+        if webhooks:
+            result['webhooks'] = webhooks
+
+        return result
 
         if detailed:
             result['executions'] = {

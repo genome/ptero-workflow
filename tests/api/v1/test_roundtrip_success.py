@@ -78,6 +78,86 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 
+class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'webhooks': {
+            'running': 'http://localhost/example/webhook/outer_dag',
+            'errored': ['http://localhost/example/webhook/outer_dag', 'http://localhost/example/webhook/outer_dag/2']
+        },
+        'tasks': {
+            'Inner': {
+                'webhooks': {
+                    'running': 'http://localhost/example/webhook/outer_task',
+                    'errored': ['http://localhost/example/webhook/outer_task', 'http://localhost/example/webhook/outer_task/2']
+                },
+                'methods': [{
+                    'name': 'some_workflow',
+                    'parameters': {
+                        'webhooks': {
+                            'running': 'http://localhost/example/webhook/inner_dag',
+                            'errored': ['http://localhost/example/webhook/inner_dag', 'http://localhost/example/webhook/inner_dag/2']
+                        },
+                        'tasks': {
+                            'A': {
+                                'webhooks': {
+                                    'running': 'http://localhost/example/webhook/inner_task',
+                                    'errored': ['http://localhost/example/webhook/inner_task', 'http://localhost/example/webhook/inner_task/2']
+                                },
+                                'methods': [
+                                    {
+                                        'name': 'execute',
+                                        'service': 'shell-command',
+                                        'parameters': {
+                                            'commandLine': ['cat'],
+                                            'user': 'testuser',
+                                            'workingDirectory': '/test/working/directory',
+                                            'webhooks': {
+                                                'running': 'http://localhost/example/webhook/shell-command',
+                                                'errored': ['http://localhost/example/webhook/shell-command', 'http://localhost/example/webhook/shell-command/2']
+                                            },
+                                        }
+                                    }
+                                ]
+                            },
+                        },
+                        'links': [
+                            {
+                                'source': 'A',
+                                'destination': 'output connector',
+                                'sourceProperty': 'result',
+                                'destinationProperty': 'inner_output',
+                            }, {
+                                'source': 'input connector',
+                                'destination': 'A',
+                                'sourceProperty': 'inner_input',
+                                'destinationProperty': 'param',
+                            },
+                        ],
+                    },
+                    'service': 'workflow',
+                }]
+            },
+        },
+
+        'links': [
+            {
+                'source': 'Inner',
+                'destination': 'output connector',
+                'sourceProperty': 'inner_output',
+                'destinationProperty': 'outer_output',
+            }, {
+                'source': 'input connector',
+                'destination': 'Inner',
+                'sourceProperty': 'outer_input',
+                'destinationProperty': 'inner_input',
+            },
+        ],
+        'inputs': {
+            'outer_input': 'kittens',
+        },
+    }
+
+
 class NestedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {

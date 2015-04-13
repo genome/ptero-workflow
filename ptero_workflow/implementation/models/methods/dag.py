@@ -146,12 +146,16 @@ class DAG(Method):
         return oc.input_names
 
     def get_parameters(self,detailed=False):
-        return {
+        result = {
             'tasks': {t.name: t.as_dict(detailed=detailed)
                 for t in self.children.itervalues()
                     if t.type not in ['InputConnector', 'OutputConnector']},
             'links': [l.as_dict(detailed=detailed) for l in self.links],
         }
+        webhooks = self.get_webhooks()
+        if webhooks:
+            result['webhooks'] = webhooks
+        return result
 
     @property
     def links(self):

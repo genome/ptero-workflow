@@ -186,4 +186,9 @@ class ShellCommand(Method):
         return submit_data
 
     def get_parameters(self, detailed=False):
+        parameters = self.parameters.copy()
+        if 'webhooks' in parameters:
+            del parameters['webhooks']
+        parameters['webhooks'] = self.get_webhooks()
+
         return self.parameters
