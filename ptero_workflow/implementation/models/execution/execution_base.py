@@ -1,10 +1,12 @@
 from ..base import Base
 from ..json_type import JSON, MutableJSONDict
+from flask import url_for
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, String
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
+from sqlalchemy.orm.session import object_session
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -87,7 +89,27 @@ class Execution(Base):
                 LOG.debug("Refusing to change status from (%s) to (%s), valid status transitions are: %s",
                     self.status, status, str(VALID_STATUS_TRANSITIONS[status]))
             else:
+                self.send_webhooks(status)
                 return ExecutionStatusHistory(execution=self, status=status)
+
+    def send_webhooks(self, status):
+        webhooks = self.parent.get_webhooks(status)
+        if webhooks:
+            # this involves at least a little overhead, so only do it once
+            # we know that there are webhooks to send.
+            webhook_data = {
+                # not sure how to get to the workflow, but would be nice...
+                #'workflowUrl': self.workflow.url
+                'executionUrl': self.url,
+                'targetName': self.parent.name,
+                'targetType': self.parent.type,
+                'color': self.color,
+                'parentColor': self.parent_color,
+                'oldStatus': self.status,
+                'status': status,
+            }
+            for webhook in webhooks:
+                webhook.send(**webhook_data)
 
     def as_dict(self, detailed):
         result = {name: getattr(self, name) for name in ['name', 'color',
@@ -127,6 +149,11 @@ class Execution(Base):
         else:
             return self.method.task.set_outputs(outputs=new_outputs,
                     color=self.color, parent_color=self.parent_color)
+
+    @property
+    def url(self):
+        return url_for('execution-detail', execution_id=self.id,
+                _external=True)
 
 
 class ExecutionStatusHistory(Base):
