@@ -61,6 +61,11 @@ class Workflow(Base):
     def status(self):
         return self.root_task.status(color=self.color)
 
+    @property
+    def executions(self):
+        return self.root_task.method_list[0].executions
+
+
     def all_tasks_iterator(self):
         yield self.root_task
         for task in self.root_task.all_tasks_iterator():
@@ -83,12 +88,19 @@ class Workflow(Base):
                 if name not in ['input connector', 'output connector']}
         links = [l.as_dict(detailed=detailed) for l in self.links]
 
-        return {
+        result = {
             'tasks': tasks,
             'links': links,
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
             'status': self.status,
         }
+
+        if detailed:
+            result['executions'] = {
+                    color: execution.as_dict(detailed=detailed)
+                    for color, execution in self.executions.iteritems()}
+
+        return result
 
     def get_petri_transitions(self):
         transitions = []
