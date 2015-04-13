@@ -45,9 +45,9 @@ NAME_SYNONYMS = {
 }
 
 def get_sorted_webhook_dict(entity):
-    unsorted_webhook_dict = defaultdict(set)
+    unsorted_webhook_dict = defaultdict(list)
     for webhook in entity.webhooks:
-        unsorted_webhook_dict[webhook.name].add(webhook.url)
+        unsorted_webhook_dict[webhook.name].append(webhook.url)
 
     sorted_webhook_dict = {}
     for name, unsorted_urls in unsorted_webhook_dict.iteritems():
