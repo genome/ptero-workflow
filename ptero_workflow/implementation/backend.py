@@ -1,8 +1,10 @@
 from . import models
 from .models.execution.execution_base import Execution
 from . import tasks
+from . import translator
 from sqlalchemy.exc import IntegrityError
 from ptero_workflow.implementation import exceptions
+import os
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -20,12 +22,26 @@ class Backend(object):
     def submit_net_task(self):
         return self.celery_app.tasks[_TASK_BASE + 'submit_net.SubmitNet']
 
+    @property
+    def http_task(self):
+        return self.celery_app.tasks['ptero_common.celery.http.HTTP']
+
     def create_workflow(self, workflow_data):
         workflow = self._save_workflow(workflow_data)
-
         self.submit_net_task.delay(workflow.id)
-
         return workflow.id, workflow.as_dict(detailed=False)
+
+    def submit_net(self, workflow_id):
+        workflow = self.session.query(models.Workflow).get(workflow_id)
+        petri_data = translator.build_petri_net(workflow)
+        self.http_task.delay('PUT', self._petri_submit_url(workflow.net_key), **petri_data)
+
+    def _petri_submit_url(self, net_key):
+        return 'http://%s:%d/v1/nets/%s' % (
+            os.environ.get('PTERO_PETRI_HOST', 'localhost'),
+            int(os.environ.get('PTERO_PETRI_PORT', 80)),
+            net_key,
+        )
 
     def _save_workflow(self, workflow_data):
         workflow = models.Workflow()

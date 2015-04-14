@@ -79,6 +79,7 @@ class ShellCommand(Method):
 
             try:
                 job_id = self._submit_to_shell_command(colors, begins, execution.id)
+                execution.status = 'scheduled'
                 execution.data['job_id'] = job_id
             except Exception as e:
                 execution.status = 'errored';
