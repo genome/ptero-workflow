@@ -9,3 +9,6 @@ class OutputsAlreadySet(ImmutableUpdateError):
 
 class InvalidStatusError(RuntimeError):
     pass
+
+class NoSuchEntityError(RuntimeError):
+    pass
