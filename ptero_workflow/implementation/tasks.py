@@ -69,8 +69,11 @@ def _build_dag_method(data, index, parent_task):
 
 
 def _build_service_method(data, index, parent_task, cls):
-    return cls(name=data.get('name'), index=index, task=parent_task,
-            parameters=data.get('parameters', {}))
+    build_parameters = data['parameters'].copy()
+    if 'webhooks' in build_parameters:
+        del build_parameters['webhooks']
+    return cls(name=data['name'], index=index, task=parent_task,
+            parameters=build_parameters)
 
 
 def create_input_holder(root, inputs, color, parent_color):
