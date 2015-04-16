@@ -2,6 +2,7 @@ from .base import Base
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
+from sqlalchemy import event
 from collections import defaultdict
 import celery
 import logging
@@ -30,13 +31,18 @@ class Webhook(Base):
                 'ptero_common.celery.http.HTTP']
 
     def send(self, **data):
-        if self.method_id is not None:
-            LOG.debug("Sending webhook named (%s) for method (%s:%s): %s",
-                    self.name, self.method.name, self.method.id, self.url)
-        else:
-            LOG.debug("Sending webhook named (%s) for task (%s:%s): %s",
-                    self.name, self.task.name, self.task.id, self.url)
         self.http.delay('PUT', self.url, webhookName=self.name, **data)
+
+    def send_after_commit(self, **data):
+        session = object_session(self)
+        url = self.url
+        name = self.name
+
+        # Note: closure over self, url, name, and data
+        def callback(session):
+            self.http.delay('PUT', url, webhookName=name, **data)
+        event.listen(session, "after_commit", callback)
+
 
 NAME_SYNONYMS = {
         "succeeded" : ["succeeded", "ended"],

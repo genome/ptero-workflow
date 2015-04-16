@@ -109,7 +109,7 @@ class Execution(Base):
                 'status': status,
             }
             for webhook in webhooks:
-                webhook.send(**webhook_data)
+                webhook.send_after_commit(**webhook_data)
 
     def as_dict(self, detailed):
         result = {name: getattr(self, name) for name in ['name', 'color',
