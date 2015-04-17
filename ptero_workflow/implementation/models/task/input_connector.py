@@ -4,6 +4,7 @@ from ..execution.method_execution import MethodExecution
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import logging
+from ptero_common import statuses
 
 
 LOG = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class InputConnector(Task):
         execution = s.query(MethodExecution).filter(
                 MethodExecution.method==self.parent,
                 MethodExecution.color==color).one()
-        execution.status = 'scheduled'
+        execution.status = statuses.scheduled
         execution.status = 'running'
         s.commit()
 

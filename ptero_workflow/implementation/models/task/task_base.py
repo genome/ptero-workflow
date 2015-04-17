@@ -15,6 +15,7 @@ import celery
 import logging
 import os
 import urllib
+from ptero_common import statuses
 
 
 __all__ = ['Task']
@@ -436,7 +437,7 @@ class Task(Base, PetriMixin):
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
-            execution.status = 'scheduled'
+            execution.status = statuses.scheduled
             execution.status = 'running'
             s.add(execution)
 
