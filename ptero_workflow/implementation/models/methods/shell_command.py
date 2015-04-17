@@ -9,6 +9,8 @@ import logging
 import os
 import json
 from pprint import pformat
+from ptero_common.statuses import (scheduled, running, canceled, errored,
+        succeeded, failed)
 
 LOG = logging.getLogger(__name__)
 
@@ -28,7 +30,7 @@ class ShellCommand(Method):
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
-            ['begun', 'error', 'execute', 'failure', 'success'])
+            ['execute', 'running', 'succeeded', 'errored', 'failed'])
 
     def attach_subclass_transitions(self, transitions, input_place_name):
         transitions.append({
@@ -69,7 +71,7 @@ class ShellCommand(Method):
         s.commit()
 
         if (self.task.is_canceled):
-            execution.status = 'canceled'
+            execution.status = canceled
             response_url = body_data['response_links']['failure']
             self.http.delay('PUT', response_url)
         else:
@@ -79,10 +81,10 @@ class ShellCommand(Method):
 
             try:
                 job_id = self._submit_to_shell_command(colors, begins, execution.id)
-                execution.status = 'scheduled'
+                execution.status = scheduled
                 execution.data['job_id'] = job_id
             except Exception as e:
-                execution.status = 'errored';
+                execution.status = errored;
                 execution.data['error_message'] = e.message
 
                 response_url = body_data['response_links']['failure']
@@ -90,52 +92,52 @@ class ShellCommand(Method):
 
         s.commit()
 
-    def begun(self, body_data, query_string_data):
+    def running(self, body_data, query_string_data):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.status = 'running'
+        execution.status = running
         s.commit()
 
-    def success(self, body_data, query_string_data):
+    def succeeded(self, body_data, query_string_data):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.status = 'succeeded'
+        execution.status = succeeded
         execution.data.update(body_data)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['success']
 
         self.http.delay('PUT', response_url)
 
-    def failure(self, body_data, query_string_data):
+    def failed(self, body_data, query_string_data):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.status = 'failed'
+        execution.status = failed
         execution.data.update(body_data)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
 
         self.http.delay('PUT', response_url)
 
-    def error(self, body_data, query_string_data):
+    def errored(self, body_data, query_string_data):
         execution_id = query_string_data['execution_id']
 
         s = object_session(self)
         execution = s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
 
-        execution.status = 'errored'
+        execution.status = errored
         execution.data.update(body_data)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
@@ -176,11 +178,8 @@ class ShellCommand(Method):
         })
 
         submit_data.update({
-            'webhooks': {
-                'begun': self.callback_url('begun', execution_id=execution_id),
-                'error': self.callback_url('error', execution_id=execution_id),
-                'failure': self.callback_url('failure', execution_id=execution_id),
-                'success': self.callback_url('success', execution_id=execution_id),
+            'webhooks': {status: self.callback_url(status, execution_id=execution_id)
+                for status in (running, errored, failed, succeeded)
             },
         })
         return submit_data
