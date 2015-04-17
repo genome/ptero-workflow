@@ -438,7 +438,7 @@ class Task(Base, PetriMixin):
                         'petri_response_links': response_links,
             })
             execution.status = statuses.scheduled
-            execution.status = 'running'
+            execution.status = statuses.running
             s.add(execution)
 
         if self.is_canceled:
