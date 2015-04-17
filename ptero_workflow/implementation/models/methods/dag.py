@@ -110,7 +110,7 @@ class DAG(Method):
                 'outputs': [self._pn('update_status_failure')],
             'action': {
                 'type': 'notify',
-                'url': self.callback_url('set_status', status='failed')
+                'url': self.callback_url('set_status', status=statuses.failed)
             }})
         failure_place = self._pn('update_status_failure')
 
