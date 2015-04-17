@@ -15,6 +15,7 @@ import celery
 import logging
 import os
 import urllib
+from ptero_common import statuses
 
 
 __all__ = ['Task']
@@ -80,7 +81,7 @@ class Task(Base, PetriMixin):
             self.id, self.name, parent_info)
         self.is_canceled = True
         for execution in self.executions.values():
-            execution.status = 'canceled'
+            execution.status = statuses.canceled
 
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
@@ -243,7 +244,8 @@ class Task(Base, PetriMixin):
                 'outputs': [self._pn('update_status_success', name)],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='succeeded')
+                    'url': self.callback_url('set_status',
+                        status=statuses.succeeded)
                 }})
         success_place = self._pn('update_status_success', name)
 
@@ -257,7 +259,8 @@ class Task(Base, PetriMixin):
                     'outputs': [self._pn('update_status_failure', name)],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='failed')
+                    'url': self.callback_url('set_status',
+                        status=statuses.failed)
                 }})
             failure_place = self._pn('update_status_failure', name)
 
@@ -436,12 +439,12 @@ class Task(Base, PetriMixin):
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
-            execution.status = 'scheduled'
-            execution.status = 'running'
+            execution.status = statuses.scheduled
+            execution.status = statuses.running
             s.add(execution)
 
         if self.is_canceled:
-            execution.status = 'canceled'
+            execution.status = statuses.canceled
 
         s.commit()
 

@@ -7,6 +7,7 @@ from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import backref, aliased, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
+from ptero_common import statuses
 
 
 __all__ = ['DAG']
@@ -99,7 +100,8 @@ class DAG(Method):
                 'outputs': [self._pn('update_status_success')],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='succeeded')
+                    'url': self.callback_url('set_status',
+                        status=statuses.succeeded)
                 }})
         success_place = self._pn('update_status_success')
 
@@ -108,7 +110,7 @@ class DAG(Method):
                 'outputs': [self._pn('update_status_failure')],
             'action': {
                 'type': 'notify',
-                'url': self.callback_url('set_status', status='failed')
+                'url': self.callback_url('set_status', status=statuses.failed)
             }})
         failure_place = self._pn('update_status_failure')
 
