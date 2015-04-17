@@ -3,6 +3,7 @@ from .. import result
 from .. import input_source
 from ..petri_mixin import PetriMixin
 from ..execution.task_execution import TaskExecution
+from .. import webhook
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text, Boolean
 from sqlalchemy.inspection import inspect
@@ -61,6 +62,12 @@ class Task(Base, PetriMixin):
         except KeyError:
             # if task hasn't created any Executions of this color yet
             return None
+
+    def get_webhooks(self, name=None):
+        if name is not None:
+            return webhook.get_webhooks_for_task(self, name)
+        else:
+            return webhook.get_sorted_webhook_dict(self)
 
     def cancel(self):
         if self.parent is not None:

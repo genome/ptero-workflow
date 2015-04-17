@@ -1,5 +1,6 @@
 from ..base import Base
 from ..execution.method_execution import MethodExecution
+from .. import webhook
 from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
@@ -101,6 +102,12 @@ class Method(Base):
 
         response_links = body_data['response_links']
         self.http.delay('PUT', response_links['created'])
+
+    def get_webhooks(self, name=None):
+        if name is not None:
+            return webhook.get_webhooks_for_method(self, name)
+        else:
+            return webhook.get_sorted_webhook_dict(self)
 
     @property
     def http(self):

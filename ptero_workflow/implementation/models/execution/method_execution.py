@@ -9,6 +9,10 @@ class MethodExecution(Execution):
         'polymorphic_identity': 'MethodExecution',
     }
 
+    @property
+    def parent(self):
+        return self.method
+
     def get_inputs(self):
         return self.method.task.get_inputs(colors=self.colors,
                 begins=self.begins)

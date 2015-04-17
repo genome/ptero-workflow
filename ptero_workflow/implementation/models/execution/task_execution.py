@@ -9,6 +9,10 @@ class TaskExecution(Execution):
         'polymorphic_identity': 'TaskExecution',
     }
 
+    @property
+    def parent(self):
+        return self.task
+
     def get_inputs(self):
         return self.task.get_inputs(colors=self.colors,
                 begins=self.begins)
