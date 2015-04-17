@@ -81,7 +81,7 @@ class Task(Base, PetriMixin):
             self.id, self.name, parent_info)
         self.is_canceled = True
         for execution in self.executions.values():
-            execution.status = 'canceled'
+            execution.status = statuses.canceled
 
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
@@ -444,7 +444,7 @@ class Task(Base, PetriMixin):
             s.add(execution)
 
         if self.is_canceled:
-            execution.status = 'canceled'
+            execution.status = statuses.canceled
 
         s.commit()
 
