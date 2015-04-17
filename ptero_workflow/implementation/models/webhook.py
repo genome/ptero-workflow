@@ -6,6 +6,7 @@ from sqlalchemy import event
 from collections import defaultdict
 import celery
 import logging
+from ptero_common.statuses import succeeded
 
 LOG = logging.getLogger(__name__)
 
@@ -45,7 +46,7 @@ class Webhook(Base):
 
 
 NAME_SYNONYMS = {
-        "succeeded" : ["succeeded", "ended"],
+        succeeded : [succeeded, "ended"],
         "failed" : ["failed", "ended"],
         "canceled" : ["canceled", "ended"],
 }

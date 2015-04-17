@@ -244,7 +244,8 @@ class Task(Base, PetriMixin):
                 'outputs': [self._pn('update_status_success', name)],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status', status='succeeded')
+                    'url': self.callback_url('set_status',
+                        status=statuses.succeeded)
                 }})
         success_place = self._pn('update_status_success', name)
 
