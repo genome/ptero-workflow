@@ -8,20 +8,9 @@ from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
 from sqlalchemy.orm.session import object_session
 import logging
+from ptero_common import statuses
 
 LOG = logging.getLogger(__name__)
-
-VALID_STATUS_TRANSITIONS = {
-    'new': ('scheduled', 'running', 'failed', 'errored', 'succeeded',
-        'canceled'),
-    'scheduled': ('running', 'failed', 'errored', 'succeeded' ,'canceled'),
-    'running': ('failed', 'errored', 'succeeded' ,'canceled'),
-    'failed': tuple(),
-    'errored': tuple(),
-    'succeeded': tuple(),
-    'canceled': tuple(),
-}
-VALID_STATUS_VALUES = VALID_STATUS_TRANSITIONS.keys()
 
 __all__ = ['Execution']
 
@@ -80,14 +69,14 @@ class Execution(Base):
 
     @status.setter
     def status(self, status):
-        if status not in VALID_STATUS_VALUES:
+        if not statuses.is_valid(status):
             raise InvalidStatusError(
                     "Status (%s) isn't one of the valid status values: %s" %
-                    (status, str(VALID_STATUS_VALUES)))
+                    (status, str(statuses.VALID_STATUSES)))
         else:
-            if status not in VALID_STATUS_TRANSITIONS[self.status]:
+            if not statuses.is_valid_transition(self.status, status):
                 LOG.debug("Refusing to change status from (%s) to (%s), valid status transitions are: %s",
-                    self.status, status, str(VALID_STATUS_TRANSITIONS[status]))
+                    self.status, status, str(statuses.VALID_STATUS_TRANSITIONS[status]))
             else:
                 self.send_webhooks(status)
                 return ExecutionStatusHistory(execution=self, status=status)
