@@ -2,8 +2,9 @@ from dag import *
 from .method_base import *
 from .shell_command import *
 from .block import *
+from .converge import *
 
-METHOD_SUBCLASSES = [DAG, ShellCommand, Block]
+METHOD_SUBCLASSES = [DAG, ShellCommand, Block, Converge]
 
 def _calculate_subclass_lookup():
     result = {}

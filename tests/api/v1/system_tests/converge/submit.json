@@ -1,0 +1,42 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "convergence",
+                    "service": "workflow-converge",
+                    "parameters": {
+                        "input_names": ["b", "a"],
+                        "output_name": "c"
+                    }
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_a",
+            "destinationProperty": "a"
+        },
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_b",
+            "destinationProperty": "b"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "c",
+            "destinationProperty": "out_c"
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens",
+        "in_b": "puppies"
+    }
+}
