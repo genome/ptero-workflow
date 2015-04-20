@@ -1,8 +1,9 @@
 from dag import *
 from .method_base import *
 from .shell_command import *
+from .block import *
 
-METHOD_SUBCLASSES = [DAG, ShellCommand]
+METHOD_SUBCLASSES = [DAG, ShellCommand, Block]
 
 def _calculate_subclass_lookup():
     result = {}

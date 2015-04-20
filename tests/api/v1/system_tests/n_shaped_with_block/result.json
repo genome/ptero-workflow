@@ -1,0 +1,8 @@
+{
+    "outputs": {
+        "block_result": 1,
+        "out_c": "foo",
+        "out_d_1": "bar",
+        "out_d_2": "baz"
+    }
+}

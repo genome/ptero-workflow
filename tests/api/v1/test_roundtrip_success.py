@@ -42,6 +42,38 @@ class RoundTripSuccess(object):
             sys.stdout.write(line)
         return is_ok
 
+class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'tasks': {
+            'Block': {
+                'methods': [
+                    {
+                        'name': 'blocker',
+                        'service': 'workflow-block',
+                        'parameters': {
+                        }
+                    }
+                ]
+            },
+        },
+        'links': [
+            {
+                'source': 'Block',
+                'destination': 'output connector',
+                'sourceProperty': 'result',
+                'destinationProperty': 'result',
+            }, {
+                'source': 'input connector',
+                'destination': 'Block',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'in_a',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+    }
+
 class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {

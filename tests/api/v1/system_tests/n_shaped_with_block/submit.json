@@ -1,0 +1,147 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./echo_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        },
+        "B": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./echo_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        },
+        "C": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./echo_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        },
+        "D": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./echo_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        },
+        "Block": {
+            "methods": [
+                {
+                    "name": "blocker",
+                    "service": "workflow-block",
+                    "parameters": {
+                    }
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_a_1",
+            "destinationProperty": "param_1"
+        },
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_a_2",
+            "destinationProperty": "param_2"
+        },
+        {
+            "source": "input connector",
+            "destination": "B",
+            "sourceProperty": "in_b",
+            "destinationProperty": "param"
+        },
+
+        {
+            "source": "A",
+            "destination": "C",
+            "sourceProperty": "param_1",
+            "destinationProperty": "param"
+        },
+        {
+            "source": "A",
+            "destination": "D",
+            "sourceProperty": "param_2",
+            "destinationProperty": "param_1"
+        },
+        {
+            "source": "B",
+            "destination": "D",
+            "sourceProperty": "param",
+            "destinationProperty": "param_2"
+        },
+
+        {
+            "source": "C",
+            "destination": "output connector",
+            "sourceProperty": "param",
+            "destinationProperty": "out_c"
+        },
+        {
+            "source": "D",
+            "destination": "output connector",
+            "sourceProperty": "param_1",
+            "destinationProperty": "out_d_1"
+        },
+        {
+            "source": "D",
+            "destination": "output connector",
+            "sourceProperty": "param_2",
+            "destinationProperty": "out_d_2"
+        },
+        {
+            "source": "D",
+            "destination": "Block",
+            "sourceProperty": "param_2",
+            "destinationProperty": "param_2"
+        },
+        {
+            "source": "Block",
+            "destination": "output connector",
+            "sourceProperty": "result",
+            "destinationProperty": "block_result"
+        }
+    ],
+
+    "inputs": {
+        "in_a_1": "foo",
+        "in_a_2": "bar",
+        "in_b": "baz"
+    }
+}

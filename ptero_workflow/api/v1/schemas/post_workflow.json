@@ -43,6 +43,7 @@
         },
 
         "method": { "oneOf": [
+            { "$ref": "#/definitions/blockMethod" },
             { "$ref": "#/definitions/workflowMethod" },
             { "$ref": "#/definitions/shellCommandMethod" }
         ]},
@@ -99,6 +100,25 @@
                 "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["tasks", "links"],
+            "additionalProperties": false
+        },
+
+        "blockMethod": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/definitions/name" },
+                "parameters": { "$ref": "#/definitions/blockParameters" },
+                "service": {
+                    "type": "string",
+                    "pattern": "^workflow-block$"
+                }
+            },
+            "required": ["name", "parameters", "service"],
+            "additionalProperties": false
+        },
+
+        "blockParameters": {
+            "type": "object",
             "additionalProperties": false
         },
 
