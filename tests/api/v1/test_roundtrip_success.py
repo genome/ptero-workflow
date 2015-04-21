@@ -42,6 +42,78 @@ class RoundTripSuccess(object):
             sys.stdout.write(line)
         return is_ok
 
+class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'tasks': {
+            'Converge': {
+                'methods': [
+                    {
+                        'name': 'converger',
+                        'service': 'workflow-converge',
+                        'parameters': {
+                            'input_names': ['b', 'a'],
+                            'output_name': 'c',
+                        }
+                    }
+                ]
+            },
+        },
+        'links': [
+            {
+                'source': 'Converge',
+                'destination': 'output connector',
+                'sourceProperty': 'c',
+                'destinationProperty': 'result',
+            }, {
+                'source': 'input connector',
+                'destination': 'Converge',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'a',
+            }, {
+                'source': 'input connector',
+                'destination': 'Converge',
+                'sourceProperty': 'in_b',
+                'destinationProperty': 'b',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+            'in_b': 'puppies',
+        },
+    }
+
+class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'tasks': {
+            'Block': {
+                'methods': [
+                    {
+                        'name': 'blocker',
+                        'service': 'workflow-block',
+                        'parameters': {
+                        }
+                    }
+                ]
+            },
+        },
+        'links': [
+            {
+                'source': 'Block',
+                'destination': 'output connector',
+                'sourceProperty': 'result',
+                'destinationProperty': 'result',
+            }, {
+                'source': 'input connector',
+                'destination': 'Block',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'in_a',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+    }
+
 class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {

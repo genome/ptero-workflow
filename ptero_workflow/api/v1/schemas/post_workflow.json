@@ -43,6 +43,8 @@
         },
 
         "method": { "oneOf": [
+            { "$ref": "#/definitions/blockMethod" },
+            { "$ref": "#/definitions/convergeMethod" },
             { "$ref": "#/definitions/workflowMethod" },
             { "$ref": "#/definitions/shellCommandMethod" }
         ]},
@@ -99,6 +101,53 @@
                 "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["tasks", "links"],
+            "additionalProperties": false
+        },
+
+        "blockMethod": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/definitions/name" },
+                "parameters": { "$ref": "#/definitions/blockParameters" },
+                "service": {
+                    "type": "string",
+                    "pattern": "^workflow-block$"
+                }
+            },
+            "required": ["name", "parameters", "service"],
+            "additionalProperties": false
+        },
+
+        "blockParameters": {
+            "type": "object",
+            "additionalProperties": false
+        },
+
+        "convergeMethod": {
+            "type": "object",
+            "properties": {
+                "name": { "$ref": "#/definitions/name" },
+                "parameters": { "$ref": "#/definitions/convergeParameters" },
+                "service": {
+                    "type": "string",
+                    "pattern": "^workflow-converge$"
+                }
+            },
+            "required": ["name", "parameters", "service"],
+            "additionalProperties": false
+        },
+
+        "convergeParameters": {
+            "type": "object",
+            "properties": {
+                "input_names": {
+                    "type": "array",
+                    "items": { "$ref": "#/definitions/name" },
+                    "minItems": 1
+                },
+                "output_name": { "$ref": "#/definitions/name" }
+            },
+            "required": ["input_names", "output_name"],
             "additionalProperties": false
         },
 
