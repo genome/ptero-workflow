@@ -7,7 +7,8 @@
         "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
         "links": { "$ref": "#/definitions/linkList" },
-        "webhooks": { "$ref": "#/definitions/webhook_set" }
+        "webhooks": { "$ref": "#/definitions/webhook_set" },
+        "name": { "$ref": "#/definitions/name" }
     },
     "required": ["inputs", "tasks", "links"],
     "additionalProperties": false,

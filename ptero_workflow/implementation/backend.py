@@ -44,7 +44,7 @@ class Backend(object):
         )
 
     def _save_workflow(self, workflow_data):
-        workflow = models.Workflow()
+        workflow = models.Workflow(name=workflow_data.get('name'))
 
         root_data = {
             'methods': [
