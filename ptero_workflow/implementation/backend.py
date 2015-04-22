@@ -27,7 +27,14 @@ class Backend(object):
         return self.celery_app.tasks['ptero_common.celery.http.HTTP']
 
     def create_workflow(self, workflow_data):
-        workflow = self._save_workflow(workflow_data)
+        try:
+            workflow = self._save_workflow(workflow_data)
+        except IntegrityError as e:
+            if e.orig.message == 'UNIQUE constraint failed: workflow.name':
+                raise exceptions.InvalidWorkflow(
+                    "Workflow with name '%s' already exists" % workflow_data['name'])
+            else:
+                raise exceptions.InvalidWorkflow('Unknown IntegrityError: %s' % e.message)
         self.submit_net_task.delay(workflow.id)
         return workflow.id, workflow.as_dict(detailed=False)
 
