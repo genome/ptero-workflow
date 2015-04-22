@@ -1,0 +1,51 @@
+{
+  "links": [
+    {
+      "destination": "A",
+      "destinationProperty": "in_matrix",
+      "source": "input connector",
+      "sourceProperty": "in_matrix"
+    },
+    {
+      "destination": "output connector",
+      "destinationProperty": "out_matrix",
+      "source": "A",
+      "sourceProperty": "out_matrix"
+    }
+  ],
+  "tasks": {
+    "A": {
+      "methods": [
+        {
+          "name": "inner",
+          "parameters": {
+            "links": [
+              {
+                "destination": "output connector",
+                "destinationProperty": "out_matrix",
+                "source": "input connector",
+                "sourceProperty": "in_matrix"
+              }
+            ],
+            "tasks": { }
+          },
+          "service": "workflow"
+        }
+      ],
+      "parallelBy": "in_matrix"
+    }
+  },
+  "inputs": {
+    "in_matrix": [
+      [
+        "Simba",
+        "Tabby",
+        "Emilio"
+      ],
+      [
+        "Pluto",
+        "Snoopy"
+      ]
+    ]
+  }
+}

@@ -20,7 +20,7 @@
 
         "taskDictionary": {
             "type": "object",
-            "minProperties": 1,
+            "minProperties": 0,
             "patternProperties": {
                 "^.+$": { "$ref": "#/definitions/task" }
             },
@@ -167,7 +167,7 @@
 
         "linkList": {
             "type": "array",
-            "minItems": 2,
+            "minItems": 1,
             "items": { "$ref": "#/definitions/link" }
         },
 
