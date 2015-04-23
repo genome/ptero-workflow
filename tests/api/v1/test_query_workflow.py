@@ -22,6 +22,9 @@ class QueryWorkflow(object):
             response = self.get(self.get_url, **query['args'])
             self.assertEqual(query['expected_code'], response.status_code)
 
+            if response.status_code == 200:
+                self.assertTrue('reports' in response.DATA)
+
             for key, val in self.expected_data[query['expected_data']].items():
                 self.assertEqual(val, response.DATA[key])
 

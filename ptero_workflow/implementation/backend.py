@@ -111,7 +111,7 @@ class Backend(object):
         try:
             workflow = self.session.query(models.Workflow).filter_by(
                 name=workflow_name).one()
-            return workflow.as_dict(detailed=False)
+            return workflow.id, workflow.as_dict(detailed=False)
         except NoResultFound:
             raise exceptions.NoSuchEntityError(
                     "Workflow with name %s was not found." % workflow_name)

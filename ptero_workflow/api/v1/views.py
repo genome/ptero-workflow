@@ -42,8 +42,9 @@ class WorkflowListView(Resource):
             return { 'error': error }, 400
 
         if 'name' in request.args:
-            workflow_as_dict = g.backend.get_workflow_by_name(request.args['name'])
-            return workflow_as_dict, 200
+            workflow_id, workflow_as_dict = g.backend.get_workflow_by_name(
+                        request.args['name'])
+            return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
     @sends_404
