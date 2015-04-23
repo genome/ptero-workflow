@@ -318,3 +318,39 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             'outer_input': 'kittens',
         },
     }
+
+class MissingInputs(PostWorkflowFailure, BaseAPITest):
+    expected_error_message = 'Missing required inputs: in_a'
+    post_data = {
+        'tasks': {
+            'A': {
+                'methods': [
+                    {
+                        'name': 'execute',
+                        'service': 'shell-command',
+                        'parameters': {
+                            'commandLine': ['cat'],
+                            'user': 'testuser',
+                            'workingDirectory': '/test/working/directory'
+                        }
+                    }
+                ]
+            },
+        },
+        'links': [
+            {
+                'source': 'input connector',
+                'destination': 'A',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'param',
+            }, {
+                'source': 'A',
+                'destination': 'output connector',
+                'sourceProperty': 'result',
+                'destinationProperty': 'out_a',
+            },
+        ],
+        'inputs': {
+            'in_b': 'kittens',
+        },
+    }

@@ -53,6 +53,8 @@ class Backend(object):
         )
 
     def _save_workflow(self, workflow_data):
+        self._ensure_required_inputs(workflow_data)
+
         workflow = models.Workflow(name=workflow_data.get('name'))
 
         root_data = {
@@ -94,6 +96,19 @@ class Backend(object):
         self.session.commit()
 
         return workflow
+
+    @staticmethod
+    def _ensure_required_inputs(workflow_data):
+        required_inputs = set()
+        for link in workflow_data['links']:
+            if link['source'] == 'input connector':
+                required_inputs.add(link['sourceProperty'])
+
+        supplied_inputs = set(workflow_data['inputs'].keys())
+        missing_inputs = required_inputs - supplied_inputs
+        if missing_inputs:
+            raise exceptions.InvalidWorkflow("Missing required inputs: %s" %
+                    ', '.join(sorted(missing_inputs)))
 
     def _get_workflow(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
