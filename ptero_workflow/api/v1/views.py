@@ -20,7 +20,7 @@ def sends_404(target):
         try:
             result = target(*args, **kwargs)
         except exceptions.NoSuchEntityError as e:
-            return e.message, 404
+            return {'error': e.message}, 404
         return result
     return wrapper
 
