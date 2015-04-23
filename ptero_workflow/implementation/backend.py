@@ -100,9 +100,6 @@ class Backend(object):
         if missing_inputs:
             raise exceptions.InvalidWorkflow("Missing required inputs: %s" %
                     ', '.join(sorted(missing_inputs)))
-        else:
-            LOG.warn('Got all inputs bro, %s\n%s\n%s',
-                    required_inputs, supplied_inputs, missing_inputs)
 
     def _get_workflow(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
