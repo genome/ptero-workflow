@@ -7,7 +7,8 @@
         "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
         "links": { "$ref": "#/definitions/linkList" },
-        "webhooks": { "$ref": "#/definitions/webhook_set" }
+        "webhooks": { "$ref": "#/definitions/webhook_set" },
+        "name": { "$ref": "#/definitions/name" }
     },
     "required": ["inputs", "tasks", "links"],
     "additionalProperties": false,
@@ -20,7 +21,7 @@
 
         "taskDictionary": {
             "type": "object",
-            "minProperties": 1,
+            "minProperties": 0,
             "patternProperties": {
                 "^.+$": { "$ref": "#/definitions/task" }
             },
@@ -167,7 +168,7 @@
 
         "linkList": {
             "type": "array",
-            "minItems": 2,
+            "minItems": 1,
             "items": { "$ref": "#/definitions/link" }
         },
 

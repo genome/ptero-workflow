@@ -14,16 +14,17 @@ LOG = logging.getLogger(__name__)
 
 
 
-def _generate_net_key():
+def _generate_uuid():
     return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
 
 
 class Workflow(Base):
     __tablename__ = 'workflow'
 
-    id          = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
+    name = Column(Text, unique=True, nullable=False, default=_generate_uuid)
 
-    net_key = Column(Text, unique=True, default=_generate_net_key)
+    net_key = Column(Text, unique=True, default=_generate_uuid)
 
     root_task_id = Column(Integer, ForeignKey('task.id',
         use_alter=True, name='fk_workflow_root_task'))
@@ -96,6 +97,7 @@ class Workflow(Base):
             'links': links,
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
             'status': self.status,
+            'name': self.name,
         }
         webhooks = self.get_webhooks()
         if webhooks:

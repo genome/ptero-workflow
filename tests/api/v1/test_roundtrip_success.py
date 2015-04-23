@@ -16,16 +16,23 @@ class RoundTripSuccess(object):
         super(RoundTripSuccess, self).setUp()
         self.response = self.post(self.post_url, self.post_data)
 
-    def test_should_return_201(self):
+    def test_roundtrip(self):
+        self.should_return_201()
+        self.should_set_location_header()
+        self.get_should_return_post_data()
+
+    def should_return_201(self):
         self.assertEqual(201, self.response.status_code)
 
-    def test_should_set_location_header(self):
+    def should_set_location_header(self):
         self.assertIsNotNone(self.response.headers.get('Location'))
 
-    def test_get_should_return_post_data(self):
+    def get_should_return_post_data(self):
         get_response = self.get(self.response.headers.get('Location'))
         del(get_response.DATA['reports'])
         del(get_response.DATA['status'])
+        if self.post_data.get('name') is None:
+            del(get_response.DATA['name'])
         self.assertTrue(self.compareDictAsJSON(expected=self.post_data,
             actual=get_response.DATA))
 
@@ -149,6 +156,23 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
         },
     }
 
+class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
+    post_data = {
+        'tasks': {
+        },
+        'links': [
+            {
+                'source': 'input connector',
+                'destination': 'output connector',
+                'sourceProperty': 'in_a',
+                'destinationProperty': 'out_a',
+            },
+        ],
+        'inputs': {
+            'in_a': 'kittens',
+        },
+        'name': 'puppies',
+    }
 
 class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
     post_data = {
