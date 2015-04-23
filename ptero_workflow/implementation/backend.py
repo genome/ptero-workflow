@@ -30,7 +30,9 @@ class Backend(object):
         try:
             workflow = self._save_workflow(workflow_data)
         except IntegrityError as e:
-            if e.orig.message == 'UNIQUE constraint failed: workflow.name':
+            sqlite_error = 'UNIQUE constraint failed: workflow.name'
+            postgres_error = 'duplicate key value violates unique constraint "workflow_name_key"'
+            if e.orig.message == sqlite_error or e.orig.message.startswith(postgres_error):
                 raise exceptions.InvalidWorkflow(
                     "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
