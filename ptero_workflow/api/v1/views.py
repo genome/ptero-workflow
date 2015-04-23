@@ -20,12 +20,31 @@ def sends_404(target):
         try:
             result = target(*args, **kwargs)
         except exceptions.NoSuchEntityError as e:
-            return e.message, 404
+            return {'error': e.message}, 404
         return result
     return wrapper
 
 
 class WorkflowListView(Resource):
+    @logged_response(logger=LOG)
+    @sends_404
+    def get(self):
+        given_keys = set(request.args.keys())
+        valid_keys = set(['name'])
+        invalid_keys = given_keys - valid_keys
+
+        if not given_keys:
+            error = 'No query arguments provided'
+            return { 'error': error }, 400
+
+        if invalid_keys:
+            error = 'Invalid query arguments: %s' % ', '.join(invalid_keys)
+            return { 'error': error }, 400
+
+        if 'name' in request.args:
+            workflow_as_dict = g.backend.get_workflow_by_name(request.args['name'])
+            return workflow_as_dict, 200
+
     @logged_response(logger=LOG)
     @sends_404
     def post(self):

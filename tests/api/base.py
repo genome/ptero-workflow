@@ -65,6 +65,10 @@ class BaseAPITest(unittest.TestCase):
     def post_url(self):
         return 'http://%s:%s/v1/workflows' % (self.api_host, self.api_port)
 
+    @property
+    def get_url(self):
+        return self.post_url
+
     def get(self, url, **kwargs):
         return _deserialize_response(requests.get(url, params=kwargs))
 

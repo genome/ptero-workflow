@@ -3,6 +3,7 @@ from .models.execution.execution_base import Execution
 from . import tasks
 from . import translator
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm.exc import NoResultFound
 from ptero_workflow.implementation import exceptions
 import os
 import logging
@@ -120,6 +121,15 @@ class Backend(object):
 
     def get_workflow(self, workflow_id):
         return self._get_workflow(workflow_id).as_dict(detailed=False)
+
+    def get_workflow_by_name(self, workflow_name):
+        try:
+            workflow = self.session.query(models.Workflow).filter_by(
+                name=workflow_name).one()
+            return workflow.as_dict(detailed=False)
+        except NoResultFound:
+            raise exceptions.NoSuchEntityError(
+                    "Workflow with name %s was not found." % workflow_name)
 
     def cancel_workflow(self, workflow_id):
         self._get_workflow(workflow_id).cancel()
