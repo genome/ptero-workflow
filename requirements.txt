@@ -1,10 +1,10 @@
-celery == 3.1.17
+celery == 3.1.18
 flask == 0.10.1
 flask-restful == 0.2.12
 gunicorn == 19.1.1
 jsonschema == 2.4.0
 librabbitmq == 1.6.1
-psycopg2 == 2.5.4
+psycopg2 == 2.6
 redis == 2.10.3
-sqlalchemy == 0.9.8
+sqlalchemy == 1.0.1
 -e git+https://github.com/genome/ptero-common.git@master#egg=ptero_common
