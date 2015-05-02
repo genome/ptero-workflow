@@ -28,7 +28,7 @@ class Method(Base):
 
     id = Column(Integer, primary_key=True)
 
-    task_id = Column(Integer, ForeignKey('task.id'))
+    task_id = Column(Integer, ForeignKey('task.id'), index=True)
     task = relationship('Task')
 
     name = Column(Text)
@@ -40,7 +40,7 @@ class Method(Base):
             collection_class=attribute_mapped_collection('color'),
             cascade='all, delete-orphan')
 
-    type = Column(Text, nullable=False)
+    type = Column(Text, nullable=False, index=True)
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }

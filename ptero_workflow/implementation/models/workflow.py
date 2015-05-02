@@ -22,9 +22,13 @@ class Workflow(Base):
     __tablename__ = 'workflow'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True, nullable=False, default=_generate_uuid)
+    name = Column(Text, unique=True, nullable=False,
+            index=True,
+            default=_generate_uuid)
 
-    net_key = Column(Text, unique=True, default=_generate_uuid)
+    net_key = Column(Text, unique=True,
+            index=True,
+            default=_generate_uuid)
 
     root_task_id = Column(Integer, ForeignKey('task.id',
         use_alter=True, name='fk_workflow_root_task'))

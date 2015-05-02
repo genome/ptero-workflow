@@ -27,8 +27,10 @@ class Execution(Base):
     color = Column(Integer, index=True, nullable=False)
     parent_color = Column(Integer, index=True, nullable=True)
 
-    method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
-    task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
+    method_id = Column(Integer, ForeignKey('method.id'),
+            index=True, nullable=True)
+    task_id = Column(Integer, ForeignKey('task.id'),
+            index=True, nullable=True)
 
     data = Column(MutableJSONDict, nullable=False)
     colors = Column(JSON)
