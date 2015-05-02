@@ -162,7 +162,7 @@ class ExecutionStatusHistory(Base):
     status = Column(Text, index=True, nullable=False)
 
     execution = relationship(Execution,
-            backref=backref('status_history', order_by=timestamp))
+            backref=backref('status_history', order_by=timestamp, lazy='joined'))
 
     def as_dict(self, detailed):
         return {'timestamp': str(self.timestamp), 'status': self.status}

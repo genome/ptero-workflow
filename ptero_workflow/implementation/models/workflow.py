@@ -35,7 +35,7 @@ class Workflow(Base):
 
 
     root_task = relationship('Task', post_update=True,
-            foreign_keys=[root_task_id])
+            foreign_keys=[root_task_id], lazy='joined')
 
     start_place_name = 'workflow-start-place'
 
