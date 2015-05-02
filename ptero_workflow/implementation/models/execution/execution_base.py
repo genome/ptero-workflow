@@ -106,9 +106,12 @@ class Execution(Base):
         result = {name: getattr(self, name) for name in ['name', 'color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
-        result['inputs'] = self.get_inputs()
-        result['outputs'] = self.get_outputs()
-        result['status_history'] = [h.as_dict(detailed=detailed) for h in self.status_history]
+        if detailed:
+            result['status_history'] = [h.as_dict(detailed=detailed)
+                    for h in self.status_history]
+        else:
+            result['inputs'] = self.get_inputs()
+            result['outputs'] = self.get_outputs()
 
         return result
 
