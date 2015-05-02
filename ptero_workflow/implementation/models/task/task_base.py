@@ -332,7 +332,7 @@ class Task(Base, PetriMixin):
                     output_name, [])
             results = s.query(result.Result
                     ).filter_by(task=source, name=name, parent_color=color
-                    ).order_by('color'
+                    ).order_by('result.color'
                     ).all()
 
             array_result = result.Result(task=source, name=name,
