@@ -167,6 +167,18 @@ class Backend(object):
         return self._get_workflow(workflow_id).status
 
     def get_workflow_details(self, workflow_id):
+        m = models
+        method_lists = self.session.query(m.MethodList).\
+                options(joinedload(m.MethodList.executions)).\
+                filter_by(workflow_id=workflow_id).all()
+
+        dags = self.session.query(m.DAG).\
+                options(joinedload(m.DAG.executions)).\
+                filter_by(workflow_id=workflow_id).all()
+
+        shell_commands = self.session.query(m.ShellCommand).\
+                options(joinedload(m.ShellCommand.executions)).\
+                filter_by(workflow_id=workflow_id).all()
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=True)
 
     def get_workflow_outputs(self, workflow_id):
