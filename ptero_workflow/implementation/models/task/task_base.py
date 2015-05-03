@@ -45,6 +45,10 @@ class Task(Base, PetriMixin):
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
 
+    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
+
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }

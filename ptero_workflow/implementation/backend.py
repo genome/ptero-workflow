@@ -72,14 +72,15 @@ class Backend(object):
             ],
         }
 
-        workflow.root_task = tasks.build_task('root', root_data)
+        workflow.root_task = tasks.build_task('root', root_data, workflow)
         models.TaskExecution(task=workflow.root_task, color=0, parent_color=None,
                 colors=[0], begins=[], data={})
 
-        tasks.create_input_holder(workflow.root_task, workflow_data['inputs'],
+        tasks.create_input_holder(workflow.root_task, workflow, workflow_data['inputs'],
                 color=workflow.color, parent_color=workflow.parent_color)
 
-        dummy_output_task = models.InputHolder(name='dummy output task')
+        dummy_output_task = models.InputHolder(name='dummy output task',
+                workflow=workflow)
         self.session.add(dummy_output_task)
 
         for link_data in workflow_data['links']:

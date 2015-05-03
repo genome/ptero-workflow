@@ -40,6 +40,10 @@ class Method(Base):
             collection_class=attribute_mapped_collection('color'),
             cascade='all, delete-orphan')
 
+    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
+
     type = Column(Text, nullable=False, index=True)
     __mapper_args__ = {
         'polymorphic_on': 'type',
