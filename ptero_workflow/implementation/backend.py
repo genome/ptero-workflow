@@ -120,21 +120,22 @@ class Backend(object):
         # Later, when those entities are iterated through we won't have to issue
         # SQL per-entity.
         m = models
-        self.session.query(m.MethodList).\
+        method_lists = self.session.query(m.MethodList).\
                 options(
                         joinedload(m.MethodList.method_list),
                         joinedload(m.MethodList.webhooks),
                 ).filter_by(workflow_id=workflow_id).all()
 
-        self.session.query(m.DAG).\
+        dags = self.session.query(m.DAG).\
                 options(
                         joinedload(m.DAG.children),
                         joinedload(m.DAG.webhooks),
                 ).filter_by(workflow_id=workflow_id).all()
 
-        self.session.query(m.ShellCommand).\
+        shell_commands = self.session.query(m.ShellCommand).\
                 options(joinedload(m.ShellCommand.webhooks)).\
                 filter_by(workflow_id=workflow_id).all()
+
 
         return workflow
 
