@@ -154,4 +154,4 @@ class ReportDetailView(Resource):
     @sends_404
     def get(self, report_type):
         generator = reports.get_report_generator(report_type)
-        return generator(**request.args), 200
+        return generator(**request.args.to_dict(flat=True)), 200
