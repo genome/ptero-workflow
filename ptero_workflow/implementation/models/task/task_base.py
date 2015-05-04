@@ -443,9 +443,12 @@ class Task(Base, PetriMixin):
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
-            execution.status = statuses.scheduled
-            execution.status = statuses.running
             s.add(execution)
+            s.flush()
+            execution.status = statuses.scheduled
+            s.flush()
+            execution.status = statuses.running
+            s.flush()
 
         if self.is_canceled:
             execution.status = statuses.canceled
