@@ -71,11 +71,6 @@ class Workflow(Base):
         return self.root_task.method_list[0].executions
 
 
-    def all_tasks_iterator(self):
-        yield self.root_task
-        for task in self.root_task.all_tasks_iterator():
-            yield task
-
     @property
     def is_canceled(self):
         return self.root_task.is_canceled
@@ -84,7 +79,7 @@ class Workflow(Base):
         if self.is_canceled:
             return
         else:
-            for task in self.all_tasks_iterator():
+            for task in self.all_tasks:
                 task.cancel()
 
     def get_webhooks(self, *args, **kwargs):

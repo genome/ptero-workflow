@@ -47,7 +47,8 @@ class Task(Base, PetriMixin):
 
     workflow_id = Column(Integer, ForeignKey('workflow.id'),
         nullable=False, index=True)
-    workflow = relationship('Workflow', foreign_keys=[workflow_id])
+    workflow = relationship('Workflow', foreign_keys=[workflow_id],
+            backref='all_tasks')
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -90,9 +91,6 @@ class Task(Base, PetriMixin):
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
         return '-'.join([name_base] + list(args))
-
-    def all_tasks_iterator(self):
-        return []
 
     def as_dict(self, detailed):
         raise NotImplementedError

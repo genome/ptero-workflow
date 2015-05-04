@@ -32,12 +32,6 @@ class DAG(Method):
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(['set_status'])
 
-    def all_tasks_iterator(self):
-        for child in self.child_list:
-            yield child
-            for task in child.all_tasks_iterator():
-                yield task
-
     def attach_subclass_transitions(self, transitions, start_place):
         for child in self.child_list:
             child_start_place = self._pn(child.name, 'start')

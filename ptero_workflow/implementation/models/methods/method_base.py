@@ -54,9 +54,6 @@ class Method(Base):
         name_base = '-'.join(['method', str(self.id), self.name.replace(' ','_')])
         return '-'.join([name_base] + list(args))
 
-    def all_tasks_iterator(self):
-        return []
-
     def attach_transitions(self, transitions, start_place):
         execution_created_place = \
                 self.attach_execution_transitions(transitions, start_place)
