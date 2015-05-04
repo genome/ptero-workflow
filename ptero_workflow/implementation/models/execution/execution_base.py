@@ -116,10 +116,10 @@ class Execution(Base):
         result = {name: getattr(self, name) for name in ['name', 'color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
-        if detailed:
-            result['status_history'] = [h.as_dict(detailed=detailed)
-                    for h in self.ordered_status_history]
-        else:
+        result['status_history'] = [h.as_dict(detailed=detailed)
+                for h in self.ordered_status_history]
+
+        if not detailed:
             result['inputs'] = self.get_inputs()
             result['outputs'] = self.get_outputs()
 
