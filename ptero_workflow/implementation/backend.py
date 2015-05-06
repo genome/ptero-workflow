@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 import os
 import logging
+import re
 
 LOG = logging.getLogger(__name__)
 
@@ -32,9 +33,11 @@ class Backend(object):
         try:
             workflow = self._save_workflow(workflow_data)
         except IntegrityError as e:
-            sqlite_error = 'UNIQUE constraint failed: workflow.name'
-            postgres_error = 'duplicate key value violates unique constraint "workflow_name_key"'
-            if e.orig.message == sqlite_error or e.orig.message.startswith(postgres_error):
+            sqlite_error = 'UNIQUE constraint failed: workflow.name' == e.orig.message
+            postgres_error = re.match(
+                    "Key.*%s.*already exists" % workflow_data['name'],
+                    e.orig.message) is not None
+            if sqlite_error or postres_error:
                 raise exceptions.InvalidWorkflow(
                     "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
