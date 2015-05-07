@@ -4,6 +4,7 @@ from sqlalchemy.orm import backref, relationship
 import base64
 import logging
 import json
+import os
 import uuid
 
 
@@ -112,10 +113,30 @@ class Workflow(Base):
 
         return result
 
+    def attach_expire_transition(self, transitions, pn, ttl):
+        transitions.append({
+                'inputs': [pn],
+                'action': {
+                    'type': 'expire',
+                    'ttl_seconds': ttl
+                }
+            })
+
     def get_petri_transitions(self):
         transitions = []
         success_place, failure_place = self.root_task.attach_transitions(
                 transitions, self.start_place_name)
+
+        success_ttl = os.environ.get('PTERO_WORKFLOW_SUCCESS_EXPIRE_SECONDS')
+        if success_ttl is not None:
+            self.attach_expire_transition(transitions, success_place,
+                    int(success_ttl))
+
+        failure_ttl = os.environ.get('PTERO_WORKFLOW_FAILURE_EXPIRE_SECONDS')
+        if failure_ttl is not None:
+            self.attach_expire_transition(transitions, failure_place,
+                    int(failure_ttl))
+
         return transitions
 
     def get_outputs(self):
