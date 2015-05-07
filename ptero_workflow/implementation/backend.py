@@ -37,7 +37,7 @@ class Backend(object):
             postgres_error = re.match(
                     "Key.*%s.*already exists" % workflow_data['name'],
                     e.orig.message) is not None
-            if sqlite_error or postres_error:
+            if sqlite_error or postgres_error:
                 raise exceptions.InvalidWorkflow(
                     "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
