@@ -7,6 +7,7 @@ from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
 from sqlalchemy.orm.session import object_session
+from operator import attrgetter
 import logging
 from ptero_common import statuses
 
@@ -27,8 +28,11 @@ class Execution(Base):
     color = Column(Integer, index=True, nullable=False)
     parent_color = Column(Integer, index=True, nullable=True)
 
-    method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
-    task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
+    method_id = Column(Integer, ForeignKey('method.id'),
+            index=True, nullable=True)
+    task_id = Column(Integer, ForeignKey('task.id'),
+            index=True, nullable=True)
+    _status = Column('status', Text, nullable=False)
 
     data = Column(MutableJSONDict, nullable=False)
     colors = Column(JSON)
@@ -61,11 +65,18 @@ class Execution(Base):
 
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
+        self._status = 'new'
         ExecutionStatusHistory(execution=self, status='new')
+
+
+    @property
+    def ordered_status_history(self):
+        return sorted(self.status_history, key=attrgetter('timestamp'))
+
 
     @property
     def status(self):
-        return self.status_history[-1].status
+        return self._status
 
     @status.setter
     def status(self, status):
@@ -79,6 +90,7 @@ class Execution(Base):
                     self.status, status, str(statuses.VALID_STATUS_TRANSITIONS[status]))
             else:
                 self.send_webhooks(status)
+                self._status = status
                 return ExecutionStatusHistory(execution=self, status=status)
 
     def send_webhooks(self, status):
@@ -104,9 +116,12 @@ class Execution(Base):
         result = {name: getattr(self, name) for name in ['name', 'color',
             'parent_color', 'data', 'colors', 'begins', 'status']}
 
-        result['inputs'] = self.get_inputs()
-        result['outputs'] = self.get_outputs()
-        result['status_history'] = [h.as_dict(detailed=detailed) for h in self.status_history]
+        result['status_history'] = [h.as_dict(detailed=detailed)
+                for h in self.ordered_status_history]
+
+        if not detailed:
+            result['inputs'] = self.get_inputs()
+            result['outputs'] = self.get_outputs()
 
         return result
 
@@ -157,7 +172,7 @@ class ExecutionStatusHistory(Base):
     status = Column(Text, index=True, nullable=False)
 
     execution = relationship(Execution,
-            backref=backref('status_history', order_by=timestamp))
+            backref=backref('status_history', order_by=timestamp, lazy='joined'))
 
     def as_dict(self, detailed):
         return {'timestamp': str(self.timestamp), 'status': self.status}

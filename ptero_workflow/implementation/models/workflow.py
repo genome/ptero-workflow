@@ -22,16 +22,20 @@ class Workflow(Base):
     __tablename__ = 'workflow'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True, nullable=False, default=_generate_uuid)
+    name = Column(Text, unique=True, nullable=False,
+            index=True,
+            default=_generate_uuid)
 
-    net_key = Column(Text, unique=True, default=_generate_uuid)
+    net_key = Column(Text, unique=True,
+            index=True,
+            default=_generate_uuid)
 
     root_task_id = Column(Integer, ForeignKey('task.id',
         use_alter=True, name='fk_workflow_root_task'))
 
 
     root_task = relationship('Task', post_update=True,
-            foreign_keys=[root_task_id])
+            foreign_keys=[root_task_id], lazy='joined')
 
     start_place_name = 'workflow-start-place'
 
@@ -67,11 +71,6 @@ class Workflow(Base):
         return self.root_task.method_list[0].executions
 
 
-    def all_tasks_iterator(self):
-        yield self.root_task
-        for task in self.root_task.all_tasks_iterator():
-            yield task
-
     @property
     def is_canceled(self):
         return self.root_task.is_canceled
@@ -80,7 +79,7 @@ class Workflow(Base):
         if self.is_canceled:
             return
         else:
-            for task in self.all_tasks_iterator():
+            for task in self.all_tasks:
                 task.cancel()
 
     def get_webhooks(self, *args, **kwargs):

@@ -4,9 +4,11 @@ from . import tasks
 from . import translator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 import os
 import logging
+import re
 
 LOG = logging.getLogger(__name__)
 
@@ -31,9 +33,11 @@ class Backend(object):
         try:
             workflow = self._save_workflow(workflow_data)
         except IntegrityError as e:
-            sqlite_error = 'UNIQUE constraint failed: workflow.name'
-            postgres_error = 'duplicate key value violates unique constraint "workflow_name_key"'
-            if e.orig.message == sqlite_error or e.orig.message.startswith(postgres_error):
+            sqlite_error = 'UNIQUE constraint failed: workflow.name' == e.orig.message
+            postgres_error = re.search(
+                    "Key.*%s.*already exists" % workflow_data['name'],
+                    e.orig.message) is not None
+            if sqlite_error or postgres_error:
                 raise exceptions.InvalidWorkflow(
                     "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
@@ -72,14 +76,15 @@ class Backend(object):
             ],
         }
 
-        workflow.root_task = tasks.build_task('root', root_data)
+        workflow.root_task = tasks.build_task('root', root_data, workflow)
         models.TaskExecution(task=workflow.root_task, color=0, parent_color=None,
                 colors=[0], begins=[], data={})
 
-        tasks.create_input_holder(workflow.root_task, workflow_data['inputs'],
+        tasks.create_input_holder(workflow.root_task, workflow, workflow_data['inputs'],
                 color=workflow.color, parent_color=workflow.parent_color)
 
-        dummy_output_task = models.InputHolder(name='dummy output task')
+        dummy_output_task = models.InputHolder(name='dummy output task',
+                workflow=workflow)
         self.session.add(dummy_output_task)
 
         for link_data in workflow_data['links']:
@@ -111,6 +116,32 @@ class Backend(object):
             raise exceptions.InvalidWorkflow("Missing required inputs: %s" %
                     ', '.join(sorted(missing_inputs)))
 
+    def _get_workflow_eagerly(self, workflow_id):
+        workflow = self._get_workflow(workflow_id)
+
+        # Here we load entities and eagerly-load some of their properties.
+        # Later, when those entities are iterated through we won't have to issue
+        # SQL per-entity.
+        m = models
+        method_lists = self.session.query(m.MethodList).\
+                options(
+                        joinedload(m.MethodList.method_list),
+                        joinedload(m.MethodList.webhooks),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        dags = self.session.query(m.DAG).\
+                options(
+                        joinedload(m.DAG.children),
+                        joinedload(m.DAG.webhooks),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        shell_commands = self.session.query(m.ShellCommand).\
+                options(joinedload(m.ShellCommand.webhooks)).\
+                filter_by(workflow_id=workflow_id).all()
+
+
+        return workflow
+
     def _get_workflow(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
         if workflow is not None:
@@ -120,7 +151,7 @@ class Backend(object):
                     "Workflow with id %s was not found." % workflow_id)
 
     def get_workflow(self, workflow_id):
-        return self._get_workflow(workflow_id).as_dict(detailed=False)
+        return self._get_workflow_eagerly(workflow_id).as_dict(detailed=False)
 
     def get_workflow_by_name(self, workflow_name):
         try:
@@ -132,14 +163,26 @@ class Backend(object):
                     "Workflow with name %s was not found." % workflow_name)
 
     def cancel_workflow(self, workflow_id):
-        self._get_workflow(workflow_id).cancel()
+        self._get_workflow_eagerly(workflow_id).cancel()
         self.session.commit()
 
     def get_workflow_status(self, workflow_id):
         return self._get_workflow(workflow_id).status
 
     def get_workflow_details(self, workflow_id):
-        return self._get_workflow(workflow_id).as_dict(detailed=True)
+        m = models
+        method_lists = self.session.query(m.MethodList).\
+                options(joinedload(m.MethodList.executions)).\
+                filter_by(workflow_id=workflow_id).all()
+
+        dags = self.session.query(m.DAG).\
+                options(joinedload(m.DAG.executions)).\
+                filter_by(workflow_id=workflow_id).all()
+
+        shell_commands = self.session.query(m.ShellCommand).\
+                options(joinedload(m.ShellCommand.executions)).\
+                filter_by(workflow_id=workflow_id).all()
+        return self._get_workflow_eagerly(workflow_id).as_dict(detailed=True)
 
     def get_workflow_outputs(self, workflow_id):
         return self._get_workflow(workflow_id).get_outputs()

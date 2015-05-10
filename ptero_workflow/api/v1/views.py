@@ -135,7 +135,7 @@ class TaskCallback(Resource):
         query_string_data = request.args
         g.backend.handle_task_callback(task_id, callback_type, body_data,
                 query_string_data)
-        return ''
+        return {"message": "Completed task callback"}, 200
 
 
 class MethodCallback(Resource):
@@ -146,7 +146,7 @@ class MethodCallback(Resource):
         query_string_data = request.args
         g.backend.handle_method_callback(method_id, callback_type,
                 body_data, query_string_data)
-        return ''
+        return {"message": "Completed method callback"}, 200
 
 
 class ReportDetailView(Resource):
@@ -154,4 +154,4 @@ class ReportDetailView(Resource):
     @sends_404
     def get(self, report_type):
         generator = reports.get_report_generator(report_type)
-        return generator(**request.args), 200
+        return generator(**request.args.to_dict(flat=True)), 200

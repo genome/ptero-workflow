@@ -23,11 +23,6 @@ class MethodList(Task):
         'polymorphic_identity': 'MethodList',
     }
 
-    def all_tasks_iterator(self):
-        for method in self.method_list:
-            for task in method.all_tasks_iterator():
-                yield task
-
     def attach_subclass_transitions(self, transitions, start_place):
         last_failure_place = start_place
         success_places = []

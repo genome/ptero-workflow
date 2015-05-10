@@ -1,5 +1,5 @@
 from .base import Base
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
 from sqlalchemy import event
@@ -14,16 +14,22 @@ __all__ = ['Webhook']
 
 class Webhook(Base):
     __tablename__ = 'webhook'
+    __table_args__ = (
+        Index('method_id', 'name'),
+        Index('task_id', 'name'),
+    )
 
     id = Column(Integer, primary_key=True)
 
-    method_id = Column(Integer, ForeignKey('method.id'), nullable=True)
-    task_id = Column(Integer, ForeignKey('task.id'), nullable=True)
+    method_id = Column(Integer, ForeignKey('method.id'),
+            index=True, nullable=True)
+    task_id = Column(Integer, ForeignKey('task.id'),
+            index=True, nullable=True)
 
     task = relationship('Task', backref='webhooks')
     method = relationship('Method', backref='webhooks')
 
-    name = Column(String, nullable=False)
+    name = Column(String, index=True, nullable=False)
     url = Column(String, nullable=False)
 
     @property

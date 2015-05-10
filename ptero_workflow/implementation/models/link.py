@@ -1,5 +1,5 @@
 from .base import Base
-from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy import Column, UniqueConstraint, Index
 from sqlalchemy import Boolean, ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
 import logging
@@ -15,12 +15,15 @@ class Link(Base):
     __tablename__ = 'link'
     __table_args__ = (
         UniqueConstraint('destination_id', 'destination_property'),
+        Index('destination_id', 'destination_property'),
     )
 
     id = Column(Integer, primary_key=True)
 
-    source_id      = Column(Integer, ForeignKey('task.id'), nullable=False)
-    destination_id = Column(Integer, ForeignKey('task.id'), nullable=False)
+    source_id = Column(Integer, ForeignKey('task.id'), index=True,
+            nullable=False)
+    destination_id = Column(Integer, ForeignKey('task.id'), index=True,
+            nullable=False)
 
     source_property      = Column(Text, nullable=False)
     destination_property = Column(Text, nullable=False)

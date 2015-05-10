@@ -62,7 +62,9 @@ class Converge(Method):
                 MethodExecution.color==color).one()
 
         execution.status = scheduled
+        s.flush()
         execution.status = running
+        s.flush()
 
         if (self.task.is_canceled):
             execution.status = canceled

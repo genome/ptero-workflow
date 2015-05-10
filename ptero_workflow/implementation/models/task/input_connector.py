@@ -45,6 +45,7 @@ class InputConnector(Task):
                 MethodExecution.method==self.parent,
                 MethodExecution.color==color).one()
         execution.status = statuses.scheduled
+        s.flush()
         execution.status = statuses.running
         s.commit()
 

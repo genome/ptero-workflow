@@ -22,11 +22,13 @@ class InputSource(Base):
 
     id = Column(Integer, primary_key=True)
 
-    source_id      = Column(Integer, ForeignKey('task.id'), nullable=False)
-    destination_id = Column(Integer, ForeignKey('task.id'), nullable=False)
+    source_id      = Column(Integer, ForeignKey('task.id'),
+            index=True, nullable=False)
+    destination_id = Column(Integer, ForeignKey('task.id'),
+            index=True, nullable=False)
 
-    source_property      = Column(Text, nullable=False)
-    destination_property = Column(Text, nullable=False)
+    source_property      = Column(Text, nullable=False, index=True)
+    destination_property = Column(Text, nullable=False, index=True)
 
     parallel_depths = Column(JSON, nullable=None)
 

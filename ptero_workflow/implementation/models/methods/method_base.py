@@ -28,7 +28,7 @@ class Method(Base):
 
     id = Column(Integer, primary_key=True)
 
-    task_id = Column(Integer, ForeignKey('task.id'))
+    task_id = Column(Integer, ForeignKey('task.id'), index=True)
     task = relationship('Task')
 
     name = Column(Text)
@@ -40,7 +40,11 @@ class Method(Base):
             collection_class=attribute_mapped_collection('color'),
             cascade='all, delete-orphan')
 
-    type = Column(Text, nullable=False)
+    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
+
+    type = Column(Text, nullable=False, index=True)
     __mapper_args__ = {
         'polymorphic_on': 'type',
     }
@@ -49,9 +53,6 @@ class Method(Base):
     def _pn(self, *args):
         name_base = '-'.join(['method', str(self.id), self.name.replace(' ','_')])
         return '-'.join([name_base] + list(args))
-
-    def all_tasks_iterator(self):
-        return []
 
     def attach_transitions(self, transitions, start_place):
         execution_created_place = \

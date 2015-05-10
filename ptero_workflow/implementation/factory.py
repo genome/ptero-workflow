@@ -1,7 +1,9 @@
 from . import backend
 from . import models
 import sqlalchemy
+import os
 import time
+import logging
 
 
 __all__ = ['Factory']
@@ -27,6 +29,8 @@ class Factory(object):
             self._initialize_celery()
 
     def _initialize_sqlalchemy(self):
+        logging.getLogger('sqlalchemy.engine').setLevel(getattr(logging,
+                os.environ.get('PTERO_WORKFLOW_ORM_LOG_LEVEL', 'WARN').upper()))
         self._engine = sqlalchemy.create_engine(self.connection_string)
         for i in xrange(3):
             try:

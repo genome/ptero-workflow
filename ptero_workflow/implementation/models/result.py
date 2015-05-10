@@ -1,5 +1,5 @@
 from .base import Base
-from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy import Column, UniqueConstraint, Index
 from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 import json_type
@@ -12,10 +12,12 @@ class Result(Base):
     __tablename__ = 'result'
     __table_args__ = (
         UniqueConstraint('color', 'name', 'task_id'),
+        Index('color', 'name', 'task_id'),
     )
 
     id = Column(Integer, primary_key=True)
-    task_id = Column(Integer, ForeignKey('task.id'), nullable=False)
+    task_id = Column(Integer, ForeignKey('task.id'),
+            index=True, nullable=False)
     name = Column(Text, nullable=False, index=True)
     color = Column(Integer, nullable=False, index=True)
     parent_color = Column(Integer, nullable=True, index=True)

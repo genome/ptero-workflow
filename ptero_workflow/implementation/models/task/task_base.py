@@ -39,11 +39,16 @@ class Task(Base, PetriMixin):
 
     id        = Column(Integer, primary_key=True)
     parent_id = Column(Integer, ForeignKey('dag.id', use_alter=True,
-        name='fk_task_parent_dag'), nullable=True)
+        name='fk_task_parent_dag'), nullable=True, index=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
+
+    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id],
+            backref='all_tasks')
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -86,9 +91,6 @@ class Task(Base, PetriMixin):
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
         return '-'.join([name_base] + list(args))
-
-    def all_tasks_iterator(self):
-        return []
 
     def as_dict(self, detailed):
         raise NotImplementedError
@@ -332,7 +334,7 @@ class Task(Base, PetriMixin):
                     output_name, [])
             results = s.query(result.Result
                     ).filter_by(task=source, name=name, parent_color=color
-                    ).order_by('color'
+                    ).order_by('result.color'
                     ).all()
 
             array_result = result.Result(task=source, name=name,
@@ -439,9 +441,12 @@ class Task(Base, PetriMixin):
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })
-            execution.status = statuses.scheduled
-            execution.status = statuses.running
             s.add(execution)
+            s.flush()
+            execution.status = statuses.scheduled
+            s.flush()
+            execution.status = statuses.running
+            s.flush()
 
         if self.is_canceled:
             execution.status = statuses.canceled
