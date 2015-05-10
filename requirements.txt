@@ -7,4 +7,4 @@ librabbitmq == 1.6.1
 psycopg2 == 2.6
 redis == 2.10.3
 sqlalchemy == 1.0.1
--e git+https://github.com/genome/ptero-common.git@master#egg=ptero_common
+-e git+http://github.com/genome/ptero-common.git@master#egg=ptero_common
