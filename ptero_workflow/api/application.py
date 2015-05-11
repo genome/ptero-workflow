@@ -1,5 +1,7 @@
 from . import v1
 from ..implementation.factory import Factory
+from flask import request
+import zlib
 import flask
 import os
 
@@ -27,6 +29,8 @@ def _attach_factory_to_app(factory, app):
     @app.before_request
     def before_request():
         flask.g.backend = factory.create_backend()
+        if request.headers.get('content-encoding', 'identity') == 'gzip':
+            request._cached_data = zlib.decompress(request.data)
 
     @app.teardown_request
     def teardown_request(exception):
