@@ -70,23 +70,23 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
             del os.environ['PTERO_WORKFLOW_%s_EXPIRE_SECONDS' % type]
 
     def test_has_no_expire_actions(self):
-        self.unset_expire('SUCCESS')
-        self.unset_expire('FAILURE')
+        self.unset_expire('SUCCEEDED')
+        self.unset_expire('FAILED')
         self.assertTrue( len(self.expire_actions) == 0 )
 
     def test_success_expire_actions(self):
-        self.set_expire('SUCCESS', 1)
-        self.unset_expire('FAILURE')
+        self.set_expire('SUCCEEDED', 1)
+        self.unset_expire('FAILED')
         self.assertTrue( len(self.expire_actions) == 1 )
 
     def test_failure_expire_actions(self):
-        self.set_expire('FAILURE', 1)
-        self.unset_expire('SUCCESS')
+        self.set_expire('FAILED', 1)
+        self.unset_expire('SUCCEEDED')
         self.assertTrue( len(self.expire_actions) == 1 )
 
     def test_success_and_failure_expire_actions(self):
-        self.set_expire('SUCCESS', 1)
-        self.set_expire('FAILURE', 1)
+        self.set_expire('SUCCEEDED', 1)
+        self.set_expire('FAILED', 1)
         self.assertTrue( len(self.expire_actions) == 2 )
 
 if __name__ == '__main__':
