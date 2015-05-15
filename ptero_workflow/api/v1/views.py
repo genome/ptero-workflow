@@ -130,7 +130,7 @@ def _report_url(workflow_id, report_type):
 class TaskCallback(Resource):
     @logged_response(logger=LOG)
     @sends_404
-    def put(self, task_id, callback_type):
+    def post(self, task_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
         g.backend.handle_task_callback(task_id, callback_type, body_data,
@@ -141,7 +141,7 @@ class TaskCallback(Resource):
 class MethodCallback(Resource):
     @logged_response(logger=LOG)
     @sends_404
-    def put(self, method_id, callback_type):
+    def post(self, method_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
         g.backend.handle_method_callback(method_id, callback_type,
