@@ -38,7 +38,7 @@ class Webhook(Base):
                 'ptero_common.celery.http.HTTP']
 
     def send(self, **data):
-        self.http.delay('PUT', self.url, webhookName=self.name, **data)
+        self.http.delay('POST', self.url, webhookName=self.name, **data)
 
     def send_after_commit(self, **data):
         session = object_session(self)
@@ -47,7 +47,7 @@ class Webhook(Base):
 
         # Note: closure over self, url, name, and data
         def callback(session):
-            self.http.delay('PUT', url, webhookName=name, **data)
+            self.http.delay('POST', url, webhookName=name, **data)
         event.listen(session, "after_commit", callback)
 
 
