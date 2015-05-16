@@ -15,7 +15,6 @@ before_script:
 
 env:
     global:
-        - PTERO_WORKFLOW_TEST_STARTUP_WAIT=15
         - PTERO_SHELL_COMMAND_HOME=./ptero-shell-command
         - PTERO_PETRI_HOME=./ptero-petri
         - PTERO_WORKFLOW_DB_STRING=postgres://postgres@localhost/ptero_workflow
