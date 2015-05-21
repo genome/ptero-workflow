@@ -438,6 +438,7 @@ class Task(Base, PetriMixin):
 
             execution = TaskExecution(task=self, color=color,
                     colors=colors, begins=begins,
+                    workflow_id=self.workflow_id,
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })

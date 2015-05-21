@@ -95,6 +95,7 @@ class Method(Base):
         execution = MethodExecution(method=self, color=color,
                 colors=colors, begins=begins,
                 parent_color=parent_color,
+                workflow_id=self.workflow_id,
                 data={
                     'petri_response_links': body_data['response_links']
         })

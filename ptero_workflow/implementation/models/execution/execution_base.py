@@ -38,6 +38,10 @@ class Execution(Base):
     colors = Column(JSON)
     begins = Column(JSON)
 
+    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
+
     type = Column(String, nullable=False)
     __mapper_args__ = {
             'polymorphic_on': 'type',
