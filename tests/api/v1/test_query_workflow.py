@@ -1,6 +1,19 @@
 from ..base import BaseAPITest
 import abc
 
+import base64
+import uuid
+
+
+def _generate_uuid():
+    return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
+
+def _generate_unique_name(prefix):
+    return prefix + _generate_uuid()
+
+bunnies = _generate_unique_name('bunnies')
+walrus = _generate_unique_name('walrus')
+elephant = _generate_unique_name('elephant')
 
 class QueryWorkflow(object):
     __metaclass__ = abc.ABCMeta
@@ -32,15 +45,15 @@ class QueryWorkflow(object):
 class QueryByName(QueryWorkflow, BaseAPITest):
     queries = [
         {
-            'args': {'name': 'bunnies'},
+            'args': {'name': bunnies},
             'expected_code': 200,
             'expected_data': 'bunnies',
         }, {
-            'args': {'name': 'walrus'},
+            'args': {'name': walrus},
             'expected_code': 200,
             'expected_data': 'walrus',
         }, {
-            'args': {'name': 'elephant'},
+            'args': {'name': elephant},
             'expected_code': 404,
             'expected_data': 'elephant',
         }
@@ -62,7 +75,7 @@ class QueryByName(QueryWorkflow, BaseAPITest):
             'inputs': {
                 'in_a': 'kittens',
             },
-            'name': 'bunnies',
+            'name': bunnies,
         },
         'walrus': {
             'tasks': { },
@@ -77,10 +90,10 @@ class QueryByName(QueryWorkflow, BaseAPITest):
             'inputs': {
                 'in_z': 'sea lion',
             },
-            'name': 'walrus',
+            'name': walrus,
         },
         'elephant': {
-            'error': 'Workflow with name elephant was not found.'
+            'error': 'Workflow with name %s was not found.' % elephant
         }
     }
 

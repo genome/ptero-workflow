@@ -3,7 +3,8 @@ import abc
 import difflib
 import json
 import sys
-
+import base64
+import uuid
 
 class RoundTripSuccess(object):
     __metaclass__ = abc.ABCMeta
@@ -156,6 +157,13 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
         },
     }
 
+
+def _generate_uuid():
+    return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
+
+unique_name = _generate_uuid()
+
+
 class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
@@ -171,7 +179,7 @@ class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
         'inputs': {
             'in_a': 'kittens',
         },
-        'name': 'puppies',
+        'name': unique_name,
     }
 
 class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
