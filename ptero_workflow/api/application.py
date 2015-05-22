@@ -30,7 +30,8 @@ def _attach_factory_to_app(factory, app):
     def before_request():
         flask.g.backend = factory.create_backend()
         if request.headers.get('content-encoding', 'identity') == 'gzip':
-            request._cached_data = zlib.decompress(request.data)
+            request._cached_data = zlib.decompress(request.data,
+                    zlib.MAX_WBITS|16)
 
     @app.teardown_request
     def teardown_request(exception):
