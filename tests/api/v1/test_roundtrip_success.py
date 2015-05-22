@@ -50,6 +50,11 @@ class RoundTripSuccess(object):
             sys.stdout.write(line)
         return is_ok
 
+    def webhook_url(self, name):
+        # this url should always respond with a status-code that does not
+        # get retried.
+        return self.post_url + '?webhook_name=%s' % name
+
 class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
@@ -183,29 +188,31 @@ class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
     }
 
 class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
-    post_data = {
+    @property
+    def post_data(self):
+        return {
         'webhooks': {
-            'running': 'http://localhost/example/webhook/outer_dag',
-            'errored': ['http://localhost/example/webhook/outer_dag', 'http://localhost/example/webhook/outer_dag/2']
+            'running': self.webhook_url('outer_dag'),
+            'errored': [self.webhook_url('outer_dag'), self.webhook_url('outer_dag_2')]
         },
         'tasks': {
             'Inner': {
                 'webhooks': {
-                    'running': 'http://localhost/example/webhook/outer_task',
-                    'errored': ['http://localhost/example/webhook/outer_task', 'http://localhost/example/webhook/outer_task/2']
+                    'running': self.webhook_url('outer_task'),
+                    'errored': [self.webhook_url('outer_task'), self.webhook_url('outer_task_2')]
                 },
                 'methods': [{
                     'name': 'some_workflow',
                     'parameters': {
                         'webhooks': {
-                            'running': 'http://localhost/example/webhook/inner_dag',
-                            'errored': ['http://localhost/example/webhook/inner_dag', 'http://localhost/example/webhook/inner_dag/2']
+                            'running': self.webhook_url('inner_dag'),
+                            'errored': [self.webhook_url('inner_dag'), self.webhook_url('inner_dag_2')]
                         },
                         'tasks': {
                             'A': {
                                 'webhooks': {
-                                    'running': 'http://localhost/example/webhook/inner_task',
-                                    'errored': ['http://localhost/example/webhook/inner_task', 'http://localhost/example/webhook/inner_task/2']
+                                    'running': self.webhook_url('inner_task'),
+                                    'errored': [self.webhook_url('inner_task'), self.webhook_url('inner_task_2')]
                                 },
                                 'methods': [
                                     {
@@ -216,8 +223,8 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
                                             'user': 'testuser',
                                             'workingDirectory': '/test/working/directory',
                                             'webhooks': {
-                                                'running': 'http://localhost/example/webhook/shell-command',
-                                                'errored': ['http://localhost/example/webhook/shell-command', 'http://localhost/example/webhook/shell-command/2']
+                                                'running': self.webhook_url('shell_command'),
+                                                'errored': [self.webhook_url('shell_command'), self.webhook_url('shell_command_2')]
                                             },
                                         }
                                     }
