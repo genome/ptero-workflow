@@ -1,0 +1,43 @@
+{
+    "id": 170, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_matrix", 
+            "source": "A", 
+            "sourceProperty": "out_matrix"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "in_matrix", 
+            "source": "input connector", 
+            "sourceProperty": "in_matrix"
+        }
+    ], 
+    "name": "hPViV5rvRayFHy6Po9lOrA", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1243, 
+            "methods": [
+                {
+                    "id": 456, 
+                    "name": "inner", 
+                    "parameters": {
+                        "links": [
+                            {
+                                "destination": "output connector", 
+                                "destinationProperty": "out_matrix", 
+                                "source": "input connector", 
+                                "sourceProperty": "in_matrix"
+                            }
+                        ], 
+                        "tasks": {}
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_matrix"
+        }
+    }
+}

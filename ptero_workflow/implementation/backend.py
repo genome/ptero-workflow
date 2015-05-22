@@ -187,6 +187,25 @@ class Backend(object):
                 filter_by(workflow_id=workflow_id).all()
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=True)
 
+    def get_workflow_skeleton(self, workflow_id):
+        workflow = self._get_workflow(workflow_id)
+
+        # Here we load entities and eagerly-load some of their properties.
+        # Later, when those entities are iterated through we won't have to issue
+        # SQL per-entity.
+        m = models
+        method_lists = self.session.query(m.MethodList).\
+                options(
+                        joinedload(m.MethodList.method_list),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        dags = self.session.query(m.DAG).\
+                options(
+                        joinedload(m.DAG.children),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        return workflow.as_skeleton_dict()
+
     def get_workflow_outputs(self, workflow_id):
         return self._get_workflow(workflow_id).get_outputs()
 

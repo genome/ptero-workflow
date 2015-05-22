@@ -1,0 +1,44 @@
+{
+    "id": 176, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_constant", 
+            "source": "A", 
+            "sourceProperty": "constant_param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_parallel", 
+            "source": "A", 
+            "sourceProperty": "parallel_param"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "constant_param", 
+            "source": "input connector", 
+            "sourceProperty": "in_constant"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "parallel_param", 
+            "source": "input connector", 
+            "sourceProperty": "in_parallel"
+        }
+    ], 
+    "name": "cKWF4WhSRQCVBmewQgM1qw", 
+    "status": "failed", 
+    "tasks": {
+        "A": {
+            "id": 1294, 
+            "methods": [
+                {
+                    "id": 473, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "parallelBy": "parallel_param"
+        }
+    }
+}

@@ -1,0 +1,103 @@
+{
+    "id": 166, 
+    "links": [
+        {
+            "destination": "C", 
+            "destinationProperty": "param_1", 
+            "source": "A", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "outer_out_c_1", 
+            "source": "C", 
+            "sourceProperty": "param_1"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "outer_out_c_2", 
+            "source": "C", 
+            "sourceProperty": "param_2"
+        }, 
+        {
+            "destination": "C", 
+            "destinationProperty": "param_2", 
+            "source": "Inner", 
+            "sourceProperty": "inner_out_b"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param", 
+            "source": "input connector", 
+            "sourceProperty": "outer_in_a"
+        }, 
+        {
+            "destination": "Inner", 
+            "destinationProperty": "inner_in_b", 
+            "source": "input connector", 
+            "sourceProperty": "outer_in_inner"
+        }
+    ], 
+    "name": "p1X9kRsqQO6L-my7GYgMnQ", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1205, 
+            "methods": [
+                {
+                    "id": 443, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "C": {
+            "id": 1203, 
+            "methods": [
+                {
+                    "id": 442, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "Inner": {
+            "id": 1201, 
+            "methods": [
+                {
+                    "id": 441, 
+                    "name": "some_workflow", 
+                    "parameters": {
+                        "links": [
+                            {
+                                "destination": "output connector", 
+                                "destinationProperty": "inner_out_b", 
+                                "source": "B", 
+                                "sourceProperty": "param"
+                            }, 
+                            {
+                                "destination": "B", 
+                                "destinationProperty": "param", 
+                                "source": "input connector", 
+                                "sourceProperty": "inner_in_b"
+                            }
+                        ], 
+                        "tasks": {
+                            "B": {
+                                "id": 1208, 
+                                "methods": [
+                                    {
+                                        "id": 444, 
+                                        "name": "execute", 
+                                        "service": "shell-command"
+                                    }
+                                ]
+                            }
+                        }
+                    }, 
+                    "service": "workflow"
+                }
+            ]
+        }
+    }
+}

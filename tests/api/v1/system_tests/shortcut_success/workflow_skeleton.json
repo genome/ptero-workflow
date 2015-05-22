@@ -1,0 +1,36 @@
+{
+    "id": 180, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_a", 
+            "source": "A", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param", 
+            "source": "input connector", 
+            "sourceProperty": "in_a"
+        }
+    ], 
+    "name": "nMewqeSiTH2oViXg-eTP2g", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1321, 
+            "methods": [
+                {
+                    "id": 485, 
+                    "name": "shortcut", 
+                    "service": "shell-command"
+                }, 
+                {
+                    "id": 486, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,61 @@
+{
+    "id": 169, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_matrix", 
+            "source": "A", 
+            "sourceProperty": "out_matrix"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "in_matrix", 
+            "source": "input connector", 
+            "sourceProperty": "in_matrix"
+        }
+    ], 
+    "name": "qTRwtaiDQ16jR1M4ameKzg", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1234, 
+            "methods": [
+                {
+                    "id": 453, 
+                    "name": "inner", 
+                    "parameters": {
+                        "links": [
+                            {
+                                "destination": "output connector", 
+                                "destinationProperty": "out_matrix", 
+                                "source": "A", 
+                                "sourceProperty": "name"
+                            }, 
+                            {
+                                "destination": "A", 
+                                "destinationProperty": "name", 
+                                "source": "input connector", 
+                                "sourceProperty": "in_matrix"
+                            }
+                        ], 
+                        "tasks": {
+                            "A": {
+                                "id": 1237, 
+                                "methods": [
+                                    {
+                                        "id": 454, 
+                                        "name": "execute", 
+                                        "service": "shell-command"
+                                    }
+                                ], 
+                                "parallelBy": "name"
+                            }
+                        }
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_matrix"
+        }
+    }
+}

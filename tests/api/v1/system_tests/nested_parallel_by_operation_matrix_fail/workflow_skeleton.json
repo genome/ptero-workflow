@@ -1,0 +1,61 @@
+{
+    "id": 168, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_matrix", 
+            "source": "A", 
+            "sourceProperty": "out_matrix"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "in_matrix", 
+            "source": "input connector", 
+            "sourceProperty": "in_matrix"
+        }
+    ], 
+    "name": "Why2Vy3BR-WycXQHtQM2OQ", 
+    "status": "failed", 
+    "tasks": {
+        "A": {
+            "id": 1225, 
+            "methods": [
+                {
+                    "id": 450, 
+                    "name": "inner", 
+                    "parameters": {
+                        "links": [
+                            {
+                                "destination": "output connector", 
+                                "destinationProperty": "out_matrix", 
+                                "source": "A", 
+                                "sourceProperty": "name"
+                            }, 
+                            {
+                                "destination": "A", 
+                                "destinationProperty": "name", 
+                                "source": "input connector", 
+                                "sourceProperty": "in_matrix"
+                            }
+                        ], 
+                        "tasks": {
+                            "A": {
+                                "id": 1228, 
+                                "methods": [
+                                    {
+                                        "id": 451, 
+                                        "name": "execute", 
+                                        "service": "shell-command"
+                                    }
+                                ], 
+                                "parallelBy": "name"
+                            }
+                        }
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_matrix"
+        }
+    }
+}

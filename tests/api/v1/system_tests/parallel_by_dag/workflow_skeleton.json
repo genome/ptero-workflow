@@ -1,0 +1,84 @@
+{
+    "id": 172, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_constant", 
+            "source": "A", 
+            "sourceProperty": "out_constant"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_parallel", 
+            "source": "A", 
+            "sourceProperty": "out_parallel"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "in_constant", 
+            "source": "input connector", 
+            "sourceProperty": "in_constant"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "in_parallel", 
+            "source": "input connector", 
+            "sourceProperty": "in_parallel"
+        }
+    ], 
+    "name": "LN6VTc2lTqSnr-mJWuNgoQ", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1260, 
+            "methods": [
+                {
+                    "id": 461, 
+                    "name": "inner", 
+                    "parameters": {
+                        "links": [
+                            {
+                                "destination": "output connector", 
+                                "destinationProperty": "out_constant", 
+                                "source": "A", 
+                                "sourceProperty": "const_param"
+                            }, 
+                            {
+                                "destination": "output connector", 
+                                "destinationProperty": "out_parallel", 
+                                "source": "A", 
+                                "sourceProperty": "parallel_param"
+                            }, 
+                            {
+                                "destination": "A", 
+                                "destinationProperty": "const_param", 
+                                "source": "input connector", 
+                                "sourceProperty": "in_constant"
+                            }, 
+                            {
+                                "destination": "A", 
+                                "destinationProperty": "parallel_param", 
+                                "source": "input connector", 
+                                "sourceProperty": "in_parallel"
+                            }
+                        ], 
+                        "tasks": {
+                            "A": {
+                                "id": 1263, 
+                                "methods": [
+                                    {
+                                        "id": 462, 
+                                        "name": "execute", 
+                                        "service": "shell-command"
+                                    }
+                                ]
+                            }
+                        }
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_parallel"
+        }
+    }
+}

@@ -1,0 +1,76 @@
+{
+    "id": 154, 
+    "links": [
+        {
+            "destination": "middle", 
+            "destinationProperty": "parallel_param", 
+            "source": "input connector", 
+            "sourceProperty": "in_parallel"
+        }, 
+        {
+            "destination": "start", 
+            "destinationProperty": "constant_param", 
+            "source": "input connector", 
+            "sourceProperty": "in_constant"
+        }, 
+        {
+            "destination": "stop", 
+            "destinationProperty": "parallel_param", 
+            "source": "middle", 
+            "sourceProperty": "parallel_param"
+        }, 
+        {
+            "destination": "stop", 
+            "destinationProperty": "constant_param", 
+            "source": "start", 
+            "sourceProperty": "constant_param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_constant", 
+            "source": "stop", 
+            "sourceProperty": "constant_param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_parallel", 
+            "source": "stop", 
+            "sourceProperty": "parallel_param"
+        }
+    ], 
+    "name": "G0F1y66CRS28UeimKByOEA", 
+    "status": "succeeded", 
+    "tasks": {
+        "middle": {
+            "id": 1115, 
+            "methods": [
+                {
+                    "id": 408, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "parallelBy": "parallel_param"
+        }, 
+        "start": {
+            "id": 1112, 
+            "methods": [
+                {
+                    "id": 406, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "stop": {
+            "id": 1113, 
+            "methods": [
+                {
+                    "id": 407, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

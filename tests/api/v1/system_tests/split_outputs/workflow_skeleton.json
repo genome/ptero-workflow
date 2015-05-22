@@ -1,0 +1,75 @@
+{
+    "id": 183, 
+    "links": [
+        {
+            "destination": "B", 
+            "destinationProperty": "param", 
+            "source": "A", 
+            "sourceProperty": "param_1"
+        }, 
+        {
+            "destination": "C", 
+            "destinationProperty": "param", 
+            "source": "A", 
+            "sourceProperty": "param_2"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_1", 
+            "source": "B", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_2", 
+            "source": "C", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param_1", 
+            "source": "input connector", 
+            "sourceProperty": "in_1"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param_2", 
+            "source": "input connector", 
+            "sourceProperty": "in_2"
+        }
+    ], 
+    "name": "raTG5b2aSaOZuwveL4srPQ", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1342, 
+            "methods": [
+                {
+                    "id": 494, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "B": {
+            "id": 1341, 
+            "methods": [
+                {
+                    "id": 493, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "C": {
+            "id": 1339, 
+            "methods": [
+                {
+                    "id": 492, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,60 @@
+{
+    "id": 153, 
+    "links": [
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_constant", 
+            "source": "A", 
+            "sourceProperty": "constant_param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_parallel", 
+            "source": "A", 
+            "sourceProperty": "parallel_param"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "parallel_param", 
+            "source": "input connector", 
+            "sourceProperty": "in_parallel"
+        }, 
+        {
+            "destination": "intermediate", 
+            "destinationProperty": "constant_param", 
+            "source": "input connector", 
+            "sourceProperty": "in_constant"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "constant_param", 
+            "source": "intermediate", 
+            "sourceProperty": "constant_param"
+        }
+    ], 
+    "name": "PtiwAYv3ReWfVcrKtrVm5A", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1107, 
+            "methods": [
+                {
+                    "id": 404, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "parallelBy": "parallel_param"
+        }, 
+        "intermediate": {
+            "id": 1105, 
+            "methods": [
+                {
+                    "id": 403, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

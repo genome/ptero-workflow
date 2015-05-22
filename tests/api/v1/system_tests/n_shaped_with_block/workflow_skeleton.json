@@ -1,0 +1,125 @@
+{
+    "id": 165, 
+    "links": [
+        {
+            "destination": "C", 
+            "destinationProperty": "param", 
+            "source": "A", 
+            "sourceProperty": "param_1"
+        }, 
+        {
+            "destination": "D", 
+            "destinationProperty": "param_1", 
+            "source": "A", 
+            "sourceProperty": "param_2"
+        }, 
+        {
+            "destination": "D", 
+            "destinationProperty": "param_2", 
+            "source": "B", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "block_result", 
+            "source": "Block", 
+            "sourceProperty": "result"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_c", 
+            "source": "C", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "Block", 
+            "destinationProperty": "param_2", 
+            "source": "D", 
+            "sourceProperty": "param_2"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_d_1", 
+            "source": "D", 
+            "sourceProperty": "param_1"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_d_2", 
+            "source": "D", 
+            "sourceProperty": "param_2"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param_1", 
+            "source": "input connector", 
+            "sourceProperty": "in_a_1"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param_2", 
+            "source": "input connector", 
+            "sourceProperty": "in_a_2"
+        }, 
+        {
+            "destination": "B", 
+            "destinationProperty": "param", 
+            "source": "input connector", 
+            "sourceProperty": "in_b"
+        }
+    ], 
+    "name": "KwQ7sDPsR2GSarMP-apQ5w", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1195, 
+            "methods": [
+                {
+                    "id": 437, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "B": {
+            "id": 1196, 
+            "methods": [
+                {
+                    "id": 438, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "Block": {
+            "id": 1191, 
+            "methods": [
+                {
+                    "id": 435, 
+                    "name": "blocker", 
+                    "service": "workflow-block"
+                }
+            ]
+        }, 
+        "C": {
+            "id": 1197, 
+            "methods": [
+                {
+                    "id": 439, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "D": {
+            "id": 1193, 
+            "methods": [
+                {
+                    "id": 436, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

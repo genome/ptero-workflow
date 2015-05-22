@@ -165,6 +165,15 @@ class Method(Base):
 
         return result
 
+    def as_skeleton_dict(self):
+        result = {
+            'id': self.id,
+            'name': self.name,
+            'service': self.service,
+        }
+        return result
+
+
 def _get_parent_color(colors):
     if len(colors) == 1:
         return None

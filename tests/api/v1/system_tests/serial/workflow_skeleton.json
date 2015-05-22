@@ -1,0 +1,63 @@
+{
+    "id": 178, 
+    "links": [
+        {
+            "destination": "B", 
+            "destinationProperty": "param", 
+            "source": "A", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "C", 
+            "destinationProperty": "param", 
+            "source": "B", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "output connector", 
+            "destinationProperty": "out_val", 
+            "source": "C", 
+            "sourceProperty": "param"
+        }, 
+        {
+            "destination": "A", 
+            "destinationProperty": "param", 
+            "source": "input connector", 
+            "sourceProperty": "in_val"
+        }
+    ], 
+    "name": "oYnx3DtZQ4q_eT2yJQgY9A", 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 1310, 
+            "methods": [
+                {
+                    "id": 480, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "B": {
+            "id": 1309, 
+            "methods": [
+                {
+                    "id": 479, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "C": {
+            "id": 1307, 
+            "methods": [
+                {
+                    "id": 478, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

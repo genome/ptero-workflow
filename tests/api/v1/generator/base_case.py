@@ -15,6 +15,7 @@ import urllib
 import urlparse
 import yaml
 import logging
+import difflib
 
 
 _POLLING_DELAY = 0.5
@@ -29,6 +30,18 @@ LOG = logging.getLogger(__name__)
 
 def validate_json(text):
     data = json.loads(text)
+
+
+def scrub_ids(struct):
+    if isinstance(struct, dict):
+        for key in struct.keys():
+            if key == 'id':
+                del struct[key]
+            else:
+                scrub_ids(struct[key])
+    elif isinstance(struct, list):
+        for item in struct:
+            scrub_ids(item)
 
 
 class TestCaseMixin(object):
@@ -70,6 +83,16 @@ class TestCaseMixin(object):
             details_url = workflow_data['reports']['workflow-details']
             self._verify_workflow_details(details_url)
 
+        url = workflow_data['reports']['workflow-skeleton']
+        self._regenerate_skeleton_data(url)
+        if self._expected_skeleton is not None:
+            self._verify_workflow_skeleton(url)
+
+    def _regenerate_skeleton_data(self, url):
+        if os.environ.get('PTERO_REGENERATE_TEST_DATA'):
+            actual_result = self._get_actual_result(url)
+            with open(self._expected_skeleton_path, 'w') as ofile:
+                ofile.write(self._to_json(actual_result))
 
     def _submit_workflow(self):
         response = _retry(requests.post, self._submit_url, self._workflow_body,
@@ -100,6 +123,25 @@ class TestCaseMixin(object):
 
         for name, task in expected_result['tasks'].iteritems():
             self._compare_task_details(task, actual_result['tasks'][name])
+
+    def _verify_workflow_skeleton(self, url):
+        actual_result = self._get_actual_result(url)
+        expected_result = self._expected_skeleton
+
+        self.compareDictAsJSON(expected_result, scrub_ids(actual_result))
+
+    def _to_json(self, data):
+        return json.dumps( data, indent=4, sort_keys=True, default=str )
+
+    def compareDictAsJSON(self, expected, actual):
+        is_ok = 1
+        expected_json = self._to_json(expected).splitlines(1)
+        actual_json = self._to_json(actual).splitlines(1)
+        for line in difflib.unified_diff(expected_json, actual_json,
+                fromfile='Expected', tofile='Actual'):
+            is_ok = 0
+            sys.stdout.write(line)
+        return is_ok
 
     @property
     def _submit_url(self):
@@ -161,12 +203,23 @@ class TestCaseMixin(object):
         return os.path.join(self.directory, 'workflow_details.json')
 
     @property
-    def _expected_details(self):
+    def _expected_skeleton_path(self):
+        return os.path.join(self.directory, 'workflow_skeleton.json')
+
+    def _load_or_none(self, path):
         try:
-            with open(self._expected_details_path) as f:
+            with open(path) as f:
                 return json.load(f)
         except IOError:
             return None
+
+    @property
+    def _expected_details(self):
+        return self._load_or_none(self._expected_details_path)
+
+    @property
+    def _expected_skeleton(self):
+        return self._load_or_none(self._expected_skeleton_path)
 
     def _compare_task_details(self, expected, actual):
         self._compare_executions(expected, actual)

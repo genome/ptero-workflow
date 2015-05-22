@@ -165,6 +165,16 @@ class DAG(Method):
             order_by(source_task.name,destination_task.name,
                     Link.source_property,Link.destination_property).all()
 
+    def as_skeleton_dict(self):
+        result = super(DAG, self).as_skeleton_dict()
+        result['parameters'] = {
+            'tasks': {t.name: t.as_skeleton_dict()
+                for t in self.children.itervalues()
+                    if t.type not in ['InputConnector', 'OutputConnector']},
+            'links': [l.as_skeleton_dict() for l in self.links],
+        }
+        return result
+
 
 def _get_parent_color(colors):
     if len(colors) == 1:
