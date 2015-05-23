@@ -123,7 +123,7 @@ class TestCaseMixin(object):
         actual_result = self._get_actual_result(outputs_url)
         expected_result = self._expected_result
 
-        self.assertEqual(expected_result, actual_result)
+        self.assertTrue(self.compare_as_json(expected_result, actual_result))
 
     def _verify_workflow_details(self, details_url):
         actual_result = self._get_actual_result(details_url)
