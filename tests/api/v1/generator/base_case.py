@@ -16,6 +16,7 @@ import urlparse
 import yaml
 import logging
 import difflib
+import re
 
 
 _POLLING_DELAY = 0.5
@@ -31,17 +32,24 @@ LOG = logging.getLogger(__name__)
 def validate_json(text):
     data = json.loads(text)
 
+FILTERS = [
+        re.compile('"id".*:'),
+        re.compile('"timestamp".*:'),
+        re.compile('"name".*:'),
+]
 
-def scrub_ids(struct):
-    if isinstance(struct, dict):
-        for key in struct.keys():
-            if key == 'id':
-                del struct[key]
-            else:
-                scrub_ids(struct[key])
-    elif isinstance(struct, list):
-        for item in struct:
-            scrub_ids(item)
+def get_lines_to_compare(struct):
+    json_str = json.dumps(struct, indent=4, sort_keys=True, default=str)
+    lines = []
+    for line in json_str.splitlines(1):
+        skip = False
+        for f in FILTERS:
+            if f.search(line) is not None:
+                skip = True
+                break
+        if not skip:
+            lines.append(line)
+    return lines
 
 
 class TestCaseMixin(object):
@@ -128,18 +136,18 @@ class TestCaseMixin(object):
         actual_result = self._get_actual_result(url)
         expected_result = self._expected_skeleton
 
-        self.compareDictAsJSON(expected_result, scrub_ids(actual_result))
+        self.assertTrue(self.compare_as_json(expected_result, actual_result))
 
     def _to_json(self, data):
         return json.dumps( data, indent=4, sort_keys=True, default=str )
 
-    def compareDictAsJSON(self, expected, actual):
-        is_ok = 1
-        expected_json = self._to_json(expected).splitlines(1)
-        actual_json = self._to_json(actual).splitlines(1)
+    def compare_as_json(self, expected, actual):
+        is_ok = True
+        expected_json = get_lines_to_compare(expected)
+        actual_json = get_lines_to_compare(actual)
         for line in difflib.unified_diff(expected_json, actual_json,
                 fromfile='Expected', tofile='Actual'):
-            is_ok = 0
+            is_ok = False
             sys.stdout.write(line)
         return is_ok
 
