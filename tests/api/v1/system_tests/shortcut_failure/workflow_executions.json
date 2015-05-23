@@ -1,0 +1,94 @@
+{
+    "executions": [
+        {
+            "begins": [], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1423, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 974
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1424, 
+            "method_id": 353, 
+            "parent_color": null, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1425, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 976
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1426, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 977
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1427, 
+            "method_id": 354, 
+            "parent_color": null, 
+            "status": "failed"
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1428, 
+            "method_id": 355, 
+            "parent_color": null, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1429, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 978
+        }
+    ], 
+    "update_url": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-23+20%3A03%3A47&workflow_id=134"
+}

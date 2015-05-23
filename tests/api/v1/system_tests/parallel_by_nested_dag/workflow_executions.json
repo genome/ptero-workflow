@@ -1,0 +1,338 @@
+{
+    "executions": [
+        {
+            "begins": [], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1357, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 938
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1358, 
+            "method_id": 339, 
+            "parent_color": null, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1359, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 941
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1360, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 940
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1361, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 940
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1362, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 940
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 3, 
+            "colors": [
+                0, 
+                3
+            ], 
+            "id": 1363, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 940
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1364, 
+            "method_id": 340, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1365, 
+            "method_id": 340, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 3, 
+            "colors": [
+                0, 
+                3
+            ], 
+            "id": 1366, 
+            "method_id": 340, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1367, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 943
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1368, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 943
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 3, 
+            "colors": [
+                0, 
+                3
+            ], 
+            "id": 1369, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 943
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1370, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 944
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1371, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 944
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 3, 
+            "colors": [
+                0, 
+                3
+            ], 
+            "id": 1372, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 944
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1373, 
+            "method_id": 341, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1374, 
+            "method_id": 341, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 3, 
+            "colors": [
+                0, 
+                3
+            ], 
+            "id": 1375, 
+            "method_id": 341, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1376, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 945
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1377, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 945
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 3, 
+            "colors": [
+                0, 
+                3
+            ], 
+            "id": 1378, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 945
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1379, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 942
+        }
+    ], 
+    "update_url": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-23+20%3A03%3A22&workflow_id=129"
+}

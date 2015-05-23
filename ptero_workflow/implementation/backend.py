@@ -209,6 +209,26 @@ class Backend(object):
     def get_workflow_outputs(self, workflow_id):
         return self._get_workflow(workflow_id).get_outputs()
 
+    def get_workflow_executions(self, workflow_id, since=None):
+        query = self.session.query(models.Execution)
+
+        if since is not None:
+            query = query.join(models.ExecutionStatusHistory).\
+                    filter(models.Execution.workflow_id == workflow_id,
+                            models.ExecutionStatusHistory.timestamp > since)
+        else:
+            query = query.filter(models.Execution.workflow_id == workflow_id)
+
+        executions = query.all()
+
+        if executions:
+            timestamp = max([e.update_timestamp for e in executions])
+            return [e.as_dict_for_executions_report() for e in executions], timestamp
+        else:
+            return [], since
+
+
+
     def _get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)
         if execution is not None:

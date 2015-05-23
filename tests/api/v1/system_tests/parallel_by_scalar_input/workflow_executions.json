@@ -1,0 +1,55 @@
+{
+    "executions": [
+        {
+            "begins": [], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1391, 
+            "parent_color": null, 
+            "status": "failed", 
+            "task_id": 953
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1392, 
+            "method_id": 344, 
+            "parent_color": null, 
+            "status": "failed"
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1393, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 955
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1394, 
+            "parent_color": null, 
+            "status": "failed", 
+            "task_id": 956
+        }
+    ], 
+    "update_url": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-23+20%3A03%3A29&workflow_id=131"
+}

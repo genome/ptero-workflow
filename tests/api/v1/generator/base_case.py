@@ -96,10 +96,21 @@ class TestCaseMixin(object):
         if self._expected_skeleton is not None:
             self._verify_workflow_skeleton(url)
 
+        url = workflow_data['reports']['workflow-executions']
+        self._regenerate_executions_data(url)
+        if self._expected_executions is not None:
+            self._verify_workflow_executions(url)
+
     def _regenerate_skeleton_data(self, url):
         if os.environ.get('PTERO_REGENERATE_TEST_DATA'):
             actual_result = self._get_actual_result(url)
             with open(self._expected_skeleton_path, 'w') as ofile:
+                ofile.write(self._to_json(actual_result))
+
+    def _regenerate_executions_data(self, url):
+        if os.environ.get('PTERO_REGENERATE_TEST_DATA'):
+            actual_result = self._get_actual_result(url)
+            with open(self._expected_executions_path, 'w') as ofile:
                 ofile.write(self._to_json(actual_result))
 
     def _submit_workflow(self):
@@ -137,6 +148,13 @@ class TestCaseMixin(object):
         expected_result = self._expected_skeleton
 
         self.assertTrue(self.compare_as_json(expected_result, actual_result))
+
+    def _verify_workflow_executions(self, url):
+        actual_result = self._get_actual_result(url)
+        expected_result = self._expected_executions
+
+        self.assertEqual(len(expected_result['executions']),
+                len(actual_result['executions']))
 
     def _to_json(self, data):
         return json.dumps( data, indent=4, sort_keys=True, default=str )
@@ -214,6 +232,10 @@ class TestCaseMixin(object):
     def _expected_skeleton_path(self):
         return os.path.join(self.directory, 'workflow_skeleton.json')
 
+    @property
+    def _expected_executions_path(self):
+        return os.path.join(self.directory, 'workflow_executions.json')
+
     def _load_or_none(self, path):
         try:
             with open(path) as f:
@@ -228,6 +250,10 @@ class TestCaseMixin(object):
     @property
     def _expected_skeleton(self):
         return self._load_or_none(self._expected_skeleton_path)
+
+    @property
+    def _expected_executions(self):
+        return self._load_or_none(self._expected_executions_path)
 
     def _compare_task_details(self, expected, actual):
         self._compare_executions(expected, actual)

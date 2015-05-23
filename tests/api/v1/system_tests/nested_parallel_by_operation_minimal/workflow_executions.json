@@ -1,0 +1,188 @@
+{
+    "executions": [
+        {
+            "begins": [], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1269, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 902
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1270, 
+            "method_id": 327, 
+            "parent_color": null, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1271, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 904
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1272, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 905
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1273, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 905
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1274, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 905
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1275, 
+            "method_id": 328, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1276, 
+            "method_id": 328, 
+            "parent_color": 0, 
+            "status": "succeeded"
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1277, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 907
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1278, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 907
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 1, 
+            "colors": [
+                0, 
+                1
+            ], 
+            "id": 1279, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 908
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
+            "id": 1280, 
+            "parent_color": 0, 
+            "status": "succeeded", 
+            "task_id": 908
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "id": 1281, 
+            "parent_color": null, 
+            "status": "succeeded", 
+            "task_id": 906
+        }
+    ], 
+    "update_url": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-23+20%3A02%3A44&workflow_id=125"
+}

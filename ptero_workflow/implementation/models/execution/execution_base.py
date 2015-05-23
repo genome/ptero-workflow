@@ -13,7 +13,7 @@ from ptero_common import statuses
 
 LOG = logging.getLogger(__name__)
 
-__all__ = ['Execution']
+__all__ = ['Execution', 'ExecutionStatusHistory']
 
 class Execution(Base):
     __tablename__ = 'execution'
@@ -97,6 +97,10 @@ class Execution(Base):
                 self._status = status
                 return ExecutionStatusHistory(execution=self, status=status)
 
+    @property
+    def update_timestamp(self):
+        return max([h.timestamp for h in self.status_history])
+
     def send_webhooks(self, status):
         webhooks = self.parent.get_webhooks(status)
         if webhooks:
@@ -126,6 +130,17 @@ class Execution(Base):
         if not detailed:
             result['inputs'] = self.get_inputs()
             result['outputs'] = self.get_outputs()
+
+        return result
+
+    def as_dict_for_executions_report(self):
+        result =  {name: getattr(self, name) for name in ['color',
+            'parent_color', 'colors', 'begins', 'status', 'id']}
+
+        if self.task_id is not None:
+            result['task_id'] = self.task_id
+        else:
+            result['method_id'] = self.method_id
 
         return result
 
@@ -178,5 +193,5 @@ class ExecutionStatusHistory(Base):
     execution = relationship(Execution,
             backref=backref('status_history', order_by=timestamp, lazy='joined'))
 
-    def as_dict(self, detailed):
+    def as_dict(self, detailed=False):
         return {'timestamp': str(self.timestamp), 'status': self.status}
