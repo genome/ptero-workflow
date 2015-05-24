@@ -1,71 +1,33 @@
 {
-    "id": 183, 
-    "links": [
-        {
-            "destination": "B", 
-            "destinationProperty": "param", 
-            "source": "A", 
-            "sourceProperty": "param_1"
-        }, 
-        {
-            "destination": "C", 
-            "destinationProperty": "param", 
-            "source": "A", 
-            "sourceProperty": "param_2"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_1", 
-            "source": "B", 
-            "sourceProperty": "param"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_2", 
-            "source": "C", 
-            "sourceProperty": "param"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "param_1", 
-            "source": "input connector", 
-            "sourceProperty": "in_1"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "param_2", 
-            "source": "input connector", 
-            "sourceProperty": "in_2"
-        }
-    ], 
-    "name": "raTG5b2aSaOZuwveL4srPQ", 
+    "id": 36, 
+    "name": "30RUfaWHQ5qPk1MbIwBn9A", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1342, 
+            "id": 266, 
             "methods": [
                 {
-                    "id": 494, 
+                    "id": 100, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
             ]
         }, 
         "B": {
-            "id": 1341, 
+            "id": 264, 
             "methods": [
                 {
-                    "id": 493, 
+                    "id": 98, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
             ]
         }, 
         "C": {
-            "id": 1339, 
+            "id": 265, 
             "methods": [
                 {
-                    "id": 492, 
+                    "id": 99, 
                     "name": "execute", 
                     "service": "shell-command"
                 }

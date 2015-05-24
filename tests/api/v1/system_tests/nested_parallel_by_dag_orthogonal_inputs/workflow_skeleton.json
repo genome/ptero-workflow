@@ -1,107 +1,29 @@
 {
-    "id": 167, 
-    "links": [
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_inner_parallel", 
-            "source": "A", 
-            "sourceProperty": "out_inner_parallel"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_outer_parallel", 
-            "source": "A", 
-            "sourceProperty": "out_outer_parallel"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "in_inner_parallel", 
-            "source": "input connector", 
-            "sourceProperty": "in_inner_parallel"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "in_outer_parallel", 
-            "source": "input connector", 
-            "sourceProperty": "in_outer_parallel"
-        }
-    ], 
-    "name": "zDcS8zxqSY6t60c0pcc_2A", 
+    "id": 20, 
+    "name": "Dkh51nl2SHGSwFkUKAsr_g", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1213, 
+            "id": 138, 
             "methods": [
                 {
-                    "id": 446, 
+                    "id": 52, 
                     "name": "inner", 
                     "parameters": {
-                        "links": [
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "out_outer_parallel", 
-                                "source": "Inner", 
-                                "sourceProperty": "animal_type_out"
-                            }, 
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "out_inner_parallel", 
-                                "source": "Inner", 
-                                "sourceProperty": "kitten_name_out"
-                            }, 
-                            {
-                                "destination": "Inner", 
-                                "destinationProperty": "kitten_name_in", 
-                                "source": "input connector", 
-                                "sourceProperty": "in_inner_parallel"
-                            }, 
-                            {
-                                "destination": "Inner", 
-                                "destinationProperty": "animal_type_in", 
-                                "source": "input connector", 
-                                "sourceProperty": "in_outer_parallel"
-                            }
-                        ], 
                         "tasks": {
                             "Inner": {
-                                "id": 1215, 
+                                "id": 141, 
                                 "methods": [
                                     {
-                                        "id": 447, 
+                                        "id": 53, 
                                         "name": "some_workflow", 
                                         "parameters": {
-                                            "links": [
-                                                {
-                                                    "destination": "output connector", 
-                                                    "destinationProperty": "animal_type_out", 
-                                                    "source": "A", 
-                                                    "sourceProperty": "animal_type"
-                                                }, 
-                                                {
-                                                    "destination": "output connector", 
-                                                    "destinationProperty": "kitten_name_out", 
-                                                    "source": "A", 
-                                                    "sourceProperty": "kitten_name"
-                                                }, 
-                                                {
-                                                    "destination": "A", 
-                                                    "destinationProperty": "animal_type", 
-                                                    "source": "input connector", 
-                                                    "sourceProperty": "animal_type_in"
-                                                }, 
-                                                {
-                                                    "destination": "A", 
-                                                    "destinationProperty": "kitten_name", 
-                                                    "source": "input connector", 
-                                                    "sourceProperty": "kitten_name_in"
-                                                }
-                                            ], 
                                             "tasks": {
                                                 "A": {
-                                                    "id": 1219, 
+                                                    "id": 144, 
                                                     "methods": [
                                                         {
-                                                            "id": 448, 
+                                                            "id": 54, 
                                                             "name": "execute", 
                                                             "service": "shell-command"
                                                         }

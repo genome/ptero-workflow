@@ -1,95 +1,31 @@
 {
-    "id": 173, 
-    "links": [
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_constant", 
-            "source": "A", 
-            "sourceProperty": "constant_param"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_parallel", 
-            "source": "A", 
-            "sourceProperty": "parallel_param"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "constant_param", 
-            "source": "Inner", 
-            "sourceProperty": "constant_param_out"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "parallel_param", 
-            "source": "Inner", 
-            "sourceProperty": "parallel_param_out"
-        }, 
-        {
-            "destination": "Inner", 
-            "destinationProperty": "constant_param_in", 
-            "source": "input connector", 
-            "sourceProperty": "in_constant"
-        }, 
-        {
-            "destination": "Inner", 
-            "destinationProperty": "parallel_param_in", 
-            "source": "input connector", 
-            "sourceProperty": "in_parallel"
-        }
-    ], 
-    "name": "ZhRB2CmhT6aytEWCU3SIHQ", 
+    "id": 26, 
+    "name": "cIajak5mRq2iboKih-OwVw", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1270, 
+            "id": 195, 
             "methods": [
                 {
-                    "id": 465, 
+                    "id": 71, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
             ]
         }, 
         "Inner": {
-            "id": 1268, 
+            "id": 194, 
             "methods": [
                 {
-                    "id": 464, 
+                    "id": 70, 
                     "name": "some_workflow", 
                     "parameters": {
-                        "links": [
-                            {
-                                "destination": "michael", 
-                                "destinationProperty": "constant_param_in", 
-                                "source": "input connector", 
-                                "sourceProperty": "constant_param_in"
-                            }, 
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "constant_param_out", 
-                                "source": "input connector", 
-                                "sourceProperty": "constant_param_in"
-                            }, 
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "parallel_param_out", 
-                                "source": "input connector", 
-                                "sourceProperty": "parallel_param_in"
-                            }, 
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "michael_param_out", 
-                                "source": "michael", 
-                                "sourceProperty": "constant_param_in"
-                            }
-                        ], 
                         "tasks": {
                             "michael": {
-                                "id": 1272, 
+                                "id": 198, 
                                 "methods": [
                                     {
-                                        "id": 466, 
+                                        "id": 72, 
                                         "name": "execute", 
                                         "service": "shell-command"
                                     }

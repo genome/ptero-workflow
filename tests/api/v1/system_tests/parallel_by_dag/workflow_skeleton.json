@@ -1,73 +1,21 @@
 {
-    "id": 172, 
-    "links": [
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_constant", 
-            "source": "A", 
-            "sourceProperty": "out_constant"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_parallel", 
-            "source": "A", 
-            "sourceProperty": "out_parallel"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "in_constant", 
-            "source": "input connector", 
-            "sourceProperty": "in_constant"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "in_parallel", 
-            "source": "input connector", 
-            "sourceProperty": "in_parallel"
-        }
-    ], 
-    "name": "LN6VTc2lTqSnr-mJWuNgoQ", 
+    "id": 25, 
+    "name": "ZshmfynmRtuHFjgktwSe_g", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1260, 
+            "id": 185, 
             "methods": [
                 {
-                    "id": 461, 
+                    "id": 67, 
                     "name": "inner", 
                     "parameters": {
-                        "links": [
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "out_constant", 
-                                "source": "A", 
-                                "sourceProperty": "const_param"
-                            }, 
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "out_parallel", 
-                                "source": "A", 
-                                "sourceProperty": "parallel_param"
-                            }, 
-                            {
-                                "destination": "A", 
-                                "destinationProperty": "const_param", 
-                                "source": "input connector", 
-                                "sourceProperty": "in_constant"
-                            }, 
-                            {
-                                "destination": "A", 
-                                "destinationProperty": "parallel_param", 
-                                "source": "input connector", 
-                                "sourceProperty": "in_parallel"
-                            }
-                        ], 
                         "tasks": {
                             "A": {
-                                "id": 1263, 
+                                "id": 188, 
                                 "methods": [
                                     {
-                                        "id": 462, 
+                                        "id": 68, 
                                         "name": "execute", 
                                         "service": "shell-command"
                                     }

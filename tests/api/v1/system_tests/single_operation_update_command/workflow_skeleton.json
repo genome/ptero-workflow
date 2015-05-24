@@ -1,27 +1,13 @@
 {
-    "id": 182, 
-    "links": [
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_a", 
-            "source": "A", 
-            "sourceProperty": "param"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "param", 
-            "source": "input connector", 
-            "sourceProperty": "in_a"
-        }
-    ], 
-    "name": "SPv0b6EnSRu2UQ1mRaM1IA", 
+    "id": 35, 
+    "name": "I967D7_0SIG-jPDc3nErbg", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1333, 
+            "id": 258, 
             "methods": [
                 {
-                    "id": 490, 
+                    "id": 96, 
                     "name": "execute", 
                     "service": "shell-command"
                 }

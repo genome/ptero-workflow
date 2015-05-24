@@ -1,99 +1,43 @@
 {
-    "id": 164, 
-    "links": [
-        {
-            "destination": "C", 
-            "destinationProperty": "param", 
-            "source": "A", 
-            "sourceProperty": "param_1"
-        }, 
-        {
-            "destination": "D", 
-            "destinationProperty": "param_1", 
-            "source": "A", 
-            "sourceProperty": "param_2"
-        }, 
-        {
-            "destination": "D", 
-            "destinationProperty": "param_2", 
-            "source": "B", 
-            "sourceProperty": "param"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_c", 
-            "source": "C", 
-            "sourceProperty": "param"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_d_1", 
-            "source": "D", 
-            "sourceProperty": "param_1"
-        }, 
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_d_2", 
-            "source": "D", 
-            "sourceProperty": "param_2"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "param_1", 
-            "source": "input connector", 
-            "sourceProperty": "in_a_1"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "param_2", 
-            "source": "input connector", 
-            "sourceProperty": "in_a_2"
-        }, 
-        {
-            "destination": "B", 
-            "destinationProperty": "param", 
-            "source": "input connector", 
-            "sourceProperty": "in_b"
-        }
-    ], 
-    "name": "MyKF4Lp_SZqdydoZzeQjUg", 
+    "id": 17, 
+    "name": "IzDfxrUDQ5WmRr4IBZXRYw", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1185, 
+            "id": 110, 
             "methods": [
                 {
-                    "id": 431, 
+                    "id": 38, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
             ]
         }, 
         "B": {
-            "id": 1186, 
+            "id": 108, 
             "methods": [
                 {
-                    "id": 432, 
+                    "id": 36, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
             ]
         }, 
         "C": {
-            "id": 1187, 
+            "id": 109, 
             "methods": [
                 {
-                    "id": 433, 
+                    "id": 37, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
             ]
         }, 
         "D": {
-            "id": 1183, 
+            "id": 112, 
             "methods": [
                 {
-                    "id": 430, 
+                    "id": 39, 
                     "name": "execute", 
                     "service": "shell-command"
                 }

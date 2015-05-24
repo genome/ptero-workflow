@@ -1,49 +1,21 @@
 {
-    "id": 168, 
-    "links": [
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_matrix", 
-            "source": "A", 
-            "sourceProperty": "out_matrix"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "in_matrix", 
-            "source": "input connector", 
-            "sourceProperty": "in_matrix"
-        }
-    ], 
-    "name": "Why2Vy3BR-WycXQHtQM2OQ", 
+    "id": 21, 
+    "name": "VIrFBtHHT0STW-xii2_HZw", 
     "status": "failed", 
     "tasks": {
         "A": {
-            "id": 1225, 
+            "id": 150, 
             "methods": [
                 {
-                    "id": 450, 
+                    "id": 56, 
                     "name": "inner", 
                     "parameters": {
-                        "links": [
-                            {
-                                "destination": "output connector", 
-                                "destinationProperty": "out_matrix", 
-                                "source": "A", 
-                                "sourceProperty": "name"
-                            }, 
-                            {
-                                "destination": "A", 
-                                "destinationProperty": "name", 
-                                "source": "input connector", 
-                                "sourceProperty": "in_matrix"
-                            }
-                        ], 
                         "tasks": {
                             "A": {
-                                "id": 1228, 
+                                "id": 153, 
                                 "methods": [
                                     {
-                                        "id": 451, 
+                                        "id": 57, 
                                         "name": "execute", 
                                         "service": "shell-command"
                                     }

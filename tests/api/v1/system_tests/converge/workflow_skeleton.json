@@ -1,33 +1,13 @@
 {
-    "id": 163, 
-    "links": [
-        {
-            "destination": "output connector", 
-            "destinationProperty": "out_c", 
-            "source": "A", 
-            "sourceProperty": "c"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "a", 
-            "source": "input connector", 
-            "sourceProperty": "in_a"
-        }, 
-        {
-            "destination": "A", 
-            "destinationProperty": "b", 
-            "source": "input connector", 
-            "sourceProperty": "in_b"
-        }
-    ], 
-    "name": "6xCk8V2NShGWTIsgmHgCVg", 
+    "id": 16, 
+    "name": "4cl09csISSinb7PIkWoV4w", 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 1177, 
+            "id": 102, 
             "methods": [
                 {
-                    "id": 428, 
+                    "id": 34, 
                     "name": "convergence", 
                     "service": "workflow-converge"
                 }

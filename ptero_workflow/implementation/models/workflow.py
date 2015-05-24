@@ -116,11 +116,9 @@ class Workflow(Base):
         tasks = {name: task.as_skeleton_dict()
             for name,task in self.tasks.iteritems()
                 if name not in ['input connector', 'output connector']}
-        links = [l.as_skeleton_dict() for l in self.links]
 
         result = {
             'id': self.id,
-            'links': links,
             'name': self.name,
             'status': self.status,
             'tasks': tasks,

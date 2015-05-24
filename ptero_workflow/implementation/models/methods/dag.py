@@ -171,7 +171,6 @@ class DAG(Method):
             'tasks': {t.name: t.as_skeleton_dict()
                 for t in self.children.itervalues()
                     if t.type not in ['InputConnector', 'OutputConnector']},
-            'links': [l.as_skeleton_dict() for l in self.links],
         }
         return result
 
