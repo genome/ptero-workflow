@@ -3,6 +3,7 @@ from . import workflow_executions
 from . import workflow_outputs
 from . import workflow_skeleton
 from . import workflow_status
+from . import workflow_submission_data
 
 _REPORTS = {
     'workflow-details': workflow_details.report,
@@ -10,6 +11,7 @@ _REPORTS = {
     'workflow-outputs': workflow_outputs.report,
     'workflow-skeleton': workflow_skeleton.report,
     'workflow-status': workflow_status.report,
+    'workflow-submission-data': workflow_submission_data.report,
     }
 
 def report_names():

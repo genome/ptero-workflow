@@ -28,7 +28,7 @@ class QueryWorkflow(object):
 
     def test_query_produces_expected_results(self):
         for workflow in self.workflows:
-            response = self.post(self.post_url, self.expected_data[workflow])
+            response = self.post(self.post_url, self.submission_data[workflow])
             self.assertEqual(201, response.status_code)
 
         for query in self.queries:
@@ -61,7 +61,7 @@ class QueryByName(QueryWorkflow, BaseAPITest):
 
     workflows = [ 'bunnies', 'walrus' ]
 
-    expected_data = {
+    submission_data = {
         'bunnies': {
             'tasks': { },
             'links': [
@@ -90,6 +90,18 @@ class QueryByName(QueryWorkflow, BaseAPITest):
             'inputs': {
                 'in_z': 'sea lion',
             },
+            'name': walrus,
+        },
+        'elephant': {
+            'error': 'Workflow with name %s was not found.' % elephant
+        }
+    }
+
+    expected_data = {
+        'bunnies': {
+            'name': bunnies,
+        },
+        'walrus': {
             'name': walrus,
         },
         'elephant': {

@@ -29,8 +29,7 @@ class RoundTripSuccess(object):
         self.assertIsNotNone(self.response.headers.get('Location'))
 
     def get_should_return_post_data(self):
-        get_response = self.get(self.response.headers.get('Location'))
-        del(get_response.DATA['reports'])
+        get_response = self.get(self.response.DATA['reports']['workflow-submission-data'])
         del(get_response.DATA['status'])
         if self.post_data.get('name') is None:
             del(get_response.DATA['name'])

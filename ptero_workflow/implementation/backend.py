@@ -154,13 +154,23 @@ class Backend(object):
                     "Workflow with id %s was not found." % workflow_id)
 
     def get_workflow(self, workflow_id):
+        workflow = self._get_workflow(workflow_id)
+        return {
+                'name': workflow.name,
+                'status': workflow.status,
+        }
+
+    def get_workflow_submission_data(self, workflow_id):
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=False)
 
     def get_workflow_by_name(self, workflow_name):
         try:
             workflow = self.session.query(models.Workflow).filter_by(
                 name=workflow_name).one()
-            return workflow.id, workflow.as_dict(detailed=False)
+            return workflow.id, {
+                    'name': workflow.name,
+                    'status': workflow.status,
+            }
         except NoResultFound:
             raise exceptions.NoSuchEntityError(
                     "Workflow with name %s was not found." % workflow_name)
