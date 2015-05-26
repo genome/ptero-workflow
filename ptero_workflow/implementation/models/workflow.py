@@ -119,6 +119,7 @@ class Workflow(Base):
 
         result = {
             'id': self.id,
+            'rootTaskId': self.root_task_id,
             'name': self.name,
             'status': self.status,
             'tasks': tasks,
