@@ -12,11 +12,11 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:52.982042+00:00"
+                    "timestamp": "2015-05-26 21:32:51.642764+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.906177+00:00"
+                    "timestamp": "2015-05-26 21:32:55.596815+00:00"
                 }
             ], 
             "taskId": 211
@@ -36,19 +36,19 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:53.587439+00:00"
+                    "timestamp": "2015-05-26 21:32:52.215320+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:53.742594+00:00"
+                    "timestamp": "2015-05-26 21:32:52.382840+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:53.742594+00:00"
+                    "timestamp": "2015-05-26 21:32:52.382840+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.867542+00:00"
+                    "timestamp": "2015-05-26 21:32:55.560484+00:00"
                 }
             ]
         }, 
@@ -66,19 +66,19 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:53.664789+00:00"
+                    "timestamp": "2015-05-26 21:32:52.302526+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:53.664789+00:00"
+                    "timestamp": "2015-05-26 21:32:52.302526+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:53.664789+00:00"
+                    "timestamp": "2015-05-26 21:32:52.302526+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:53.821749+00:00"
+                    "timestamp": "2015-05-26 21:32:52.460773+00:00"
                 }
             ], 
             "taskId": 213
@@ -97,55 +97,22 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:53.877384+00:00"
+                    "timestamp": "2015-05-26 21:32:52.522602+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:53.877384+00:00"
+                    "timestamp": "2015-05-26 21:32:52.522602+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:53.877384+00:00"
+                    "timestamp": "2015-05-26 21:32:52.522602+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.608671+00:00"
+                    "timestamp": "2015-05-26 21:32:55.315121+00:00"
                 }
             ], 
-            "taskId": 214
-        }, 
-        {
-            "begins": [
-                0, 
-                1
-            ], 
-            "color": 2, 
-            "colors": [
-                0, 
-                2
-            ], 
-            "id": 354, 
-            "parentColor": 0, 
-            "status": "succeeded", 
-            "statusHistory": [
-                {
-                    "status": "new", 
-                    "timestamp": "2015-05-26 19:23:54.051000+00:00"
-                }, 
-                {
-                    "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:54.051000+00:00"
-                }, 
-                {
-                    "status": "running", 
-                    "timestamp": "2015-05-26 19:23:54.051000+00:00"
-                }, 
-                {
-                    "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.252194+00:00"
-                }
-            ], 
-            "taskId": 214
+            "taskId": 215
         }, 
         {
             "begins": [
@@ -157,28 +124,61 @@
                 0, 
                 1
             ], 
+            "id": 354, 
+            "parentColor": 0, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-05-26 21:32:52.721050+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-05-26 21:32:52.721050+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-05-26 21:32:52.721050+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-05-26 21:32:55.020137+00:00"
+                }
+            ], 
+            "taskId": 215
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
             "id": 355, 
             "parentColor": 0, 
             "status": "succeeded", 
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:54.098461+00:00"
+                    "timestamp": "2015-05-26 21:32:52.772730+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:54.098461+00:00"
+                    "timestamp": "2015-05-26 21:32:52.772730+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:54.098461+00:00"
+                    "timestamp": "2015-05-26 21:32:52.772730+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.333256+00:00"
+                    "timestamp": "2015-05-26 21:32:55.219851+00:00"
                 }
             ], 
-            "taskId": 214
+            "taskId": 215
         }, 
         {
             "begins": [
@@ -196,55 +196,22 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:54.132585+00:00"
+                    "timestamp": "2015-05-26 21:32:52.813540+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:54.132585+00:00"
+                    "timestamp": "2015-05-26 21:32:52.813540+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:54.132585+00:00"
+                    "timestamp": "2015-05-26 21:32:52.813540+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.509240+00:00"
+                    "timestamp": "2015-05-26 21:32:55.105607+00:00"
                 }
             ], 
-            "taskId": 214
-        }, 
-        {
-            "begins": [
-                0, 
-                1
-            ], 
-            "color": 2, 
-            "colors": [
-                0, 
-                2
-            ], 
-            "id": 357, 
-            "methodId": 77, 
-            "parentColor": 0, 
-            "status": "succeeded", 
-            "statusHistory": [
-                {
-                    "status": "new", 
-                    "timestamp": "2015-05-26 19:23:54.212769+00:00"
-                }, 
-                {
-                    "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:54.328480+00:00"
-                }, 
-                {
-                    "status": "running", 
-                    "timestamp": "2015-05-26 19:23:54.853138+00:00"
-                }, 
-                {
-                    "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.149222+00:00"
-                }
-            ]
+            "taskId": 215
         }, 
         {
             "begins": [
@@ -256,6 +223,39 @@
                 0, 
                 1
             ], 
+            "id": 357, 
+            "methodId": 77, 
+            "parentColor": 0, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-05-26 21:32:52.886445+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-05-26 21:32:53.029607+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-05-26 21:32:54.632336+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-05-26 21:32:54.867861+00:00"
+                }
+            ]
+        }, 
+        {
+            "begins": [
+                0, 
+                1
+            ], 
+            "color": 2, 
+            "colors": [
+                0, 
+                2
+            ], 
             "id": 358, 
             "methodId": 77, 
             "parentColor": 0, 
@@ -263,19 +263,19 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:54.236518+00:00"
+                    "timestamp": "2015-05-26 21:32:52.908545+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:54.880488+00:00"
+                    "timestamp": "2015-05-26 21:32:54.111977+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:55.978307+00:00"
+                    "timestamp": "2015-05-26 21:32:54.928843+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.211140+00:00"
+                    "timestamp": "2015-05-26 21:32:55.124054+00:00"
                 }
             ]
         }, 
@@ -296,19 +296,19 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:54.270671+00:00"
+                    "timestamp": "2015-05-26 21:32:52.936246+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:55.413766+00:00"
+                    "timestamp": "2015-05-26 21:32:53.579843+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:56.172084+00:00"
+                    "timestamp": "2015-05-26 21:32:54.694874+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.419812+00:00"
+                    "timestamp": "2015-05-26 21:32:54.951045+00:00"
                 }
             ]
         }, 
@@ -326,23 +326,23 @@
             "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 19:23:56.662946+00:00"
+                    "timestamp": "2015-05-26 21:32:55.369243+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 19:23:56.662946+00:00"
+                    "timestamp": "2015-05-26 21:32:55.369243+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 19:23:56.662946+00:00"
+                    "timestamp": "2015-05-26 21:32:55.369243+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 19:23:56.810651+00:00"
+                    "timestamp": "2015-05-26 21:32:55.526006+00:00"
                 }
             ], 
-            "taskId": 215
+            "taskId": 214
         }
     ], 
-    "update_url": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-26+19%3A23%3A56.906177&workflow_id=29"
+    "updateUrl": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-26+21%3A32%3A55.596815&workflow_id=29"
 }

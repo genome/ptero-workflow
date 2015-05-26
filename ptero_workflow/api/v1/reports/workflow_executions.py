@@ -21,6 +21,6 @@ def report(workflow_id, since=None):
     url = '%s?%s' % (base_url, urllib.urlencode(url_query_string_args))
 
     return {
-            'update_url': url,
+            'updateUrl': url,
             'executions': executions,
     }
