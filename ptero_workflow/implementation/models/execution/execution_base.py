@@ -137,6 +137,9 @@ class Execution(Base):
         result =  {name: getattr(self, name) for name in ['color',
             'parent_color', 'colors', 'begins', 'status', 'id']}
 
+        result['status_history'] = [h.as_dict()
+                for h in self.ordered_status_history]
+
         if self.task_id is not None:
             result['task_id'] = self.task_id
         else:
