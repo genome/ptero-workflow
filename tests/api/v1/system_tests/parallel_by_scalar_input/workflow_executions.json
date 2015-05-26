@@ -7,19 +7,19 @@
                 0
             ], 
             "id": 361, 
-            "parent_color": null, 
+            "parentColor": null, 
             "status": "failed", 
-            "status_history": [
+            "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:57.554668+00:00"
                 }, 
                 {
                     "status": "failed", 
-                    "timestamp": "2015-05-26 01:00:11"
+                    "timestamp": "2015-05-26 19:23:58.751777+00:00"
                 }
             ], 
-            "task_id": 217
+            "taskId": 217
         }, 
         {
             "begins": [
@@ -30,25 +30,25 @@
                 0
             ], 
             "id": 362, 
-            "method_id": 78, 
-            "parent_color": null, 
+            "methodId": 78, 
+            "parentColor": null, 
             "status": "failed", 
-            "status_history": [
+            "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.162023+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.338930+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.338930+00:00"
                 }, 
                 {
                     "status": "failed", 
-                    "timestamp": "2015-05-26 01:00:11"
+                    "timestamp": "2015-05-26 19:23:58.708391+00:00"
                 }
             ]
         }, 
@@ -61,27 +61,27 @@
                 0
             ], 
             "id": 363, 
-            "parent_color": null, 
+            "parentColor": null, 
             "status": "succeeded", 
-            "status_history": [
+            "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.258551+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.258551+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.258551+00:00"
                 }, 
                 {
                     "status": "succeeded", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.419068+00:00"
                 }
             ], 
-            "task_id": 219
+            "taskId": 219
         }, 
         {
             "begins": [
@@ -92,28 +92,28 @@
                 0
             ], 
             "id": 364, 
-            "parent_color": null, 
+            "parentColor": null, 
             "status": "failed", 
-            "status_history": [
+            "statusHistory": [
                 {
                     "status": "new", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.478837+00:00"
                 }, 
                 {
                     "status": "scheduled", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.478837+00:00"
                 }, 
                 {
                     "status": "running", 
-                    "timestamp": "2015-05-26 01:00:10"
+                    "timestamp": "2015-05-26 19:23:58.478837+00:00"
                 }, 
                 {
                     "status": "failed", 
-                    "timestamp": "2015-05-26 01:00:11"
+                    "timestamp": "2015-05-26 19:23:58.647658+00:00"
                 }
             ], 
-            "task_id": 221
+            "taskId": 220
         }
     ], 
-    "update_url": "http://localhost:7000/v1/reports/workflow-executions?workflow_id=29&since=2015-05-26+01%3A00%3A11"
+    "update_url": "http://localhost:7000/v1/reports/workflow-executions?since=2015-05-26+19%3A23%3A58.751777&workflow_id=30"
 }

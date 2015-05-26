@@ -135,15 +135,16 @@ class Execution(Base):
 
     def as_dict_for_executions_report(self):
         result =  {name: getattr(self, name) for name in ['color',
-            'parent_color', 'colors', 'begins', 'status', 'id']}
+            'colors', 'begins', 'status', 'id']}
 
-        result['status_history'] = [h.as_dict()
+        result['statusHistory'] = [h.as_dict()
                 for h in self.ordered_status_history]
+        result['parentColor'] = self.parent_color
 
         if self.task_id is not None:
-            result['task_id'] = self.task_id
+            result['taskId'] = self.task_id
         else:
-            result['method_id'] = self.method_id
+            result['methodId'] = self.method_id
 
         return result
 
