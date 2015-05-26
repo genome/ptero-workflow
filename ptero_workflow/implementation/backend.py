@@ -225,7 +225,7 @@ class Backend(object):
             timestamp = max([e.update_timestamp for e in executions])
             return [e.as_dict_for_executions_report() for e in executions], timestamp
         else:
-            return [], since
+            return [], None
 
 
 
