@@ -308,6 +308,7 @@ class Task(Base, PetriMixin):
                     ).one()
             size = source.get_size(colors, begins)
         except Exception as e:
+            s.rollback()
             LOG.exception('Failed to get split size')
             self.http.delay('PUT', response_links['failure'])
             execution = s.query(TaskExecution).filter(
