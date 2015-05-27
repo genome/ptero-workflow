@@ -44,6 +44,7 @@ class Task(Base, PetriMixin):
     type      = Column(Text, nullable=False)
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
+    topological_index = Column(Integer, nullable=False)
 
     workflow_id = Column(Integer, ForeignKey('workflow.id'),
         nullable=False, index=True)

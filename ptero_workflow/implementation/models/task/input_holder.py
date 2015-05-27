@@ -13,3 +13,6 @@ class InputHolder(Task):
     __mapper_args__ = {
         'polymorphic_identity': 'InputHolder',
     }
+
+    def __init__(self, *args, **kwargs):
+        return super(InputHolder, self).__init__(*args, topological_index=-1, **kwargs)
