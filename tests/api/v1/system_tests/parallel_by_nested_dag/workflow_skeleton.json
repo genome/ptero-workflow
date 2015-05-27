@@ -1,11 +1,11 @@
 {
-    "id": 27, 
-    "name": "DNWV5ZurS3iGwW1Ik5Fmkg", 
+    "id": 28, 
+    "name": "Udb3aDifTICT1_KupvB5YA", 
     "rootTaskId": 202, 
     "status": "succeeded", 
     "tasks": {
         "Inner": {
-            "id": 206, 
+            "id": 204, 
             "methods": [
                 {
                     "id": 74, 
@@ -13,21 +13,23 @@
                     "parameters": {
                         "tasks": {
                             "A": {
-                                "id": 209, 
+                                "id": 208, 
                                 "methods": [
                                     {
                                         "id": 75, 
                                         "name": "execute", 
                                         "service": "shell-command"
                                     }
-                                ]
+                                ], 
+                                "topologicalIndex": 0
                             }
                         }
                     }, 
                     "service": "workflow"
                 }
             ], 
-            "parallelBy": "parallel_param_in"
+            "parallelBy": "parallel_param_in", 
+            "topologicalIndex": 0
         }
     }
 }

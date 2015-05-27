@@ -1,48 +1,52 @@
 {
-    "id": 17, 
-    "name": "c_SlwdOWTd-yMrbQ8lCeBQ", 
+    "id": 18, 
+    "name": "3DIVIQ9NQICb-UmPAxTLrA", 
     "rootTaskId": 106, 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 112, 
-            "methods": [
-                {
-                    "id": 39, 
-                    "name": "execute", 
-                    "service": "shell-command"
-                }
-            ]
-        }, 
-        "B": {
             "id": 111, 
-            "methods": [
-                {
-                    "id": 38, 
-                    "name": "execute", 
-                    "service": "shell-command"
-                }
-            ]
-        }, 
-        "C": {
-            "id": 110, 
             "methods": [
                 {
                     "id": 37, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 0
+        }, 
+        "B": {
+            "id": 112, 
+            "methods": [
+                {
+                    "id": 38, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 1
+        }, 
+        "C": {
+            "id": 113, 
+            "methods": [
+                {
+                    "id": 39, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 2
         }, 
         "D": {
-            "id": 109, 
+            "id": 110, 
             "methods": [
                 {
                     "id": 36, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 3
         }
     }
 }

@@ -1,6 +1,6 @@
 {
-    "id": 36, 
-    "name": "9uuEswDvRPG2RICG9d0vBw", 
+    "id": 37, 
+    "name": "JESeCa3vTcqQdAo_b_rHBQ", 
     "rootTaskId": 262, 
     "status": "succeeded", 
     "tasks": {
@@ -12,7 +12,8 @@
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 0
         }, 
         "B": {
             "id": 267, 
@@ -22,17 +23,19 @@
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 1
         }, 
         "C": {
-            "id": 266, 
+            "id": 264, 
             "methods": [
                 {
                     "id": 98, 
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 2
         }
     }
 }

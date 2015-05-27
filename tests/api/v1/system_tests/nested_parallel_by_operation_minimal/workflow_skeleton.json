@@ -1,11 +1,11 @@
 {
-    "id": 23, 
-    "name": "tEWkd6MDQFaNU8TuKMXGPQ", 
+    "id": 24, 
+    "name": "1XOAhxJ8RXmE1l-3QAXDag", 
     "rootTaskId": 166, 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 170, 
+            "id": 169, 
             "methods": [
                 {
                     "id": 62, 
@@ -16,7 +16,8 @@
                     "service": "workflow"
                 }
             ], 
-            "parallelBy": "in_matrix"
+            "parallelBy": "in_matrix", 
+            "topologicalIndex": 0
         }
     }
 }

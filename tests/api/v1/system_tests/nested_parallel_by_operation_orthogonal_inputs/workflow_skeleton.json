@@ -1,11 +1,11 @@
 {
-    "id": 24, 
-    "name": "0AlVMUT7SH-eLNoGaZ2pig", 
+    "id": 25, 
+    "name": "yq9lPAg5Rvmk6uxpZlqVAw", 
     "rootTaskId": 174, 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 178, 
+            "id": 177, 
             "methods": [
                 {
                     "id": 64, 
@@ -13,7 +13,7 @@
                     "parameters": {
                         "tasks": {
                             "A": {
-                                "id": 181, 
+                                "id": 180, 
                                 "methods": [
                                     {
                                         "id": 65, 
@@ -21,14 +21,16 @@
                                         "service": "shell-command"
                                     }
                                 ], 
-                                "parallelBy": "kitten_name"
+                                "parallelBy": "kitten_name", 
+                                "topologicalIndex": 0
                             }
                         }
                     }, 
                     "service": "workflow"
                 }
             ], 
-            "parallelBy": "in_outer_parallel"
+            "parallelBy": "in_outer_parallel", 
+            "topologicalIndex": 0
         }
     }
 }

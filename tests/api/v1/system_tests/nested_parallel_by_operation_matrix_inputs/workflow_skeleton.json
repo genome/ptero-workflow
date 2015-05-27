@@ -1,11 +1,11 @@
 {
-    "id": 22, 
-    "name": "jDRGu5CrQmijWggJ5v9bQg", 
+    "id": 23, 
+    "name": "eBTUZThZTj2janNycHW0Hw", 
     "rootTaskId": 157, 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 161, 
+            "id": 160, 
             "methods": [
                 {
                     "id": 59, 
@@ -13,7 +13,7 @@
                     "parameters": {
                         "tasks": {
                             "A": {
-                                "id": 164, 
+                                "id": 163, 
                                 "methods": [
                                     {
                                         "id": 60, 
@@ -21,14 +21,16 @@
                                         "service": "shell-command"
                                     }
                                 ], 
-                                "parallelBy": "name"
+                                "parallelBy": "name", 
+                                "topologicalIndex": 0
                             }
                         }
                     }, 
                     "service": "workflow"
                 }
             ], 
-            "parallelBy": "in_matrix"
+            "parallelBy": "in_matrix", 
+            "topologicalIndex": 0
         }
     }
 }

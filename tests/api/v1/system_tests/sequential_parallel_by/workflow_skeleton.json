@@ -1,22 +1,11 @@
 {
-    "id": 30, 
-    "name": "um43h-RTS3im2nPnWntPzA", 
+    "id": 31, 
+    "name": "xZ2Fh8tvSW2RGcivZAHsFw", 
     "rootTaskId": 223, 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 228, 
-            "methods": [
-                {
-                    "id": 82, 
-                    "name": "execute", 
-                    "service": "shell-command"
-                }
-            ], 
-            "parallelBy": "parallel_param"
-        }, 
-        "B": {
-            "id": 227, 
+            "id": 226, 
             "methods": [
                 {
                     "id": 81, 
@@ -24,7 +13,20 @@
                     "service": "shell-command"
                 }
             ], 
-            "parallelBy": "parallel_param"
+            "parallelBy": "parallel_param", 
+            "topologicalIndex": 0
+        }, 
+        "B": {
+            "id": 227, 
+            "methods": [
+                {
+                    "id": 82, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "parallelBy": "parallel_param", 
+            "topologicalIndex": 1
         }
     }
 }

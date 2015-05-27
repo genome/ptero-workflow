@@ -1,11 +1,11 @@
 {
-    "id": 33, 
-    "name": "WgqmqEloSOG8xgCEbVur0Q", 
+    "id": 34, 
+    "name": "rkttWpaRTgq4WF4uCFiU5Q", 
     "rootTaskId": 244, 
     "status": "succeeded", 
     "tasks": {
         "A": {
-            "id": 248, 
+            "id": 247, 
             "methods": [
                 {
                     "id": 91, 
@@ -17,7 +17,8 @@
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 0
         }
     }
 }

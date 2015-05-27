@@ -1,10 +1,21 @@
 {
-    "id": 19, 
-    "name": "Vx7xFsXjSwWq4zvlfJuoHQ", 
+    "id": 20, 
+    "name": "angfJutHS0OkaX4hiE14Sg", 
     "rootTaskId": 125, 
     "status": "succeeded", 
     "tasks": {
         "A": {
+            "id": 131, 
+            "methods": [
+                {
+                    "id": 49, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 0
+        }, 
+        "C": {
             "id": 130, 
             "methods": [
                 {
@@ -12,23 +23,14 @@
                     "name": "execute", 
                     "service": "shell-command"
                 }
-            ]
+            ], 
+            "topologicalIndex": 2
         }, 
-        "C": {
-            "id": 129, 
+        "Inner": {
+            "id": 127, 
             "methods": [
                 {
                     "id": 47, 
-                    "name": "execute", 
-                    "service": "shell-command"
-                }
-            ]
-        }, 
-        "Inner": {
-            "id": 131, 
-            "methods": [
-                {
-                    "id": 49, 
                     "name": "some_workflow", 
                     "parameters": {
                         "tasks": {
@@ -40,13 +42,15 @@
                                         "name": "execute", 
                                         "service": "shell-command"
                                     }
-                                ]
+                                ], 
+                                "topologicalIndex": 0
                             }
                         }
                     }, 
                     "service": "workflow"
                 }
-            ]
+            ], 
+            "topologicalIndex": 1
         }
     }
 }

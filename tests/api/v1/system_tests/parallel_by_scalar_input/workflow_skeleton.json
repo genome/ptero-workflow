@@ -1,11 +1,11 @@
 {
-    "id": 29, 
-    "name": "2TK6N4S0RcWcMd41gmB6lw", 
+    "id": 30, 
+    "name": "zff-GewVTFiEIvdGyKmbsg", 
     "rootTaskId": 217, 
     "status": "failed", 
     "tasks": {
         "A": {
-            "id": 221, 
+            "id": 220, 
             "methods": [
                 {
                     "id": 79, 
@@ -13,7 +13,8 @@
                     "service": "shell-command"
                 }
             ], 
-            "parallelBy": "parallel_param"
+            "parallelBy": "parallel_param", 
+            "topologicalIndex": 0
         }
     }
 }

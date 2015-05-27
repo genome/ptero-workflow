@@ -66,6 +66,7 @@ class MethodList(Task):
         result = {
             'id': self.id,
             'methods': [m.as_skeleton_dict() for m in self.method_list],
+            'topologicalIndex': self.topological_index,
         }
         if self.parallel_by is not None:
             result['parallelBy'] = self.parallel_by
