@@ -146,6 +146,8 @@ class Execution(Base):
         else:
             result['methodId'] = self.method_id
 
+        result['detailsUrl'] = self.url
+
         return result
 
     def update(self, update_data):
