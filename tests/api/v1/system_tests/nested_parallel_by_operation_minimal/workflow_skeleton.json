@@ -1,0 +1,23 @@
+{
+    "id": 24, 
+    "name": "1XOAhxJ8RXmE1l-3QAXDag", 
+    "rootTaskId": 166, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 169, 
+            "methods": [
+                {
+                    "id": 62, 
+                    "name": "inner", 
+                    "parameters": {
+                        "tasks": {}
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_matrix", 
+            "topologicalIndex": 0
+        }
+    }
+}

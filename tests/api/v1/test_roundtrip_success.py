@@ -3,7 +3,8 @@ import abc
 import difflib
 import json
 import sys
-
+import base64
+import uuid
 
 class RoundTripSuccess(object):
     __metaclass__ = abc.ABCMeta
@@ -28,8 +29,7 @@ class RoundTripSuccess(object):
         self.assertIsNotNone(self.response.headers.get('Location'))
 
     def get_should_return_post_data(self):
-        get_response = self.get(self.response.headers.get('Location'))
-        del(get_response.DATA['reports'])
+        get_response = self.get(self.response.DATA['reports']['workflow-submission-data'])
         del(get_response.DATA['status'])
         if self.post_data.get('name') is None:
             del(get_response.DATA['name'])
@@ -48,6 +48,11 @@ class RoundTripSuccess(object):
             is_ok = 0
             sys.stdout.write(line)
         return is_ok
+
+    def webhook_url(self, name):
+        # this url should always respond with a status-code that does not
+        # get retried.
+        return self.post_url + '?webhook_name=%s' % name
 
 class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
     post_data = {
@@ -156,6 +161,13 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
         },
     }
 
+
+def _generate_uuid():
+    return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
+
+unique_name = _generate_uuid()
+
+
 class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
@@ -171,33 +183,35 @@ class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
         'inputs': {
             'in_a': 'kittens',
         },
-        'name': 'puppies',
+        'name': unique_name,
     }
 
 class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
-    post_data = {
+    @property
+    def post_data(self):
+        return {
         'webhooks': {
-            'running': 'http://localhost/example/webhook/outer_dag',
-            'errored': ['http://localhost/example/webhook/outer_dag', 'http://localhost/example/webhook/outer_dag/2']
+            'running': self.webhook_url('outer_dag'),
+            'errored': [self.webhook_url('outer_dag'), self.webhook_url('outer_dag_2')]
         },
         'tasks': {
             'Inner': {
                 'webhooks': {
-                    'running': 'http://localhost/example/webhook/outer_task',
-                    'errored': ['http://localhost/example/webhook/outer_task', 'http://localhost/example/webhook/outer_task/2']
+                    'running': self.webhook_url('outer_task'),
+                    'errored': [self.webhook_url('outer_task'), self.webhook_url('outer_task_2')]
                 },
                 'methods': [{
                     'name': 'some_workflow',
                     'parameters': {
                         'webhooks': {
-                            'running': 'http://localhost/example/webhook/inner_dag',
-                            'errored': ['http://localhost/example/webhook/inner_dag', 'http://localhost/example/webhook/inner_dag/2']
+                            'running': self.webhook_url('inner_dag'),
+                            'errored': [self.webhook_url('inner_dag'), self.webhook_url('inner_dag_2')]
                         },
                         'tasks': {
                             'A': {
                                 'webhooks': {
-                                    'running': 'http://localhost/example/webhook/inner_task',
-                                    'errored': ['http://localhost/example/webhook/inner_task', 'http://localhost/example/webhook/inner_task/2']
+                                    'running': self.webhook_url('inner_task'),
+                                    'errored': [self.webhook_url('inner_task'), self.webhook_url('inner_task_2')]
                                 },
                                 'methods': [
                                     {
@@ -208,8 +222,8 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
                                             'user': 'testuser',
                                             'workingDirectory': '/test/working/directory',
                                             'webhooks': {
-                                                'running': 'http://localhost/example/webhook/shell-command',
-                                                'errored': ['http://localhost/example/webhook/shell-command', 'http://localhost/example/webhook/shell-command/2']
+                                                'running': self.webhook_url('shell_command'),
+                                                'errored': [self.webhook_url('shell_command'), self.webhook_url('shell_command_2')]
                                             },
                                         }
                                     }

@@ -1,0 +1,41 @@
+{
+    "id": 32, 
+    "name": "PhNYDYVhQUCrTsV0FQfwsQ", 
+    "rootTaskId": 230, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 236, 
+            "methods": [
+                {
+                    "id": 86, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 0
+        }, 
+        "B": {
+            "id": 235, 
+            "methods": [
+                {
+                    "id": 85, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 1
+        }, 
+        "C": {
+            "id": 232, 
+            "methods": [
+                {
+                    "id": 84, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 2
+        }
+    }
+}

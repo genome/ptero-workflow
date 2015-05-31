@@ -44,6 +44,7 @@ class Task(Base, PetriMixin):
     type      = Column(Text, nullable=False)
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
+    topological_index = Column(Integer, nullable=False)
 
     workflow_id = Column(Integer, ForeignKey('workflow.id'),
         nullable=False, index=True)
@@ -307,6 +308,7 @@ class Task(Base, PetriMixin):
                     ).one()
             size = source.get_size(colors, begins)
         except Exception as e:
+            s.rollback()
             LOG.exception('Failed to get split size')
             self.http.delay('PUT', response_links['failure'])
             execution = s.query(TaskExecution).filter(
@@ -438,6 +440,7 @@ class Task(Base, PetriMixin):
 
             execution = TaskExecution(task=self, color=color,
                     colors=colors, begins=begins,
+                    workflow_id=self.workflow_id,
                     parent_color=parent_color, data={
                         'petri_response_links': response_links,
             })

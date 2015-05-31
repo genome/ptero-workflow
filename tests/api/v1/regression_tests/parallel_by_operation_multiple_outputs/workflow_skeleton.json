@@ -1,0 +1,42 @@
+{
+    "id": 8, 
+    "name": "2KpDRw6NQDOJ-ile5T3NbQ", 
+    "rootTaskId": 36, 
+    "status": "succeeded", 
+    "tasks": {
+        "middle": {
+            "id": 40, 
+            "methods": [
+                {
+                    "id": 14, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "parallelBy": "parallel_param", 
+            "topologicalIndex": 0
+        }, 
+        "start": {
+            "id": 38, 
+            "methods": [
+                {
+                    "id": 12, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 1
+        }, 
+        "stop": {
+            "id": 39, 
+            "methods": [
+                {
+                    "id": 13, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 2
+        }
+    }
+}

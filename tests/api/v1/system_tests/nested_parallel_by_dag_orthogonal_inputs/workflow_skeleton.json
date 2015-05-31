@@ -1,0 +1,51 @@
+{
+    "id": 21, 
+    "name": "WP8HaWmbQAqcN44iPWXGRA", 
+    "rootTaskId": 136, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 139, 
+            "methods": [
+                {
+                    "id": 52, 
+                    "name": "inner", 
+                    "parameters": {
+                        "tasks": {
+                            "Inner": {
+                                "id": 141, 
+                                "methods": [
+                                    {
+                                        "id": 53, 
+                                        "name": "some_workflow", 
+                                        "parameters": {
+                                            "tasks": {
+                                                "A": {
+                                                    "id": 145, 
+                                                    "methods": [
+                                                        {
+                                                            "id": 54, 
+                                                            "name": "execute", 
+                                                            "service": "shell-command"
+                                                        }
+                                                    ], 
+                                                    "topologicalIndex": 0
+                                                }
+                                            }
+                                        }, 
+                                        "service": "workflow"
+                                    }
+                                ], 
+                                "parallelBy": "kitten_name_in", 
+                                "topologicalIndex": 0
+                            }
+                        }
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_outer_parallel", 
+            "topologicalIndex": 0
+        }
+    }
+}

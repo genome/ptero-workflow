@@ -1,0 +1,35 @@
+{
+    "id": 26, 
+    "name": "vc5c87VfQWOVEuSSqUZKyw", 
+    "rootTaskId": 183, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 186, 
+            "methods": [
+                {
+                    "id": 67, 
+                    "name": "inner", 
+                    "parameters": {
+                        "tasks": {
+                            "A": {
+                                "id": 189, 
+                                "methods": [
+                                    {
+                                        "id": 68, 
+                                        "name": "execute", 
+                                        "service": "shell-command"
+                                    }
+                                ], 
+                                "topologicalIndex": 0
+                            }
+                        }
+                    }, 
+                    "service": "workflow"
+                }
+            ], 
+            "parallelBy": "in_parallel", 
+            "topologicalIndex": 0
+        }
+    }
+}

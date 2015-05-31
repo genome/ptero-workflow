@@ -33,15 +33,18 @@ class Backend(object):
         try:
             workflow = self._save_workflow(workflow_data)
         except IntegrityError as e:
-            sqlite_error = 'UNIQUE constraint failed: workflow.name' == e.orig.message
-            postgres_error = re.search(
-                    "Key.*%s.*already exists" % workflow_data['name'],
-                    e.orig.message) is not None
-            if sqlite_error or postgres_error:
-                raise exceptions.InvalidWorkflow(
-                    "Workflow with name '%s' already exists" % workflow_data['name'])
+            if 'name' in workflow_data:
+                sqlite_error = 'UNIQUE constraint failed: workflow.name' == e.orig.message
+                postgres_error = re.search(
+                        "Key.*%s.*already exists" % workflow_data['name'],
+                        e.orig.message) is not None
+                if sqlite_error or postgres_error:
+                    raise exceptions.InvalidWorkflow(
+                        "Workflow with name '%s' already exists" % workflow_data['name'])
+                else:
+                    raise exceptions.InvalidWorkflow('Unknown IntegrityError: %s' % e.message)
             else:
-                raise exceptions.InvalidWorkflow('Unknown IntegrityError: %s' % e.message)
+                raise e
         self.submit_net_task.delay(workflow.id)
         return workflow.id, workflow.as_dict(detailed=False)
 
@@ -77,8 +80,10 @@ class Backend(object):
         }
 
         workflow.root_task = tasks.build_task('root', root_data, workflow)
+        workflow.root_task.topological_index=-1
+
         models.TaskExecution(task=workflow.root_task, color=0, parent_color=None,
-                colors=[0], begins=[], data={})
+                colors=[0], begins=[], workflow=workflow, data={})
 
         tasks.create_input_holder(workflow.root_task, workflow, workflow_data['inputs'],
                 color=workflow.color, parent_color=workflow.parent_color)
@@ -151,13 +156,23 @@ class Backend(object):
                     "Workflow with id %s was not found." % workflow_id)
 
     def get_workflow(self, workflow_id):
+        workflow = self._get_workflow(workflow_id)
+        return {
+                'name': workflow.name,
+                'status': workflow.status,
+        }
+
+    def get_workflow_submission_data(self, workflow_id):
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=False)
 
     def get_workflow_by_name(self, workflow_name):
         try:
             workflow = self.session.query(models.Workflow).filter_by(
                 name=workflow_name).one()
-            return workflow.id, workflow.as_dict(detailed=False)
+            return workflow.id, {
+                    'name': workflow.name,
+                    'status': workflow.status,
+            }
         except NoResultFound:
             raise exceptions.NoSuchEntityError(
                     "Workflow with name %s was not found." % workflow_name)
@@ -184,8 +199,47 @@ class Backend(object):
                 filter_by(workflow_id=workflow_id).all()
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=True)
 
+    def get_workflow_skeleton(self, workflow_id):
+        workflow = self._get_workflow(workflow_id)
+
+        # Here we load entities and eagerly-load some of their properties.
+        # Later, when those entities are iterated through we won't have to issue
+        # SQL per-entity.
+        m = models
+        method_lists = self.session.query(m.MethodList).\
+                options(
+                        joinedload(m.MethodList.method_list),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        dags = self.session.query(m.DAG).\
+                options(
+                        joinedload(m.DAG.children),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        return workflow.as_skeleton_dict()
+
     def get_workflow_outputs(self, workflow_id):
         return self._get_workflow(workflow_id).get_outputs()
+
+    def get_workflow_executions(self, workflow_id, since=None):
+        query = self.session.query(models.Execution)
+
+        if since is not None:
+            query = query.join(models.ExecutionStatusHistory).\
+                    filter(models.Execution.workflow_id == workflow_id,
+                            models.ExecutionStatusHistory.timestamp > since)
+        else:
+            query = query.filter(models.Execution.workflow_id == workflow_id)
+
+        executions = query.all()
+
+        if executions:
+            timestamp = max([e.update_timestamp for e in executions])
+            return [e.as_dict_for_executions_report() for e in executions], timestamp
+        else:
+            return [], None
+
+
 
     def _get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)

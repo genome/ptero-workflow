@@ -1,5 +1,7 @@
 from ..base import BaseAPITest
 import abc
+import base64
+import uuid
 
 
 class PostDuplicateWorkflowFailure(object):
@@ -22,8 +24,15 @@ class PostDuplicateWorkflowFailure(object):
                 duplicate_response.DATA)
 
 
+def _generate_uuid():
+    return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
+
+unique_name = _generate_uuid()
+
+
 class NameFailure(PostDuplicateWorkflowFailure, BaseAPITest):
-    expected_error_message = "Workflow with name 'foxes' already exists"
+    expected_error_message = "Workflow with name '%s' already exists" % unique_name
+
     post_data = {
         'tasks': { },
         'links': [
@@ -37,5 +46,5 @@ class NameFailure(PostDuplicateWorkflowFailure, BaseAPITest):
         'inputs': {
             'in_a': 'kittens',
         },
-        'name': 'foxes',
+        'name': unique_name,
     }

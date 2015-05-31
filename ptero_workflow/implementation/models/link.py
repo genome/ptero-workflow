@@ -36,7 +36,7 @@ class Link(Base):
             backref=backref('input_links'),
             foreign_keys=[destination_id])
 
-    def as_dict(self, detailed):
+    def as_dict(self, detailed=False):
         data = {
             'source': self.source_task.name,
             'destination': self.destination_task.name,
@@ -44,3 +44,5 @@ class Link(Base):
             'destinationProperty': self.destination_property,
         }
         return data
+
+    as_skeleton_dict = as_dict

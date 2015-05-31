@@ -1,0 +1,24 @@
+{
+    "id": 34, 
+    "name": "rkttWpaRTgq4WF4uCFiU5Q", 
+    "rootTaskId": 244, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 247, 
+            "methods": [
+                {
+                    "id": 91, 
+                    "name": "shortcut", 
+                    "service": "shell-command"
+                }, 
+                {
+                    "id": 92, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 0
+        }
+    }
+}

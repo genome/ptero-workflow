@@ -95,6 +95,7 @@ class Method(Base):
         execution = MethodExecution(method=self, color=color,
                 colors=colors, begins=begins,
                 parent_color=parent_color,
+                workflow_id=self.workflow_id,
                 data={
                     'petri_response_links': body_data['response_links']
         })
@@ -163,6 +164,15 @@ class Method(Base):
                     for color, execution in self.executions.iteritems()}
 
         return result
+
+    def as_skeleton_dict(self):
+        result = {
+            'id': self.id,
+            'name': self.name,
+            'service': self.service,
+        }
+        return result
+
 
 def _get_parent_color(colors):
     if len(colors) == 1:

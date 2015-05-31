@@ -1,0 +1,31 @@
+{
+    "id": 7, 
+    "name": "X7mV61KhQD-gVwYB9odhfA", 
+    "rootTaskId": 29, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 33, 
+            "methods": [
+                {
+                    "id": 10, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "parallelBy": "parallel_param", 
+            "topologicalIndex": 1
+        }, 
+        "intermediate": {
+            "id": 31, 
+            "methods": [
+                {
+                    "id": 9, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 0
+        }
+    }
+}

@@ -112,6 +112,20 @@ class Workflow(Base):
 
         return result
 
+    def as_skeleton_dict(self):
+        tasks = {name: task.as_skeleton_dict()
+            for name,task in self.tasks.iteritems()
+                if name not in ['input connector', 'output connector']}
+
+        result = {
+            'id': self.id,
+            'rootTaskId': self.root_task_id,
+            'name': self.name,
+            'status': self.status,
+            'tasks': tasks,
+        }
+        return result
+
     def attach_expire_transition(self, transitions, pn, ttl):
         transitions.append({
                 'inputs': [pn],

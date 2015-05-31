@@ -61,3 +61,13 @@ class MethodList(Task):
                     color: execution.as_dict(detailed=detailed)
                     for color, execution in self.executions.iteritems()}
         return result
+
+    def as_skeleton_dict(self):
+        result = {
+            'id': self.id,
+            'methods': [m.as_skeleton_dict() for m in self.method_list],
+            'topologicalIndex': self.topological_index,
+        }
+        if self.parallel_by is not None:
+            result['parallelBy'] = self.parallel_by
+        return result

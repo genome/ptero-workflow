@@ -1,5 +1,9 @@
 from . import exceptions
 from . import models
+from networkx.algorithms import is_directed_acyclic_graph
+from networkx.exception import NetworkXUnfeasible
+from networkx import DiGraph
+from ptero_workflow.implementation import exceptions
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -45,14 +49,26 @@ def _build_dag_method(data, workflow, index, parent_task):
     method = models.DAG(name=data['name'], index=index,
             task=parent_task, workflow=workflow)
 
+    nodes = data['parameters']['tasks'].keys()
+    links = [(l['source'], l['destination'])
+            for l in data['parameters']['links']]
+    try:
+        ordering = get_deterministic_topological_ordering(nodes, links,
+                start_node='input connector')
+    except NetworkXUnfeasible:
+        raise exceptions.InvalidWorkflow('DAG named "%s" has a cycle', data['name'])
+
     children = {}
-    for name, child_task_data in data['parameters']['tasks'].iteritems():
-        children[name] = build_task(name, child_task_data, workflow,
-                parent_method=method)
+    for idx, name in enumerate(ordering[1:-1]):
+        child_task_data = data['parameters']['tasks'][name]
+        task = build_task(name, child_task_data, workflow, parent_method=method)
+        task.topological_index = idx
+        children[name] = task
+
     children['input connector'] = models.InputConnector(
-        name='input connector', parent=method, workflow=workflow)
+        name='input connector', parent=method, workflow=workflow, topological_index=-1)
     children['output connector'] = models.OutputConnector(
-        name='output connector', parent=method, workflow=workflow)
+        name='output connector', parent=method, workflow=workflow, topological_index=-1)
 
     method.children = children
 
@@ -67,6 +83,47 @@ def _build_dag_method(data, workflow, index, parent_task):
         )
 
     return method
+
+def get_deterministic_topological_ordering(nodes, links, start_node):
+    """
+    Topological sort that is deterministic because it sorts (alphabetically)
+    candidates to check
+    """
+    LOG.warn("nodes: %s\nlinks: %s", nodes, links)
+    graph = DiGraph()
+    graph.add_nodes_from(nodes)
+    for link in links:
+        graph.add_edge(*link)
+
+    if not is_directed_acyclic_graph(graph):
+        raise NetworkXUnfeasible
+
+    task_names = sorted(graph.successors(start_node))
+    task_set = set(task_names)
+    graph.remove_node(start_node)
+
+    result = [start_node]
+    while task_names:
+        for name in task_names:
+            if graph.in_degree(name) == 0:
+                result.append(name)
+
+                # it is OK to modify task_names because we break out
+                # of loop below
+                task_names.remove(name)
+
+                new_successors = [t for t in graph.successors(name)
+                        if t not in task_set]
+                task_names.extend(new_successors)
+                task_names.sort()
+                task_set.update(set(new_successors))
+
+                graph.remove_node(name)
+                break
+
+    return result
+
+
 
 
 def _build_service_method(data, workflow, index, parent_task, cls):
