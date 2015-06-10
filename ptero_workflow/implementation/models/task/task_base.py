@@ -83,8 +83,8 @@ class Task(Base, PetriMixin):
         else:
             parent_info = ''
         LOG.info(
-            "Canceling task ID:%s with name (%s)%s",
-            self.id, self.name, parent_info)
+                "%s - Canceling task ID:%s with name (%s)%s",
+            self.workflow_id, self.id, self.name, parent_info)
         self.is_canceled = True
         for execution in self.executions.values():
             execution.status = statuses.canceled
@@ -309,7 +309,7 @@ class Task(Base, PetriMixin):
             size = source.get_size(colors, begins)
         except Exception as e:
             s.rollback()
-            LOG.exception('Failed to get split size')
+            LOG.exception('%s - Failed to get split size', self.workflow_id)
             self.http.delay('PUT', response_links['failure'])
             execution = s.query(TaskExecution).filter(
                     TaskExecution.task==self,
@@ -319,8 +319,8 @@ class Task(Base, PetriMixin):
             s.commit()
             return
 
-        LOG.debug('Split size for %s[%s] colors=%s is %s',
-                self.name, self.parallel_by, colors, size)
+        LOG.debug('%s - Split size for %s[%s] colors=%s is %s',
+                self.workflow_id, self.name, self.parallel_by, colors, size)
         self.http.delay('PUT', response_links['send_data'],
                 color_group_size=size)
 
@@ -410,8 +410,8 @@ class Task(Base, PetriMixin):
             inputs[source.destination_property] = source.get_data(
                     colors, begins)
 
-        LOG.debug('Got inputs for %s, colors=%s: %s', self.name,
-                colors, inputs)
+        LOG.debug('%s - Got inputs for %s, colors=%s: %s', self.workflow_id, 
+                self.name, colors, inputs)
 
         return inputs
 
@@ -485,13 +485,14 @@ class Task(Base, PetriMixin):
         return self, name, parallel_depths
 
     def create_input_sources(self, session, parallel_depths):
-        LOG.debug('Creating input sources for %s', self.name)
+        LOG.debug('%s - Creating input sources for %s', self.workflow_id, 
+                self.name)
         for e in self.input_links:
             source_task, source_property, source_parallel_depths = \
                     self.resolve_input_source(session, e.destination_property,
                             parallel_depths)
-            LOG.debug('Found input source %s[%s] = %s[%s]: parallel_depths=%s',
-                    self.name, e.destination_property,
+            LOG.debug('%s - Found input source %s[%s] = %s[%s]: parallel_depths=%s',
+                    self.workflow_id, self.name, e.destination_property,
                     source_task.name, source_property,
                     source_parallel_depths)
 

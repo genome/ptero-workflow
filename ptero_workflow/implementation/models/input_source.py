@@ -50,8 +50,9 @@ class InputSource(Base):
         return indexes
 
     def get_data(self, colors, begins):
-        LOG.debug('get_data %s[%s] -> %s[%s] with parallel_depths=%s, '
+        LOG.debug('%s - get_data %s[%s] -> %s[%s] with parallel_depths=%s, '
                 'colors=%s, begins=%s',
+                self.workflow_id,
                 self.destination_task.name, self.destination_property,
                 self.source_task.name, self.source_property,
                 self.parallel_depths, colors, begins)
@@ -62,9 +63,9 @@ class InputSource(Base):
                 ).filter(result.Result.color.in_(colors)).one()
 
         indexes = self.parallel_indexes(colors, begins)
-        LOG.debug('%s[%s]  parallel_depths=%s, colors=%s, begins=%s '
+        LOG.debug('%s - %s[%s]  parallel_depths=%s, colors=%s, begins=%s '
                 '-> indexes=%s',
-                self.source_task.name, self.source_property,
+                self.workflow_id, self.source_task.name, self.source_property,
                 self.parallel_depths, colors, begins, indexes)
         return r.get_data(indexes)
 
