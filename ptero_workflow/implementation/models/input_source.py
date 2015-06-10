@@ -36,6 +36,11 @@ class InputSource(Base):
     destination_task = relationship('Task', backref='input_sources',
             foreign_keys=[destination_id])
 
+    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id],
+            backref='all_input_sources')
+
     def parallel_indexes(self, colors, begins):
         indexes = []
         for depth in self.parallel_depths:

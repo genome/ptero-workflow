@@ -501,6 +501,7 @@ class Task(Base, PetriMixin):
                     destination_task=self,
                     destination_property=e.destination_property,
                     parallel_depths=source_parallel_depths,
+                    workflow=self.workflow,
             )
             session.add(in_source)
 
