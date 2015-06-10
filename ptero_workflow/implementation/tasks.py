@@ -89,7 +89,6 @@ def get_deterministic_topological_ordering(nodes, links, start_node):
     Topological sort that is deterministic because it sorts (alphabetically)
     candidates to check
     """
-    LOG.warn("nodes: %s\nlinks: %s", nodes, links)
     graph = DiGraph()
     graph.add_nodes_from(nodes)
     for link in links:
