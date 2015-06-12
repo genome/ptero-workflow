@@ -90,8 +90,9 @@ class Execution(Base):
                     (status, str(statuses.VALID_STATUSES)))
         else:
             if not statuses.is_valid_transition(self.status, status):
-                LOG.debug("Refusing to change status from (%s) to (%s), valid status transitions are: %s",
-                    self.status, status, str(statuses.VALID_STATUS_TRANSITIONS[status]))
+                LOG.debug("%s - Refusing to change status from (%s) to (%s), valid status transitions are: %s",
+                    self.workflow_id, self.status, status,
+                    str(statuses.VALID_STATUS_TRANSITIONS[status]))
             else:
                 self.send_webhooks(status)
                 self._status = status

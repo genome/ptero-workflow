@@ -35,7 +35,8 @@ class InputConnector(Task):
             self._set_dag_status_running(color)
             response_url = body_data['response_links']['success']
         except:
-            LOG.exception("Unexpected exception setting dag status to running")
+            LOG.exception("%s Unexpected exception setting dag status to running",
+                    self.workflow_id)
             response_url = body_data['response_links']['failure']
         self.http.delay('PUT', response_url)
 

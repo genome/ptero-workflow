@@ -102,8 +102,10 @@ class ExecutionDetailView(Resource):
                     update_data=update_data)
             return execution_data, 200
         except exceptions.ImmutableUpdateError as e:
-            LOG.exception('ImmutableUpdateError occured while updating '
-                'execution (%d) with update_data=%s', execution_id, update_data)
+            LOG.exception('%s - ImmutableUpdateError occured while updating '
+                'execution (%s) with update_data=%s', 
+                g.backend.get_workflow_id_from_execution_id(execution_id),
+                execution_id, update_data)
             return e.message, 409
 
 
