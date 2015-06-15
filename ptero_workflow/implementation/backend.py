@@ -151,6 +151,14 @@ class Backend(object):
         execution = self.session.query(Execution).get(execution_id)
         return execution.workflow_id
 
+    def get_workflow_id_from_task_id(self, task_id):
+        task = self.session.query(models.Task).get(task_id)
+        return task.workflow_id
+
+    def get_workflow_id_from_method_id(self, method_id):
+        method = self.session.query(models.Method).get(method_id)
+        return method.workflow_id
+
     def _get_workflow(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
         if workflow is not None:

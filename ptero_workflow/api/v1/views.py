@@ -44,6 +44,7 @@ class WorkflowListView(Resource):
         if 'name' in request.args:
             workflow_id, workflow_as_dict = g.backend.get_workflow_by_name(
                         request.args['name'])
+            request.workflow_id = workflow_id
             return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
@@ -52,6 +53,7 @@ class WorkflowListView(Resource):
         try:
             data = validators.get_workflow_post_data()
             workflow_id, workflow_as_dict = g.backend.create_workflow(data)
+            request.workflow_id = workflow_id
             return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
                 'Location': url_for('workflow-detail', workflow_id=workflow_id)
             }
@@ -68,12 +70,14 @@ class WorkflowDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, workflow_id):
+        request.workflow_id = workflow_id
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
     @sends_404
     def patch(self, workflow_id):
+        request.workflow_id = workflow_id
         update_data = request.get_json()
         forbidden_fields = set(update_data.keys()) - set(['is_canceled'])
         if forbidden_fields:
@@ -90,6 +94,7 @@ class ExecutionDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, execution_id):
+        request.workflow_id = g.backend.get_workflow_id_from_execution_id(execution_id)
         execution_data = g.backend.get_execution(execution_id)
         return execution_data, 200
 
@@ -98,6 +103,7 @@ class ExecutionDetailView(Resource):
     def patch(self, execution_id):
         update_data = request.get_json()
         try:
+            request.workflow_id = g.backend.get_workflow_id_from_execution_id(execution_id)
             execution_data = g.backend.update_execution(execution_id,
                     update_data=update_data)
             return execution_data, 200
@@ -135,6 +141,7 @@ class TaskCallback(Resource):
     def post(self, task_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
+        request.workflow_id = g.backend.get_workflow_id_from_task_id(task_id)
         g.backend.handle_task_callback(task_id, callback_type, body_data,
                 query_string_data)
         return {"message": "Completed task callback"}, 200
@@ -146,6 +153,7 @@ class MethodCallback(Resource):
     def post(self, method_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
+        request.workflow_id = g.backend.get_workflow_id_from_method_id(method_id)
         g.backend.handle_method_callback(method_id, callback_type,
                 body_data, query_string_data)
         return {"message": "Completed method callback"}, 200
@@ -155,5 +163,6 @@ class ReportDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, report_type):
+        request.workflow_id = request.args['workflow_id']
         generator = reports.get_report_generator(report_type)
         return generator(**request.args.to_dict(flat=True)), 200
