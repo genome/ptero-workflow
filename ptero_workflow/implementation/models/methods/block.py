@@ -73,7 +73,9 @@ class Block(Method):
             response_url = body_data['response_links']['failure']
             self.http.delay('PUT', response_url)
         else:
-            execution.update({'outputs': {'result': 1}})
+            outputs = execution.get_inputs()
+            outputs.setdefault('result', 1)
+            execution.update({'outputs': outputs})
             execution.status = succeeded
             s.commit()
 
