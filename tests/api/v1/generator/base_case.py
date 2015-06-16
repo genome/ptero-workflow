@@ -36,6 +36,7 @@ FILTERS = [
         re.compile('"id".*:'),
         re.compile('"timestamp".*:'),
         re.compile('"name".*:'),
+        re.compile('"rootTaskId".*:'),
 ]
 
 def get_lines_to_compare(struct):
