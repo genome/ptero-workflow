@@ -1,5 +1,6 @@
 {
     "outputs": {
+        "block_param_2": "baz",
         "block_result": 1,
         "out_c": "foo",
         "out_d_1": "bar",

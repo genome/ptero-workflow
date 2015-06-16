@@ -136,6 +136,12 @@
             "destination": "output connector",
             "sourceProperty": "result",
             "destinationProperty": "block_result"
+        },
+        {
+            "source": "Block",
+            "destination": "output connector",
+            "sourceProperty": "param_2",
+            "destinationProperty": "block_param_2"
         }
     ],
 
