@@ -35,7 +35,8 @@ class Task(Base, PetriMixin):
         'create_array_result',
         'create_execution',
         'get_split_size',
-        'set_status',
+        'succeeded',
+        'failed',
     ])
 
     id        = Column(Integer, primary_key=True)
@@ -248,8 +249,7 @@ class Task(Base, PetriMixin):
                 'outputs': [self._pn('update_status_success', name)],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status',
-                        status=statuses.succeeded)
+                    'url': self.callback_url('succeeded'),
                 }})
         success_place = self._pn('update_status_success', name)
 
@@ -263,8 +263,7 @@ class Task(Base, PetriMixin):
                     'outputs': [self._pn('update_status_failure', name)],
                 'action': {
                     'type': 'notify',
-                    'url': self.callback_url('set_status',
-                        status=statuses.failed)
+                    'url': self.callback_url('failed'),
                 }})
             failure_place = self._pn('update_status_failure', name)
 
@@ -468,14 +467,20 @@ class Task(Base, PetriMixin):
 
         self.http.delay('PUT', response_links['created'])
 
-    def set_status(self, body_data, query_string_data):
+    def succeeded(self, body_data, query_string_data):
+        self._ended(body_data, statuses.succeeded)
+
+    def failed(self, body_data, query_string_data):
+        self._ended(body_data, statuses.failed)
+
+    def _ended(self, body_data, status):
         s = object_session(self)
 
         color = body_data['color']
         execution = s.query(TaskExecution).filter(
                 TaskExecution.task==self,
                 TaskExecution.color==color).one()
-        execution.status = query_string_data['status']
+        execution.status = status
 
         s.commit()
 
