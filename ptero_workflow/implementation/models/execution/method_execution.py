@@ -27,3 +27,15 @@ class MethodExecution(Execution):
 
     def get_outputs(self):
         return self.method.task.get_outputs(color=self.color)
+
+    @property
+    def outputs_are_set(self):
+        return self.method.task.outputs_for_color_are_set(self.color)
+
+    @property
+    def missing_outputs(self):
+        outputs = self.get_outputs()
+        if outputs is not None:
+            return self.method.task.output_properties - set(self.get_outputs())
+        else:
+            return self.method.task.output_properties

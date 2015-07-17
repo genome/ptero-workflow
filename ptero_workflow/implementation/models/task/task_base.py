@@ -527,6 +527,11 @@ class Task(Base, PetriMixin):
         if results:
             return {r.name: r.data for r in results}
 
+    def outputs_for_color_are_set(self, color):
+        s = object_session(self)
+        num_results = s.query(result.Result).filter_by(task=self, color=color).count()
+        return num_results > 0
+
 def _get_parent_color(colors):
     if len(colors) == 1:
         return None
