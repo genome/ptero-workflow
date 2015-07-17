@@ -278,7 +278,13 @@ class Backend(object):
 
     def update_execution(self, execution_id, update_data):
         execution = self._get_execution(execution_id)
-        execution.update(update_data)
+
+        try:
+            execution.update(update_data)
+        except exceptions.UpdateError:
+            self.session.rollback()
+            raise
+
         self.session.commit()
         return execution.as_dict(detailed=False)
 

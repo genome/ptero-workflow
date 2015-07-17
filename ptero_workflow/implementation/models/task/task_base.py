@@ -16,6 +16,7 @@ import logging
 import os
 import urllib
 from ptero_common import statuses
+from ptero_workflow.implementation import exceptions
 
 
 __all__ = ['Task']
@@ -399,10 +400,19 @@ class Task(Base, PetriMixin):
         else:
             return []
 
+    @property
+    def output_properties(self):
+        return set([l.source_property for l in self.output_links])
+
     def set_outputs(self, outputs, color, parent_color):
-        for name, value in outputs.iteritems():
-            result.Result(task=self, name=name, data=value,
-                    color=color, parent_color=parent_color)
+        for output_property in self.output_properties:
+            if output_property not in outputs.keys():
+                raise exceptions.MissingOutputError(
+                        "No value specified for output (%s), outputs specified were: %s" %
+                        (output_property, str(outputs.keys())))
+            else:
+                result.Result(task=self, name=output_property, data=outputs[output_property],
+                        color=color, parent_color=parent_color)
 
     def get_inputs(self, colors, begins):
         inputs = {}

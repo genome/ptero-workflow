@@ -10,8 +10,12 @@ class ImmutableUpdateError(UpdateError):
 class OutputsAlreadySet(ImmutableUpdateError):
     pass
 
+class MissingOutputError(UpdateError):
+    pass
+
 class InvalidStatusError(RuntimeError):
     pass
 
 class NoSuchEntityError(RuntimeError):
     pass
+

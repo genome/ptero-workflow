@@ -1,4 +1,5 @@
 from .task_base import Task
+from .. import result
 from sqlalchemy import Column, ForeignKey, Integer
 
 
@@ -16,3 +17,8 @@ class InputHolder(Task):
 
     def __init__(self, *args, **kwargs):
         return super(InputHolder, self).__init__(*args, topological_index=-1, **kwargs)
+
+    def set_outputs(self, outputs, color, parent_color):
+        for name, value in outputs.iteritems():
+            result.Result(task=self, name=name, data=value,
+                    color=color, parent_color=parent_color)
