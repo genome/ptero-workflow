@@ -10,6 +10,13 @@ class TaskExecution(Execution):
     }
 
     @property
+    def name(self):
+        return "%s.%s" % (
+                self.task.name,
+                self.id,
+        )
+
+    @property
     def parent(self):
         return self.task
 

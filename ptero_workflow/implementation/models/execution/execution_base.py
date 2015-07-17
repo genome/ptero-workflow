@@ -53,20 +53,6 @@ class Execution(Base):
         'outputs': 'update_outputs',
     }
 
-    @property
-    def name(self):
-        if self.method_id is not None:
-            return "%s.%s.%s" % (
-                    self.method.task.name,
-                    self.method.name,
-                    self.id,
-            )
-        else:
-            return "%s.%s" % (
-                    self.task.name,
-                    self.id,
-            )
-
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
         self._status = 'new'
