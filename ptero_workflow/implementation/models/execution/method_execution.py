@@ -26,7 +26,4 @@ class MethodExecution(Execution):
                 begins=self.begins)
 
     def get_outputs(self):
-        s = object_session(self)
-        query_results = s.query(result.Result).filter_by(task=self.method.task,
-            color=self.color, parent_color=self.parent_color).all()
-        return {r.name: r.data for r in query_results}
+        return self.method.task.get_outputs(color=self.color)
