@@ -1,0 +1,155 @@
+{
+    "executions": [
+        {
+            "begins": [], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/1", 
+            "id": 1, 
+            "parentColor": null, 
+            "status": "failed", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-17 21:55:13.730024+00:00"
+                }, 
+                {
+                    "status": "failed", 
+                    "timestamp": "2015-07-17 21:55:15.947638+00:00"
+                }
+            ], 
+            "taskId": 2
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/2", 
+            "id": 2, 
+            "methodId": 1, 
+            "parentColor": null, 
+            "status": "failed", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-17 21:55:14.647901+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-17 21:55:14.816312+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-17 21:55:14.816312+00:00"
+                }, 
+                {
+                    "status": "failed", 
+                    "timestamp": "2015-07-17 21:55:15.905536+00:00"
+                }
+            ]
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/3", 
+            "id": 3, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-17 21:55:14.736594+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-17 21:55:14.736594+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-17 21:55:14.736594+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-17 21:55:14.887778+00:00"
+                }
+            ], 
+            "taskId": 5
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/4", 
+            "id": 4, 
+            "parentColor": null, 
+            "status": "failed", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-17 21:55:14.939532+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-17 21:55:14.939532+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-17 21:55:14.939532+00:00"
+                }, 
+                {
+                    "status": "failed", 
+                    "timestamp": "2015-07-17 21:55:15.856234+00:00"
+                }
+            ], 
+            "taskId": 4
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/5", 
+            "id": 5, 
+            "methodId": 2, 
+            "parentColor": null, 
+            "status": "errored", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-17 21:55:15.006231+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-17 21:55:15.091545+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-17 21:55:15.637883+00:00"
+                }, 
+                {
+                    "status": "errored", 
+                    "timestamp": "2015-07-17 21:55:15.763400+00:00"
+                }
+            ]
+        }
+    ], 
+    "updateUrl": "http://localhost:7000/v1/reports/workflow-executions?workflow_id=1&since=2015-07-17+21%3A55%3A15.947638"
+}
