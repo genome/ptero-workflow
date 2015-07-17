@@ -102,44 +102,45 @@ class ShellCommand(Method):
         execution.status = running
         s.commit()
 
-    def succeeded(self, body_data, query_string_data):
-        execution_id = query_string_data['execution_id']
-
+    def _get_execution(self, execution_id):
         s = object_session(self)
-        execution = s.query(MethodExecution).filter_by(id=execution_id,
+        return s.query(MethodExecution).filter_by(id=execution_id,
                 method_id=self.id).one()
+
+    def succeeded(self, body_data, query_string_data):
+        execution = self._get_execution(query_string_data['execution_id'])
 
         execution.status = succeeded
         execution.data.update(body_data)
+
+        s = object_session(self)
         s.commit()
+
         response_url = execution.data['petri_response_links_for_shell_command']['success']
 
         self.http.delay('PUT', response_url)
 
     def failed(self, body_data, query_string_data):
-        execution_id = query_string_data['execution_id']
-
-        s = object_session(self)
-        execution = s.query(MethodExecution).filter_by(id=execution_id,
-                method_id=self.id).one()
+        execution = self._get_execution(query_string_data['execution_id'])
 
         execution.status = failed
         execution.data.update(body_data)
+
+        s = object_session(self)
         s.commit()
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
 
         self.http.delay('PUT', response_url)
 
     def errored(self, body_data, query_string_data):
-        execution_id = query_string_data['execution_id']
-
-        s = object_session(self)
-        execution = s.query(MethodExecution).filter_by(id=execution_id,
-                method_id=self.id).one()
+        execution = self._get_execution(query_string_data['execution_id'])
 
         execution.status = errored
         execution.data.update(body_data)
+
+        s = object_session(self)
         s.commit()
+
         response_url = execution.data['petri_response_links_for_shell_command']['failure']
         self.http.delay('PUT', response_url)
 
