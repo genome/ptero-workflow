@@ -1,7 +1,10 @@
 class InvalidWorkflow(Exception):
     pass
 
-class ImmutableUpdateError(Exception):
+class UpdateError(Exception):
+    pass
+
+class ImmutableUpdateError(UpdateError):
     pass
 
 class OutputsAlreadySet(ImmutableUpdateError):
