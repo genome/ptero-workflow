@@ -5,6 +5,8 @@ from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import Boolean, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm.exc import NoResultFound
+from ..exceptions import MissingResultError
 import logging
 
 
@@ -58,9 +60,15 @@ class InputSource(Base):
                 self.parallel_depths, colors, begins)
         s = object_session(self)
 
-        r = s.query(result.Result
-                ).filter_by(task=self.source_task, name=self.source_property
-                ).filter(result.Result.color.in_(colors)).one()
+        try:
+            r = s.query(result.Result
+                    ).filter_by(task=self.source_task, name=self.source_property
+                    ).filter(result.Result.color.in_(colors)).one()
+        except NoResultFound:
+            raise MissingResultError("No result found for task (%s:%s) with "
+                    "name (%s) and color one of %s" % (
+                    self.source_task.name, self.source_task.id,
+                    self.source_property, str(colors)))
 
         indexes = self.parallel_indexes(colors, begins)
         LOG.debug('%s - %s[%s]  parallel_depths=%s, colors=%s, begins=%s '
