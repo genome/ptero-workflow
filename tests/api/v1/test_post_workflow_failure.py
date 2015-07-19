@@ -52,13 +52,15 @@ class BorkIsInvalidWebhookName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
+                'dataFlow': {
+                    'in_a': 'param'
+                    }
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'result': 'out_a'
+                    }
             },
         ],
         'inputs': {
@@ -105,13 +107,15 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
+                'dataFlow': {
+                    'in_a': 'param'
+                    }
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'result': 'out_a'
+                    }
             },
         ],
         'inputs': {
@@ -155,13 +159,15 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
+                'dataFlow': {
+                    'in_a': 'param'
+                    }
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'result': 'out_a'
+                    }
             },
         ],
         'inputs': {
@@ -210,13 +216,15 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                                 {
                                     'source': 'input connector',
                                     'destination': 'A',
-                                    'sourceProperty': 'inner_input',
-                                    'destinationProperty': 'param',
+                                    'dataFlow': {
+                                        'inner_input': 'param'
+                                        }
                                 }, {
                                     'source': 'A',
                                     'destination': 'output connector',
-                                    'sourceProperty': 'result',
-                                    'destinationProperty': 'inner_output',
+                                    'dataFlow': {
+                                        'result': 'inner_output'
+                                        }
                                 },
                             ],
                         },
@@ -230,13 +238,15 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
+                'dataFlow': {
+                    'outer_input': 'inner_input'
+                    }
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'sourceProperty': 'inner_output',
-                'destinationProperty': 'outer_output',
+                'dataFlow': {
+                    'inner_output': 'outer_output'
+                    }
             },
         ],
         'inputs': {
@@ -285,13 +295,15 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
                                 {
                                     'source': 'input connector',
                                     'destination': 'A',
-                                    'sourceProperty': 'inner_input',
-                                    'destinationProperty': 'param',
+                                    'dataFlow': {
+                                        'inner_input': 'param'
+                                        }
                                 }, {
                                     'source': 'A',
                                     'destination': 'output connector',
-                                    'sourceProperty': 'result',
-                                    'destinationProperty': 'inner_output',
+                                    'dataFlow': {
+                                        'result': 'inner_output'
+                                        }
                                 },
                             ],
                         },
@@ -305,13 +317,15 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
+                'dataFlow': {
+                    'outer_input': 'inner_input'
+                    }
             }, {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'sourceProperty': 'inner_output',
-                'destinationProperty': 'outer_output',
+                'dataFlow': {
+                    'inner_output': 'outer_output'
+                    }
             },
         ],
         'inputs': {
@@ -341,13 +355,15 @@ class MissingInputs(PostWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
+                'dataFlow': {
+                    'in_a': 'param'
+                    }
             }, {
                 'source': 'A',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'result': 'out_a'
+                    }
             },
         ],
         'inputs': {

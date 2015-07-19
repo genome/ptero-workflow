@@ -73,14 +73,15 @@ def _build_dag_method(data, workflow, index, parent_task):
     method.children = children
 
     for link_data in data['parameters']['links']:
-        source = children[link_data['source']]
-        destination = children[link_data['destination']]
-        models.Link(
-            destination_task=destination,
-            destination_property=link_data['destinationProperty'],
-            source_task=source,
-            source_property=link_data['sourceProperty'],
-        )
+        for source_property, destination_property in link_data['dataFlow'].items():
+            source = children[link_data['source']]
+            destination = children[link_data['destination']]
+            models.Link(
+                destination_task=destination,
+                destination_property=destination_property,
+                source_task=source,
+                source_property=source_property,
+            )
 
     return method
 

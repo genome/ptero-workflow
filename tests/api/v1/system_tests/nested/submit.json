@@ -39,14 +39,16 @@
                             {
                                 "source": "input connector",
                                 "destination": "B",
-                                "sourceProperty": "inner_in_b",
-                                "destinationProperty": "param"
+                                "dataFlow": {
+                                    "inner_in_b": "param"
+                                }
                             },
                             {
                                 "source": "B",
                                 "destination": "output connector",
-                                "sourceProperty": "param",
-                                "destinationProperty": "inner_out_b"
+                                "dataFlow": {
+                                    "param": "inner_out_b"
+                                }
                             }
                         ]
                     },
@@ -74,38 +76,44 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "outer_in_a",
-            "destinationProperty": "param"
+            "dataFlow": {
+                "outer_in_a": "param"
+            }
         },
         {
             "source": "input connector",
             "destination": "Inner",
-            "sourceProperty": "outer_in_inner",
-            "destinationProperty": "inner_in_b"
+            "dataFlow": {
+                "outer_in_inner": "inner_in_b"
+            }
         },
         {
             "source": "A",
             "destination": "C",
-            "sourceProperty": "param",
-            "destinationProperty": "param_1"
+            "dataFlow": {
+                "param": "param_1"
+            }
         },
         {
             "source": "Inner",
             "destination": "C",
-            "sourceProperty": "inner_out_b",
-            "destinationProperty": "param_2"
+            "dataFlow": {
+                "inner_out_b": "param_2"
+            }
         },
         {
             "source": "C",
             "destination": "output connector",
-            "sourceProperty": "param_1",
-            "destinationProperty": "outer_out_c_1"
+            "dataFlow": {
+                "param_1": "outer_out_c_1"
+            }
         },
         {
             "source": "C",
             "destination": "output connector",
-            "sourceProperty": "param_2",
-            "destinationProperty": "outer_out_c_2"
+            "dataFlow": {
+                "param_2": "outer_out_c_2"
+            }
         }
     ],
 

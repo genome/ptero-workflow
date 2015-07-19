@@ -1,16 +1,18 @@
 {
   "links": [
     {
-      "destination": "A",
-      "destinationProperty": "in_matrix",
       "source": "input connector",
-      "sourceProperty": "in_matrix"
+      "destination": "A",
+      "dataFlow": {
+        "in_matrix": "in_matrix"
+      }
     },
     {
-      "destination": "output connector",
-      "destinationProperty": "out_matrix",
       "source": "A",
-      "sourceProperty": "out_matrix"
+      "destination": "output connector",
+      "dataFlow": {
+        "out_matrix": "out_matrix"
+      }
     }
   ],
   "tasks": {
@@ -21,16 +23,18 @@
           "parameters": {
             "links": [
               {
-                "destination": "A",
-                "destinationProperty": "name",
                 "source": "input connector",
-                "sourceProperty": "in_matrix"
+                "destination": "A",
+                "dataFlow": {
+                  "in_matrix": "name"
+                }
               },
               {
-                "destination": "output connector",
-                "destinationProperty": "out_matrix",
                 "source": "A",
-                "sourceProperty": "name"
+                "destination": "output connector",
+                "dataFlow": {
+                  "name": "out_matrix"
+                }
               }
             ],
             "tasks": {

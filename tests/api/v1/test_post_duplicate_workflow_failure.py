@@ -39,8 +39,9 @@ class NameFailure(PostDuplicateWorkflowFailure, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'output connector',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'in_a': 'out_a'
+                }
             },
         ],
         'inputs': {

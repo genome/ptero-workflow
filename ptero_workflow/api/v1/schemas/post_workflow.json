@@ -175,17 +175,24 @@
         "link": {
             "type": "object",
             "properties": {
+                "dataFlow": { "$ref": "#/definitions/dataFlowDictionary" },
                 "destination": { "$ref": "#/definitions/name" },
-                "destinationProperty": { "$ref": "#/definitions/name" },
-                "source": { "$ref": "#/definitions/name" },
-                "sourceProperty": { "$ref": "#/definitions/name" }
+                "source": { "$ref": "#/definitions/name" }
             },
             "required": [
+                "dataFlow",
                 "destination",
-                "destinationProperty",
-                "source",
-                "sourceProperty"
+                "source"
             ],
+            "additionalProperties": false
+        },
+
+        "dataFlowDictionary": {
+            "type": "object",
+            "minProperties": 1,
+            "patternProperties": {
+                "^.+$": { "$ref": "#/definitions/name" }
+            },
             "additionalProperties": false
         }
     }

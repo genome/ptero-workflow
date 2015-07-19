@@ -68,8 +68,9 @@ class QueryByName(QueryWorkflow, BaseAPITest):
                 {
                     'source': 'input connector',
                     'destination': 'output connector',
-                    'sourceProperty': 'in_a',
-                    'destinationProperty': 'out_a',
+                    'dataFlow': {
+                        'in_a': 'out_a',
+                    },
                 },
             ],
             'inputs': {
@@ -83,8 +84,9 @@ class QueryByName(QueryWorkflow, BaseAPITest):
                 {
                     'source': 'input connector',
                     'destination': 'output connector',
-                    'sourceProperty': 'in_z',
-                    'destinationProperty': 'out_z',
+                    'dataFlow': {
+                        'in_z': 'out_z',
+                    },
                 },
             ],
             'inputs': {

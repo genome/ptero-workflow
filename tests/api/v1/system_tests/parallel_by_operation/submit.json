@@ -21,27 +21,18 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "in_constant",
-            "destinationProperty": "constant_param"
+            "dataFlow": {
+                "in_constant": "constant_param",
+                "in_parallel": "parallel_param"
+            }
         },
         {
             "source": "A",
             "destination": "output connector",
-            "sourceProperty": "constant_param",
-            "destinationProperty": "out_constant"
-        },
-
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_parallel",
-            "destinationProperty": "parallel_param"
-        },
-        {
-            "source": "A",
-            "destination": "output connector",
-            "sourceProperty": "parallel_param",
-            "destinationProperty": "out_parallel"
+            "dataFlow": {
+                "constant_param": "out_constant",
+                "parallel_param": "out_parallel"
+            }
         }
     ],
 

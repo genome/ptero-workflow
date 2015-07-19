@@ -94,10 +94,11 @@ class Backend(object):
 
         for link_data in workflow_data['links']:
             if 'output connector' == link_data['destination']:
-                self.session.add(models.Link(source_task=workflow.root_task,
-                        source_property=link_data['destinationProperty'],
-                        destination_task=dummy_output_task,
-                        destination_property=link_data['destinationProperty']))
+                for source_property, destination_property in link_data['dataFlow'].items():
+                    self.session.add(models.Link(source_task=workflow.root_task,
+                            source_property=destination_property,
+                            destination_task=dummy_output_task,
+                            destination_property=destination_property))
 
         self.session.add(workflow)
         self.session.commit()
@@ -113,7 +114,7 @@ class Backend(object):
         required_inputs = set()
         for link in workflow_data['links']:
             if link['source'] == 'input connector':
-                required_inputs.add(link['sourceProperty'])
+                required_inputs.update(link['dataFlow'].keys())
 
         supplied_inputs = set(workflow_data['inputs'].keys())
         missing_inputs = required_inputs - supplied_inputs

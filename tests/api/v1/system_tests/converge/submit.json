@@ -18,20 +18,17 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "in_a",
-            "destinationProperty": "a"
-        },
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_b",
-            "destinationProperty": "b"
+            "dataFlow": {
+                "in_a": "a",
+                "in_b": "b"
+            }
         },
         {
             "source": "A",
             "destination": "output connector",
-            "sourceProperty": "c",
-            "destinationProperty": "out_c"
+            "dataFlow": {
+                "c": "out_c"
+            }
         }
     ],
 

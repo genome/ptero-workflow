@@ -48,26 +48,30 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "in_val",
-            "destinationProperty": "param"
+            "dataFlow": {
+                "in_val": "param"
+            }
         },
         {
             "source": "A",
             "destination": "B",
-            "sourceProperty": "param",
-            "destinationProperty": "param"
+            "dataFlow": {
+                "param": "param"
+            }
         },
         {
             "source": "B",
             "destination": "C",
-            "sourceProperty": "param",
-            "destinationProperty": "param"
+            "dataFlow": {
+                "param": "param"
+            }
         },
         {
             "source": "C",
             "destination": "output connector",
-            "sourceProperty": "param",
-            "destinationProperty": "out_val"
+            "dataFlow": {
+                "param": "out_val"
+            }
         }
     ],
 

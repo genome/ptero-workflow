@@ -8,6 +8,7 @@ from sqlalchemy.orm import backref, aliased, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 from ptero_common import statuses
+from collections import defaultdict
 
 
 __all__ = ['DAG']
@@ -146,11 +147,31 @@ class DAG(Method):
             'tasks': {t.name: t.as_dict(detailed=detailed)
                 for t in self.children.itervalues()
                     if t.type not in ['InputConnector', 'OutputConnector']},
-            'links': [l.as_dict(detailed=detailed) for l in self.links],
+            'links': self.links_dict_list,
         }
         webhooks = self.get_webhooks()
         if webhooks:
             result['webhooks'] = webhooks
+        return result
+
+    @property
+    def links_dict_list(self):
+        link_entries = defaultdict(list)
+        for link in self.links:
+            key = str([link.source_task.name, link.destination_task.name])
+            link_entries[key].append(link)
+
+        result = []
+        for link_entry_key in sorted(link_entries.keys()):
+            link_entry = link_entries[link_entry_key]
+
+            first_link = link_entry.pop()
+            entry = first_link.as_dict().copy()
+            for additional_link in link_entry:
+                entry['dataFlow'][additional_link.source_property] =\
+                        additional_link.destination_property
+            result.append(entry)
+
         return result
 
     @property

@@ -40,8 +40,9 @@ class Link(Base):
         data = {
             'source': self.source_task.name,
             'destination': self.destination_task.name,
-            'sourceProperty': self.source_property,
-            'destinationProperty': self.destination_property,
+            'dataFlow': {
+                self.source_property: self.destination_property,
+            },
         }
         return data
 

@@ -1,28 +1,32 @@
 {
   "links": [
     {
-      "destination": "A",
-      "destinationProperty": "in_outer_parallel",
       "source": "input connector",
-      "sourceProperty": "in_outer_parallel"
-    },
-    {
-      "destination": "output connector",
-      "destinationProperty": "out_outer_parallel",
-      "source": "A",
-      "sourceProperty": "out_outer_parallel"
-    },
-    {
       "destination": "A",
-      "destinationProperty": "in_inner_parallel",
-      "source": "input connector",
-      "sourceProperty": "in_inner_parallel"
+      "dataFlow": {
+        "in_outer_parallel": "in_outer_parallel"
+      }
     },
     {
-      "destination": "output connector",
-      "destinationProperty": "out_inner_parallel",
       "source": "A",
-      "sourceProperty": "out_inner_parallel"
+      "destination": "output connector",
+      "dataFlow": {
+        "out_outer_parallel": "out_outer_parallel"
+      }
+    },
+    {
+      "source": "input connector",
+      "destination": "A",
+      "dataFlow": {
+        "in_inner_parallel": "in_inner_parallel"
+      }
+    },
+    {
+      "source": "A",
+      "destination": "output connector",
+      "dataFlow": {
+        "out_inner_parallel": "out_inner_parallel"
+      }
     }
   ],
   "tasks": {
@@ -33,28 +37,32 @@
           "parameters": {
             "links": [
               {
-                "destination": "A",
-                "destinationProperty": "animal_type",
                 "source": "input connector",
-                "sourceProperty": "in_outer_parallel"
-              },
-              {
-                "destination": "output connector",
-                "destinationProperty": "out_outer_parallel",
-                "source": "A",
-                "sourceProperty": "animal_type"
-              },
-              {
                 "destination": "A",
-                "destinationProperty": "kitten_name",
-                "source": "input connector",
-                "sourceProperty": "in_inner_parallel"
+                "dataFlow": {
+                  "in_outer_parallel": "animal_type"
+                }
               },
               {
-                "destination": "output connector",
-                "destinationProperty": "out_inner_parallel",
                 "source": "A",
-                "sourceProperty": "kitten_name"
+                "destination": "output connector",
+                "dataFlow": {
+                  "animal_type": "out_outer_parallel"
+                }
+              },
+              {
+                "source": "input connector",
+                "destination": "A",
+                "dataFlow": {
+                  "in_inner_parallel": "kitten_name"
+                }
+              },
+              {
+                "source": "A",
+                "destination": "output connector",
+                "dataFlow": {
+                  "kitten_name": "out_inner_parallel"
+                }
               }
             ],
             "tasks": {
