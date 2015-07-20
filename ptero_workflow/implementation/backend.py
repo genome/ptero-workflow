@@ -94,13 +94,21 @@ class Backend(object):
         self.session.add(dummy_output_task)
 
         validate_unique_links(workflow_data['links'])
+        link = models.Link(source_task=workflow.root_task,
+            destination_task=dummy_output_task)
+        self.session.add(link)
         for link_data in workflow_data['links']:
             if 'output connector' == link_data['destination']:
-                for source_property, destination_property in link_data['dataFlow'].items():
-                    self.session.add(models.Link(source_task=workflow.root_task,
-                            source_property=destination_property,
-                            destination_task=dummy_output_task,
-                            destination_property=destination_property))
+                for source_property, destination_part in link_data['dataFlow'].items():
+                    if isinstance(destination_part, basestring):
+                        self.session.add(models.DataFlowEntry(source_property=destination_part,
+                            destination_property=destination_part,
+                            link=link))
+                    else:
+                        for destination_property in destination_part:
+                            self.session.add(models.DataFlowEntry(source_property=destination_property,
+                                destination_property=destination_property,
+                                link=link))
 
         self.session.add(workflow)
         self.session.commit()

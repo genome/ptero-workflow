@@ -6,7 +6,6 @@ import logging
 import json
 import os
 import uuid
-from collections import defaultdict
 
 
 __all__ = ['Workflow']
@@ -55,30 +54,8 @@ class Workflow(Base):
 
         return sorted(results,
                 key=lambda l: l.source_task.name\
-                    + l.destination_task.name\
-                    + l.source_property\
-                    + l.destination_property)
+                    + l.destination_task.name)
         return results
-
-    @property
-    def links_dict_list(self):
-        link_entries = defaultdict(list)
-        for link in self.links:
-            key = str([link.source_task.name, link.destination_task.name])
-            link_entries[key].append(link)
-
-        result = []
-        for link_entry_key in sorted(link_entries.keys()):
-            link_entry = link_entries[link_entry_key]
-
-            first_link = link_entry.pop()
-            entry = first_link.as_dict().copy()
-            for additional_link in link_entry:
-                entry['dataFlow'][additional_link.source_property] =\
-                        additional_link.destination_property
-            result.append(entry)
-
-        return result
 
     @property
     def tasks(self):
@@ -114,7 +91,7 @@ class Workflow(Base):
 
         result = {
             'tasks': tasks,
-            'links': self.links_dict_list,
+            'links': [l.as_dict(detailed=detailed) for l in self.links],
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
             'status': self.status,
             'name': self.name,

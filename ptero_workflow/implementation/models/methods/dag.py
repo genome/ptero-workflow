@@ -8,7 +8,6 @@ from sqlalchemy.orm import backref, aliased, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 from ptero_common import statuses
-from collections import defaultdict
 
 
 __all__ = ['DAG']
@@ -147,31 +146,11 @@ class DAG(Method):
             'tasks': {t.name: t.as_dict(detailed=detailed)
                 for t in self.children.itervalues()
                     if t.type not in ['InputConnector', 'OutputConnector']},
-            'links': self.links_dict_list,
+            'links': [l.as_dict(detailed=detailed) for l in self.links],
         }
         webhooks = self.get_webhooks()
         if webhooks:
             result['webhooks'] = webhooks
-        return result
-
-    @property
-    def links_dict_list(self):
-        link_entries = defaultdict(list)
-        for link in self.links:
-            key = str([link.source_task.name, link.destination_task.name])
-            link_entries[key].append(link)
-
-        result = []
-        for link_entry_key in sorted(link_entries.keys()):
-            link_entry = link_entries[link_entry_key]
-
-            first_link = link_entry.pop()
-            entry = first_link.as_dict().copy()
-            for additional_link in link_entry:
-                entry['dataFlow'][additional_link.source_property] =\
-                        additional_link.destination_property
-            result.append(entry)
-
         return result
 
     @property
@@ -183,8 +162,7 @@ class DAG(Method):
             join(source_task,source_task.id==Link.source_id).\
             join(destination_task,destination_task.id==Link.destination_id).\
             filter(destination_task.parent_id==self.id, source_task.parent_id==self.id).\
-            order_by(source_task.name,destination_task.name,
-                    Link.source_property,Link.destination_property).all()
+            order_by(source_task.name,destination_task.name).all()
 
     def as_skeleton_dict(self):
         result = super(DAG, self).as_skeleton_dict()
