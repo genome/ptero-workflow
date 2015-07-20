@@ -26,7 +26,8 @@
                                 "source": "input connector",
                                 "destination": "output connector",
                                 "dataFlow": {
-                                    "constant_param_in": "constant_param_out"
+                                    "constant_param_in": "constant_param_out",
+                                    "parallel_param_in": "parallel_param_out"
                                 }
                             },
                             {
@@ -34,13 +35,6 @@
                                 "destination": "michael",
                                 "dataFlow": {
                                     "constant_param_in": "constant_param_in"
-                                }
-                            },
-                            {
-                                "source": "input connector",
-                                "destination": "output connector",
-                                "dataFlow": {
-                                    "parallel_param_in": "parallel_param_out"
                                 }
                             },
                             {

@@ -105,13 +105,7 @@
             "source": "C",
             "destination": "output connector",
             "dataFlow": {
-                "param_1": "outer_out_c_1"
-            }
-        },
-        {
-            "source": "C",
-            "destination": "output connector",
-            "dataFlow": {
+                "param_1": "outer_out_c_1",
                 "param_2": "outer_out_c_2"
             }
         }

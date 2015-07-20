@@ -80,13 +80,7 @@
             "source": "stop",
             "destination": "output connector",
             "dataFlow": {
-                "constant_param": "out_constant"
-            }
-        },
-        {
-            "source": "stop",
-            "destination": "output connector",
-            "dataFlow": {
+                "constant_param": "out_constant",
                 "parallel_param": "out_parallel"
             }
         }

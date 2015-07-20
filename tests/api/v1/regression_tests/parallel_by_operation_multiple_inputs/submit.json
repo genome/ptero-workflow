@@ -50,7 +50,8 @@
             "source": "A",
             "destination": "output connector",
             "dataFlow": {
-                "constant_param": "out_constant"
+                "constant_param": "out_constant",
+                "parallel_param": "out_parallel"
             }
         },
 
@@ -59,13 +60,6 @@
             "destination": "A",
             "dataFlow": {
                 "in_parallel": "parallel_param"
-            }
-        },
-        {
-            "source": "A",
-            "destination": "output connector",
-            "dataFlow": {
-                "parallel_param": "out_parallel"
             }
         }
     ],

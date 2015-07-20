@@ -4,6 +4,7 @@
       "source": "input connector",
       "destination": "A",
       "dataFlow": {
+        "in_inner_parallel": "in_inner_parallel",
         "in_outer_parallel": "in_outer_parallel"
       }
     },
@@ -11,21 +12,8 @@
       "source": "A",
       "destination": "output connector",
       "dataFlow": {
+        "out_inner_parallel": "out_inner_parallel",
         "out_outer_parallel": "out_outer_parallel"
-      }
-    },
-    {
-      "source": "input connector",
-      "destination": "A",
-      "dataFlow": {
-        "in_inner_parallel": "in_inner_parallel"
-      }
-    },
-    {
-      "source": "A",
-      "destination": "output connector",
-      "dataFlow": {
-        "out_inner_parallel": "out_inner_parallel"
       }
     }
   ],
@@ -40,6 +28,7 @@
                 "source": "input connector",
                 "destination": "A",
                 "dataFlow": {
+                  "in_inner_parallel": "kitten_name",
                   "in_outer_parallel": "animal_type"
                 }
               },
@@ -47,20 +36,7 @@
                 "source": "A",
                 "destination": "output connector",
                 "dataFlow": {
-                  "animal_type": "out_outer_parallel"
-                }
-              },
-              {
-                "source": "input connector",
-                "destination": "A",
-                "dataFlow": {
-                  "in_inner_parallel": "kitten_name"
-                }
-              },
-              {
-                "source": "A",
-                "destination": "output connector",
-                "dataFlow": {
+                  "animal_type": "out_outer_parallel",
                   "kitten_name": "out_inner_parallel"
                 }
               }
