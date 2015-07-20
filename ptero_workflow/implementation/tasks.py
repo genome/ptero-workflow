@@ -4,6 +4,7 @@ from networkx.algorithms import is_directed_acyclic_graph
 from networkx.exception import NetworkXUnfeasible
 from networkx import DiGraph
 from ptero_workflow.implementation import exceptions
+from ptero_workflow.implementation.validators import validate_unique_links
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ def _build_dag_method(data, workflow, index, parent_task):
         ordering = get_deterministic_topological_ordering(nodes, links,
                 start_node='input connector')
     except NetworkXUnfeasible:
-        raise exceptions.InvalidWorkflow('DAG named "%s" has a cycle', data['name'])
+        raise exceptions.DAGCycleError('DAG named "%s" has a cycle', data['name'])
 
     children = {}
     for idx, name in enumerate(ordering[1:-1]):
@@ -72,6 +73,7 @@ def _build_dag_method(data, workflow, index, parent_task):
 
     method.children = children
 
+    validate_unique_links(data['parameters']['links'])
     for link_data in data['parameters']['links']:
         for source_property, destination_property in link_data['dataFlow'].items():
             source = children[link_data['source']]
@@ -153,5 +155,5 @@ _ILLEGAL_TASK_NAMES = {'input connector', 'output connector'}
 def _validate_dag_task_names(tasks):
     for illegal_name in _ILLEGAL_TASK_NAMES:
         if illegal_name in tasks:
-            raise exceptions.InvalidWorkflow('"%s" is an illegal task name'
+            raise exceptions.IllegalTaskNameError('"%s" is an illegal task name'
                     % illegal_name)

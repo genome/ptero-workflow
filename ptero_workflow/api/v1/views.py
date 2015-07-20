@@ -4,6 +4,7 @@ from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
+from ...implementation.exceptions import ValidationError as PteroValidationError
 from ptero_common.logging_configuration import logged_response
 from functools import wraps
 
@@ -62,7 +63,7 @@ class WorkflowListView(Resource):
             msg = "JSON schema validation error: %s" % e.message
             LOG.error(msg)
             return {'error': msg}, 400
-        except exceptions.InvalidWorkflow as e:
+        except PteroValidationError as e:
             LOG.exception(e)
             return {'error': e.message}, 400
 
