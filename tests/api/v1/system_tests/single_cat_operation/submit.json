@@ -1,0 +1,41 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./cat_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "dataFlow": {
+                "in_1": ["a", "b"],
+                "in_2": "c"
+            }
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "dataFlow": {
+                "result": "result"
+            }
+        }
+    ],
+
+    "inputs": {
+        "in_1": "foo",
+        "in_2": "bar"
+    }
+}

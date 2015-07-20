@@ -191,9 +191,18 @@
             "type": "object",
             "minProperties": 1,
             "patternProperties": {
-                "^.+$": { "$ref": "#/definitions/name" }
+                "^.+$": { "$ref": "#/definitions/dataFlowEntry" }
             },
             "additionalProperties": false
+        },
+        "dataFlowEntry": { "oneOf": [
+            { "$ref": "#/definitions/name" },
+            { "$ref": "#/definitions/nameList" }
+        ]},
+        "nameList": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/name" },
+            "minItems": 1
         }
     }
 }

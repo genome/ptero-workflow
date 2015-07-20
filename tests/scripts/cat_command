@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+
+import os
+import requests
+import sys
+
+def patch_and_expect(execution_url, patch_data, status_code):
+    print "Sending PATCH to %s with body: %s" % (execution_url, patch_data)
+    response = requests.patch(execution_url, json=patch_data)
+    if (response.status_code != status_code):
+        print "Expected status_code %s, but recieved %s instead." % response.status_code
+        sys.exit(3)
+    else:
+        return response.json;
+
+def main():
+    execution_url = os.environ['PTERO_WORKFLOW_EXECUTION_URL']
+    print "Found PTERO_WORKFLOW_EXECUTION_URL = %s" % execution_url
+
+    execution_data = requests.get(execution_url).json()
+    print "Found execution_data from GET request = %s" % execution_data
+    inputs = execution_data['inputs']
+
+    values = [inputs[name] for name in sorted(inputs.keys())]
+
+    patch_data = {'outputs': {'result': ''.join(values)}}
+    patch_and_expect(execution_url, patch_data, 200)
+
+    sys.exit(os.EX_OK)
+
+if __name__ == "__main__":
+    main()
