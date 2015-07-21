@@ -59,8 +59,9 @@ class WorkflowListView(Resource):
             }
 
         except ValidationError as e:
-            LOG.exception(e)
-            return {'error': e.message}, 400
+            msg = "JSON schema validation error: %s" % e.message
+            LOG.error(msg)
+            return {'error': msg}, 400
         except exceptions.InvalidWorkflow as e:
             LOG.exception(e)
             return {'error': e.message}, 400

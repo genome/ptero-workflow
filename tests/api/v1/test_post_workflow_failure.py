@@ -20,7 +20,7 @@ class PostWorkflowFailure(object):
                 self.response.DATA)
 
 class BorkIsInvalidWebhookName(PostWorkflowFailure, BaseAPITest):
-    expected_error_message = "Additional properties are not allowed (u'bork' was unexpected)"
+    expected_error_message = "JSON schema validation error: Additional properties are not allowed (u'bork' was unexpected)"
     post_data = {
         'webhooks': {
             'scheduled': 'http://localhost/example/webhook',
