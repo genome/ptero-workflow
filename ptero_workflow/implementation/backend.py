@@ -278,12 +278,14 @@ class Backend(object):
 
     def update_execution(self, execution_id, update_data):
         execution = self._get_execution(execution_id)
-        execution.update(update_data)
+
         try:
-            self.session.commit()
-        except IntegrityError:
+            execution.update(update_data)
+        except exceptions.UpdateError:
             self.session.rollback()
-            raise exceptions.OutputsAlreadySet
+            raise
+
+        self.session.commit()
         return execution.as_dict(detailed=False)
 
     def handle_task_callback(self, task_id, callback_type, body_data,

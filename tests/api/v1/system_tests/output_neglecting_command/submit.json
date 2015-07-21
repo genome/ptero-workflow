@@ -1,0 +1,50 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./output_neglecting_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_a",
+            "destinationProperty": "param_a"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "param_a",
+            "destinationProperty": "out_a"
+        },
+        {
+            "source": "input connector",
+            "destination": "A",
+            "sourceProperty": "in_b",
+            "destinationProperty": "param_b"
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "sourceProperty": "param_b",
+            "destinationProperty": "out_b"
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens",
+        "in_b": "puppies"
+    }
+}

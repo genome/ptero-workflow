@@ -86,6 +86,10 @@ class TestCaseMixin(object):
             self._verify_result(outputs_report_url)
         else:
             LOG.info("Workflow failed... Checking expected details")
+
+            details_url = workflow_data['reports']['workflow-details']
+            self._regenerate_details_data(details_url)
+
             self.assertTrue(self._expected_details is not None)
 
         if self._expected_details is not None:
@@ -101,6 +105,12 @@ class TestCaseMixin(object):
         self._regenerate_executions_data(url)
         if self._expected_executions is not None:
             self._verify_workflow_executions(url)
+
+    def _regenerate_details_data(self, url):
+        if os.environ.get('PTERO_REGENERATE_TEST_DATA'):
+            actual_result = self._get_actual_result(url)
+            with open(self._expected_details_path, 'w') as ofile:
+                ofile.write(self._to_json(actual_result))
 
     def _regenerate_skeleton_data(self, url):
         if os.environ.get('PTERO_REGENERATE_TEST_DATA'):

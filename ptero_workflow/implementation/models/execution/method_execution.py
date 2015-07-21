@@ -10,6 +10,14 @@ class MethodExecution(Execution):
     }
 
     @property
+    def name(self):
+        return "%s.%s.%s" % (
+                self.method.task.name,
+                self.method.name,
+                self.id,
+        )
+
+    @property
     def parent(self):
         return self.method
 
@@ -18,7 +26,16 @@ class MethodExecution(Execution):
                 begins=self.begins)
 
     def get_outputs(self):
-        s = object_session(self)
-        query_results = s.query(result.Result).filter_by(task=self.method.task,
-            color=self.color, parent_color=self.parent_color).all()
-        return {r.name: r.data for r in query_results}
+        return self.method.task.get_outputs(color=self.color)
+
+    @property
+    def outputs_are_set(self):
+        return self.method.task.outputs_for_color_are_set(self.color)
+
+    @property
+    def missing_outputs(self):
+        outputs = self.get_outputs()
+        if outputs is not None:
+            return self.method.task.output_properties - set(self.get_outputs())
+        else:
+            return self.method.task.output_properties

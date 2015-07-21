@@ -1,0 +1,19 @@
+{
+    "id": 1, 
+    "name": "GktOeQNJQKKyYaXTAyM4Vw", 
+    "rootTaskId": 2, 
+    "status": "failed", 
+    "tasks": {
+        "A": {
+            "id": 4, 
+            "methods": [
+                {
+                    "id": 2, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 0
+        }
+    }
+}
