@@ -39,8 +39,9 @@ class Link(Base):
         data = {
             'source': self.source_task.name,
             'destination': self.destination_task.name,
-            'dataFlow': format_dict_of_lists(self.data_flow),
         }
+        if self.data_flow:
+            data['dataFlow'] = format_dict_of_lists(self.data_flow)
         return data
 
     @property

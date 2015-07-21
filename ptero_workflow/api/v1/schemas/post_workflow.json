@@ -180,7 +180,6 @@
                 "source": { "$ref": "#/definitions/name" }
             },
             "required": [
-                "dataFlow",
                 "destination",
                 "source"
             ],

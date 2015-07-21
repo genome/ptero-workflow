@@ -81,7 +81,7 @@ def _build_dag_method(data, workflow, index, parent_task):
             destination_task=destination,
             source_task=source,
         )
-        for source_property, destination_part in link_data['dataFlow'].items():
+        for source_property, destination_part in link_data.get('dataFlow', {}).items():
             if isinstance(destination_part, basestring):
                 models.DataFlowEntry(source_property=source_property,
                     destination_property=destination_part,

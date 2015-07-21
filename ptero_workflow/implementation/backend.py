@@ -99,7 +99,7 @@ class Backend(object):
         self.session.add(link)
         for link_data in workflow_data['links']:
             if 'output connector' == link_data['destination']:
-                for source_property, destination_part in link_data['dataFlow'].items():
+                for source_property, destination_part in link_data.get('dataFlow', {}).items():
                     if isinstance(destination_part, basestring):
                         self.session.add(models.DataFlowEntry(source_property=destination_part,
                             destination_property=destination_part,
@@ -124,7 +124,7 @@ class Backend(object):
         required_inputs = set()
         for link in workflow_data['links']:
             if link['source'] == 'input connector':
-                required_inputs.update(link['dataFlow'].keys())
+                required_inputs.update(link.get('dataFlow', {}).keys())
 
         supplied_inputs = set(workflow_data['inputs'].keys())
         missing_inputs = required_inputs - supplied_inputs

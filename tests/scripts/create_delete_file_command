@@ -1,0 +1,44 @@
+#!/usr/bin/env python
+
+# deletes <filename> if input is provided, else creates a temp file and sets
+# that as the output named <filename>
+
+import os
+import requests
+import sys
+import tempfile
+
+
+def patch_and_expect(execution_url, patch_data, status_code):
+    print "Sending PATCH to %s with body: %s" % (execution_url, patch_data)
+    response = requests.patch(execution_url, json=patch_data)
+    if (response.status_code != status_code):
+        print "Expected status_code %s, but recieved %s instead." % response.status_code
+        sys.exit(3)
+    else:
+        return response.json;
+
+def main():
+    execution_url = os.environ['PTERO_WORKFLOW_EXECUTION_URL']
+    print "Found PTERO_WORKFLOW_EXECUTION_URL = %s" % execution_url
+
+    execution_data = requests.get(execution_url).json()
+    print "Found execution_data from GET request = %s" % execution_data
+    inputs = execution_data['inputs']
+
+    if 'filename' in inputs:
+        filename = inputs['filename']
+        if os.path.isfile(filename):
+            os.remove(filename)
+        else:
+            print "Expected file (%s) to exist but it doesn't" % filename
+            sys.exit(3)
+    else:
+        temp_file = tempfile.NamedTemporaryFile(delete=False)
+        patch_data = {'outputs': {'filename':temp_file.name}}
+        patch_and_expect(execution_url, patch_data, 200)
+
+    sys.exit(os.EX_OK)
+
+if __name__ == "__main__":
+    main()
