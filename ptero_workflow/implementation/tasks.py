@@ -4,6 +4,7 @@ from networkx.algorithms import is_directed_acyclic_graph
 from networkx.exception import NetworkXUnfeasible
 from networkx import DiGraph
 from ptero_workflow.implementation import exceptions
+from ptero_workflow.implementation.validators import validate_unique_links
 import logging
 
 LOG = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ def _build_dag_method(data, workflow, index, parent_task):
         ordering = get_deterministic_topological_ordering(nodes, links,
                 start_node='input connector')
     except NetworkXUnfeasible:
-        raise exceptions.InvalidWorkflow('DAG named "%s" has a cycle', data['name'])
+        raise exceptions.DAGCycleError('DAG named "%s" has a cycle', data['name'])
 
     children = {}
     for idx, name in enumerate(ordering[1:-1]):
@@ -72,15 +73,24 @@ def _build_dag_method(data, workflow, index, parent_task):
 
     method.children = children
 
+    validate_unique_links(data['parameters']['links'])
     for link_data in data['parameters']['links']:
         source = children[link_data['source']]
         destination = children[link_data['destination']]
-        models.Link(
+        link = models.Link(
             destination_task=destination,
-            destination_property=link_data['destinationProperty'],
             source_task=source,
-            source_property=link_data['sourceProperty'],
         )
+        for source_property, destination_part in link_data.get('dataFlow', {}).items():
+            if isinstance(destination_part, basestring):
+                models.DataFlowEntry(source_property=source_property,
+                    destination_property=destination_part,
+                    link=link)
+            else:
+                for destination_property in destination_part:
+                    models.DataFlowEntry(source_property=source_property,
+                        destination_property=destination_property,
+                        link=link)
 
     return method
 
@@ -136,9 +146,10 @@ def _build_service_method(data, workflow, index, parent_task, cls):
 def create_input_holder(root, workflow, inputs, color, parent_color):
     task = models.InputHolder(name='input_holder', workflow=workflow)
     task.set_outputs(inputs, color=color, parent_color=parent_color)
+    link = models.Link(source_task=task, destination_task=root)
     for i in inputs.iterkeys():
-        models.Link(source_task=task, destination_task=root,
-                source_property=i, destination_property=i)
+        models.DataFlowEntry(source_property=i, destination_property=i,
+                link=link)
     return task
 
 
@@ -152,5 +163,5 @@ _ILLEGAL_TASK_NAMES = {'input connector', 'output connector'}
 def _validate_dag_task_names(tasks):
     for illegal_name in _ILLEGAL_TASK_NAMES:
         if illegal_name in tasks:
-            raise exceptions.InvalidWorkflow('"%s" is an illegal task name'
+            raise exceptions.IllegalTaskNameError('"%s" is an illegal task name'
                     % illegal_name)

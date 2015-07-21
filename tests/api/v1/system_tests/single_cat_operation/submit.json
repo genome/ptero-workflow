@@ -6,14 +6,13 @@
                     "name": "execute",
                     "service": "shell-command",
                     "parameters": {
-                        "commandLine": ["./echo_command"],
+                        "commandLine": ["./cat_command"],
                         "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}",
                         "environment": {{ environment }}
                     }
                 }
-            ],
-            "parallelBy": "parallel_param"
+            ]
         }
     },
 
@@ -22,22 +21,21 @@
             "source": "input connector",
             "destination": "A",
             "dataFlow": {
-                "in_constant": "constant_param",
-                "in_parallel": "parallel_param"
+                "in_1": ["a", "b"],
+                "in_2": "c"
             }
         },
         {
             "source": "A",
             "destination": "output connector",
             "dataFlow": {
-                "constant_param": "out_constant",
-                "parallel_param": "out_parallel"
+                "result": "result"
             }
         }
     ],
 
     "inputs": {
-        "in_constant": "kittens",
-        "in_parallel": "Simba"
+        "in_1": "foo",
+        "in_2": "bar"
     }
 }

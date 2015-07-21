@@ -54,9 +54,7 @@ class Workflow(Base):
 
         return sorted(results,
                 key=lambda l: l.source_task.name\
-                    + l.destination_task.name\
-                    + l.source_property\
-                    + l.destination_property)
+                    + l.destination_task.name)
         return results
 
     @property
@@ -90,11 +88,10 @@ class Workflow(Base):
         tasks = {name: task.as_dict(detailed=detailed)
             for name,task in self.tasks.iteritems()
                 if name not in ['input connector', 'output connector']}
-        links = [l.as_dict(detailed=detailed) for l in self.links]
 
         result = {
             'tasks': tasks,
-            'links': links,
+            'links': [l.as_dict(detailed=detailed) for l in self.links],
             'inputs': self.root_task.get_inputs(colors=[0], begins=[0]),
             'status': self.status,
             'name': self.name,

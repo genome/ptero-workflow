@@ -43,6 +43,8 @@ class RoundTripSuccess(object):
         is_ok = 1
         expected_json = self._to_json(expected).splitlines(1)
         actual_json = self._to_json(actual).splitlines(1)
+        from pprint import pprint
+        pprint(actual_json)
         for line in difflib.unified_diff(expected_json, actual_json,
                 fromfile='Expected', tofile='Actual'):
             is_ok = 0
@@ -74,18 +76,16 @@ class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'Converge',
                 'destination': 'output connector',
-                'sourceProperty': 'c',
-                'destinationProperty': 'result',
+                'dataFlow': {
+                    'c': 'result',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'Converge',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'a',
-            }, {
-                'source': 'input connector',
-                'destination': 'Converge',
-                'sourceProperty': 'in_b',
-                'destinationProperty': 'b',
+                'dataFlow': {
+                    'in_a': 'a',
+                    'in_b': 'b',
+                },
             },
         ],
         'inputs': {
@@ -112,13 +112,15 @@ class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'Block',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'result',
+                'dataFlow': {
+                    'result': 'result',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'Block',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'in_a',
+                'dataFlow': {
+                    'in_a': 'in_a',
+                },
             },
         ],
         'inputs': {
@@ -147,13 +149,15 @@ class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'A',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'result': 'out_a',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
+                'dataFlow': {
+                    'in_a': 'param',
+                },
             },
         ],
         'inputs': {
@@ -176,8 +180,9 @@ class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'input connector',
                 'destination': 'output connector',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'in_a': 'out_a',
+                },
             },
         ],
         'inputs': {
@@ -234,13 +239,15 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
                             {
                                 'source': 'A',
                                 'destination': 'output connector',
-                                'sourceProperty': 'result',
-                                'destinationProperty': 'inner_output',
+                                'dataFlow': {
+                                    'result': 'inner_output',
+                                },
                             }, {
                                 'source': 'input connector',
                                 'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
+                                'dataFlow': {
+                                    'inner_input': 'param',
+                                },
                             },
                         ],
                     },
@@ -253,13 +260,15 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'sourceProperty': 'inner_output',
-                'destinationProperty': 'outer_output',
+                'dataFlow': {
+                    'inner_output': 'outer_output',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
+                'dataFlow': {
+                    'outer_input': 'inner_input',
+                },
             },
         ],
         'inputs': {
@@ -294,13 +303,15 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
                             {
                                 'source': 'A',
                                 'destination': 'output connector',
-                                'sourceProperty': 'result',
-                                'destinationProperty': 'inner_output',
+                                'dataFlow': {
+                                    'result': 'inner_output',
+                                },
                             }, {
                                 'source': 'input connector',
                                 'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
+                                'dataFlow': {
+                                    'inner_input': 'param',
+                                },
                             },
                         ],
                     },
@@ -313,13 +324,15 @@ class NestedWorkflow(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'sourceProperty': 'inner_output',
-                'destinationProperty': 'outer_output',
+                'dataFlow': {
+                    'inner_output': 'outer_output',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
+                'dataFlow': {
+                    'outer_input': 'inner_input',
+                },
             },
         ],
         'inputs': {
@@ -349,13 +362,15 @@ class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'A',
                 'destination': 'output connector',
-                'sourceProperty': 'result',
-                'destinationProperty': 'out_a',
+                'dataFlow': {
+                    'result': 'out_a',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'A',
-                'sourceProperty': 'in_a',
-                'destinationProperty': 'param',
+                'dataFlow': {
+                    'in_a': 'param',
+                },
             },
         ],
         'inputs': {
@@ -390,13 +405,15 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
                             {
                                 'source': 'A',
                                 'destination': 'output connector',
-                                'sourceProperty': 'result',
-                                'destinationProperty': 'inner_output',
+                                'dataFlow': {
+                                    'result': 'inner_output',
+                                },
                             }, {
                                 'source': 'input connector',
                                 'destination': 'A',
-                                'sourceProperty': 'inner_input',
-                                'destinationProperty': 'param',
+                                'dataFlow': {
+                                    'inner_input': 'param',
+                                },
                             },
                         ],
                     },
@@ -409,13 +426,15 @@ class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
             {
                 'source': 'Inner',
                 'destination': 'output connector',
-                'sourceProperty': 'inner_output',
-                'destinationProperty': 'outer_output',
+                'dataFlow': {
+                    'inner_output': 'outer_output',
+                },
             }, {
                 'source': 'input connector',
                 'destination': 'Inner',
-                'sourceProperty': 'outer_input',
-                'destinationProperty': 'inner_input',
+                'dataFlow': {
+                    'outer_input': 'inner_input',
+                },
             },
         ],
         'inputs': {

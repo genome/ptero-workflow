@@ -175,18 +175,33 @@
         "link": {
             "type": "object",
             "properties": {
+                "dataFlow": { "$ref": "#/definitions/dataFlowDictionary" },
                 "destination": { "$ref": "#/definitions/name" },
-                "destinationProperty": { "$ref": "#/definitions/name" },
-                "source": { "$ref": "#/definitions/name" },
-                "sourceProperty": { "$ref": "#/definitions/name" }
+                "source": { "$ref": "#/definitions/name" }
             },
             "required": [
                 "destination",
-                "destinationProperty",
-                "source",
-                "sourceProperty"
+                "source"
             ],
             "additionalProperties": false
+        },
+
+        "dataFlowDictionary": {
+            "type": "object",
+            "minProperties": 1,
+            "patternProperties": {
+                "^.+$": { "$ref": "#/definitions/dataFlowEntry" }
+            },
+            "additionalProperties": false
+        },
+        "dataFlowEntry": { "oneOf": [
+            { "$ref": "#/definitions/name" },
+            { "$ref": "#/definitions/nameList" }
+        ]},
+        "nameList": {
+            "type": "array",
+            "items": { "$ref": "#/definitions/name" },
+            "minItems": 1
         }
     }
 }

@@ -162,8 +162,7 @@ class DAG(Method):
             join(source_task,source_task.id==Link.source_id).\
             join(destination_task,destination_task.id==Link.destination_id).\
             filter(destination_task.parent_id==self.id, source_task.parent_id==self.id).\
-            order_by(source_task.name,destination_task.name,
-                    Link.source_property,Link.destination_property).all()
+            order_by(source_task.name,destination_task.name).all()
 
     def as_skeleton_dict(self):
         result = super(DAG, self).as_skeleton_dict()

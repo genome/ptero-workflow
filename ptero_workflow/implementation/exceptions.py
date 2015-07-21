@@ -1,6 +1,3 @@
-class InvalidWorkflow(Exception):
-    pass
-
 class UpdateError(Exception):
     pass
 
@@ -20,4 +17,25 @@ class NoSuchEntityError(RuntimeError):
     pass
 
 class MissingResultError(RuntimeError):
+    pass
+
+class ValidationError(Exception):
+    pass
+
+class NonUniqueLinkError(ValidationError):
+    pass
+
+class NonUniqueNameError(ValidationError):
+    pass
+
+class MissingInputsError(ValidationError):
+    pass
+
+class UnknownIntegrityError(ValidationError):
+    pass
+
+class DAGCycleError(ValidationError):
+    pass
+
+class IllegalTaskNameError(ValidationError):
     pass

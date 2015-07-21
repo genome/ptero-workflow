@@ -89,5 +89,9 @@ class BaseAPITest(unittest.TestCase):
 
 
 def _deserialize_response(response):
-    response.DATA = response.json()
+    try:
+        response.DATA = response.json()
+    except ValueError:
+        print "No JSON could be decoded from response to %s %s" % (
+                response.request.method, response.request.url)
     return response

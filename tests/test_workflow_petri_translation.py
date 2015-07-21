@@ -46,14 +46,16 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
                 {
                     'source': 'input connector',
                     'destination': 'A',
-                    'sourceProperty': 'in_a',
-                    'destinationProperty': 'param'
+                    'dataFlow': {
+                        'in_a': 'param',
+                    },
                 },
                 {
                     'source': 'A',
                     'destination': 'output connector',
-                    'sourceProperty': 'param',
-                    'destinationProperty': 'out_a'
+                    'dataFlow': {
+                        'param': 'out_a',
+                    },
                 }
             ],
 

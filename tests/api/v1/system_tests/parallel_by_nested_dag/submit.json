@@ -26,27 +26,18 @@
                             {
                                 "source": "input connector",
                                 "destination": "A",
-                                "sourceProperty": "constant_param_in",
-                                "destinationProperty": "constant_param"
+                                "dataFlow": {
+                                    "constant_param_in": "constant_param",
+                                    "parallel_param_in": "parallel_param"
+                                }
                             },
                             {
                                 "source": "A",
                                 "destination": "output connector",
-                                "sourceProperty": "constant_param",
-                                "destinationProperty": "constant_param_out"
-                            },
-
-                            {
-                                "source": "input connector",
-                                "destination": "A",
-                                "sourceProperty": "parallel_param_in",
-                                "destinationProperty": "parallel_param"
-                            },
-                            {
-                                "source": "A",
-                                "destination": "output connector",
-                                "sourceProperty": "parallel_param",
-                                "destinationProperty": "parallel_param_out"
+                                "dataFlow": {
+                                    "constant_param": "constant_param_out",
+                                    "parallel_param": "parallel_param_out"
+                                }
                             }
                         ]
                     },
@@ -61,27 +52,18 @@
         {
             "source": "input connector",
             "destination": "Inner",
-            "sourceProperty": "in_constant",
-            "destinationProperty": "constant_param_in"
+            "dataFlow": {
+                "in_constant": "constant_param_in",
+                "in_parallel": "parallel_param_in"
+            }
         },
         {
             "source": "Inner",
             "destination": "output connector",
-            "sourceProperty": "constant_param_out",
-            "destinationProperty": "out_constant"
-        },
-
-        {
-            "source": "input connector",
-            "destination": "Inner",
-            "sourceProperty": "in_parallel",
-            "destinationProperty": "parallel_param_in"
-        },
-        {
-            "source": "Inner",
-            "destination": "output connector",
-            "sourceProperty": "parallel_param_out",
-            "destinationProperty": "out_parallel"
+            "dataFlow": {
+                "constant_param_out": "out_constant",
+                "parallel_param_out": "out_parallel"
+            }
         }
     ],
 

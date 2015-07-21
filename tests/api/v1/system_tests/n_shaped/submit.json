@@ -62,58 +62,55 @@
         {
             "source": "input connector",
             "destination": "A",
-            "sourceProperty": "in_a_1",
-            "destinationProperty": "param_1"
-        },
-        {
-            "source": "input connector",
-            "destination": "A",
-            "sourceProperty": "in_a_2",
-            "destinationProperty": "param_2"
+            "dataFlow": {
+                "in_a_1": "param_1",
+                "in_a_2": "param_2"
+            }
         },
         {
             "source": "input connector",
             "destination": "B",
-            "sourceProperty": "in_b",
-            "destinationProperty": "param"
+            "dataFlow": {
+                "in_b": "param"
+            }
         },
 
         {
             "source": "A",
             "destination": "C",
-            "sourceProperty": "param_1",
-            "destinationProperty": "param"
+            "dataFlow": {
+                "param_1": "param"
+            }
         },
         {
             "source": "A",
             "destination": "D",
-            "sourceProperty": "param_2",
-            "destinationProperty": "param_1"
+            "dataFlow": {
+                "param_2": "param_1"
+            }
         },
         {
             "source": "B",
             "destination": "D",
-            "sourceProperty": "param",
-            "destinationProperty": "param_2"
+            "dataFlow": {
+                "param": "param_2"
+            }
         },
 
         {
             "source": "C",
             "destination": "output connector",
-            "sourceProperty": "param",
-            "destinationProperty": "out_c"
+            "dataFlow": {
+                "param": "out_c"
+            }
         },
         {
             "source": "D",
             "destination": "output connector",
-            "sourceProperty": "param_1",
-            "destinationProperty": "out_d_1"
-        },
-        {
-            "source": "D",
-            "destination": "output connector",
-            "sourceProperty": "param_2",
-            "destinationProperty": "out_d_2"
+            "dataFlow": {
+                "param_1": "out_d_1",
+                "param_2": "out_d_2"
+            }
         }
     ],
 

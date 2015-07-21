@@ -350,11 +350,19 @@ class Task(Base, PetriMixin):
 
     @property
     def input_names(self):
-        return [e.destination_property for e in self.input_links]
+        result = set()
+        for link in self.input_links:
+            for entry in link.data_flow_entries:
+                result.add(entry.destination_property)
+        return result
 
     @property
     def output_names(self):
-        return [e.source_property for e in self.output_links]
+        result = set()
+        for link in self.output_links:
+            for entry in link.data_flow_entries:
+                result.add(entry.source_property)
+        return result
 
     @classmethod
     def from_dict(cls, type, **kwargs):
@@ -399,19 +407,17 @@ class Task(Base, PetriMixin):
         else:
             return []
 
-    @property
-    def output_properties(self):
-        return set([l.source_property for l in self.output_links])
-
     def set_outputs(self, outputs, color, parent_color):
-        for output_property in self.output_properties:
-            if output_property not in outputs.keys():
+        for output_name in self.output_names:
+            if output_name not in outputs.keys():
                 raise exceptions.MissingOutputError(
-                        "No value specified for output (%s), outputs specified were: %s" %
-                        (output_property, str(outputs.keys())))
+                        "No value specified for output (%s) on task (%s:%s), "
+                        "outputs specified were: %s" % (output_name, self.name,
+                            self.id, str(outputs.keys())))
             else:
-                result.Result(task=self, name=output_property, data=outputs[output_property],
-                        color=color, parent_color=parent_color)
+                result.Result(task=self, name=output_name,
+                        data=outputs[output_name], color=color,
+                        parent_color=parent_color)
 
     def get_inputs(self, colors, begins):
         inputs = {}
@@ -491,10 +497,11 @@ class Task(Base, PetriMixin):
         else:
             pdepths = parallel_depths
 
-        for e in self.input_links:
-            if e.destination_property == name:
-                return e.source_task.resolve_output_source(session,
-                        e.source_property, pdepths)
+        for input_link in self.input_links:
+            for source, destination_list in input_link.data_flow.iteritems():
+                if name in destination_list:
+                    return input_link.source_task.resolve_output_source(session,
+                            source, pdepths)
 
     def resolve_output_source(self, session, name, parallel_depths):
         return self, name, parallel_depths
@@ -502,24 +509,25 @@ class Task(Base, PetriMixin):
     def create_input_sources(self, session, parallel_depths):
         LOG.debug('%s - Creating input sources for %s', self.workflow_id, 
                 self.name)
-        for e in self.input_links:
-            source_task, source_property, source_parallel_depths = \
-                    self.resolve_input_source(session, e.destination_property,
-                            parallel_depths)
-            LOG.debug('%s - Found input source %s[%s] = %s[%s]: parallel_depths=%s',
-                    self.workflow_id, self.name, e.destination_property,
-                    source_task.name, source_property,
-                    source_parallel_depths)
+        for input_link in self.input_links:
+            for entry in input_link.data_flow_entries:
+                source_task, source_property, source_parallel_depths = \
+                        self.resolve_input_source(session, entry.destination_property,
+                                parallel_depths)
+                LOG.debug('%s - Found input source %s[%s] = %s[%s]: parallel_depths=%s',
+                        self.workflow_id, self.name, entry.destination_property,
+                        source_task.name, entry.source_property,
+                        source_parallel_depths)
 
-            in_source = input_source.InputSource(
-                    source_task=source_task,
-                    source_property=source_property,
-                    destination_task=self,
-                    destination_property=e.destination_property,
-                    parallel_depths=source_parallel_depths,
-                    workflow=self.workflow,
-            )
-            session.add(in_source)
+                in_source = input_source.InputSource(
+                        source_task=source_task,
+                        source_property=source_property,
+                        destination_task=self,
+                        destination_property=entry.destination_property,
+                        parallel_depths=source_parallel_depths,
+                        workflow=self.workflow,
+                )
+                session.add(in_source)
 
     @property
     def http(self):
@@ -531,11 +539,6 @@ class Task(Base, PetriMixin):
         results = s.query(result.Result).filter_by(task=self, color=color).all()
         if results:
             return {r.name: r.data for r in results}
-
-    def outputs_for_color_are_set(self, color):
-        s = object_session(self)
-        num_results = s.query(result.Result).filter_by(task=self, color=color).count()
-        return num_results > 0
 
 def _get_parent_color(colors):
     if len(colors) == 1:

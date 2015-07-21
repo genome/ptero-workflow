@@ -115,13 +115,15 @@ class NestedWorkflowWithWebhooks(WebhookTest, BaseAPITest):
                                     {
                                         'source': 'A',
                                         'destination': 'output connector',
-                                        'sourceProperty': 'param',
-                                        'destinationProperty': 'inner_output',
+                                        'dataFlow': {
+                                            'param': 'inner_output'
+                                            }
                                         }, {
                                             'source': 'input connector',
                                             'destination': 'A',
-                                            'sourceProperty': 'inner_input',
-                                            'destinationProperty': 'param',
+                                            'dataFlow': {
+                                                'inner_input': 'param'
+                                                }
                                             },
                                         ],
                                 },
@@ -134,13 +136,15 @@ class NestedWorkflowWithWebhooks(WebhookTest, BaseAPITest):
                     {
                         'source': 'Inner',
                         'destination': 'output connector',
-                        'sourceProperty': 'inner_output',
-                        'destinationProperty': 'outer_output',
+                        'dataFlow': {
+                            'inner_output': 'outer_output'
+                            }
                         }, {
                             'source': 'input connector',
                             'destination': 'Inner',
-                            'sourceProperty': 'outer_input',
-                            'destinationProperty': 'inner_input',
+                            'dataFlow': {
+                                'outer_input': 'inner_input'
+                                }
                             },
                         ],
             'inputs': {

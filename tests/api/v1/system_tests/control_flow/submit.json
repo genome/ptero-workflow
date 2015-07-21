@@ -6,7 +6,7 @@
                     "name": "execute",
                     "service": "shell-command",
                     "parameters": {
-                        "commandLine": ["./echo_command"],
+                        "commandLine": ["./create_delete_file_command"],
                         "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}",
                         "environment": {{ environment }}
@@ -20,21 +20,7 @@
                     "name": "execute",
                     "service": "shell-command",
                     "parameters": {
-                        "commandLine": ["./echo_command"],
-                        "user": "{{ user }}",
-                        "workingDirectory": "{{ workingDirectory }}",
-                        "environment": {{ environment }}
-                    }
-                }
-            ]
-        },
-        "C": {
-            "methods": [
-                {
-                    "name": "execute",
-                    "service": "shell-command",
-                    "parameters": {
-                        "commandLine": ["./echo_command"],
+                        "commandLine": ["./create_delete_file_command"],
                         "user": "{{ user }}",
                         "workingDirectory": "{{ workingDirectory }}",
                         "environment": {{ environment }}
@@ -47,35 +33,21 @@
     "links": [
         {
             "source": "input connector",
-            "destination": "A",
-            "dataFlow": {
-                "in_val": "param"
-            }
+            "destination": "A"
         },
         {
             "source": "A",
             "destination": "B",
             "dataFlow": {
-                "param": "param"
+                "filename": "filename"
             }
         },
         {
             "source": "B",
-            "destination": "C",
-            "dataFlow": {
-                "param": "param"
-            }
-        },
-        {
-            "source": "C",
-            "destination": "output connector",
-            "dataFlow": {
-                "param": "out_val"
-            }
+            "destination": "output connector"
         }
     ],
 
     "inputs": {
-        "in_val": "walruses"
     }
 }

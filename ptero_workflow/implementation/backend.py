@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
+from ptero_workflow.implementation.validators import validate_unique_links
 import os
 import logging
 import re
@@ -39,10 +40,10 @@ class Backend(object):
                         "Key.*%s.*already exists" % workflow_data['name'],
                         e.orig.message) is not None
                 if sqlite_error or postgres_error:
-                    raise exceptions.InvalidWorkflow(
+                    raise exceptions.NonUniqueNameError(
                         "Workflow with name '%s' already exists" % workflow_data['name'])
                 else:
-                    raise exceptions.InvalidWorkflow('Unknown IntegrityError: %s' % e.message)
+                    raise exceptions.UnknownIntegrityError('Unknown IntegrityError: %s' % e.message)
             else:
                 raise e
         self.submit_net_task.delay(workflow.id)
@@ -92,12 +93,22 @@ class Backend(object):
                 workflow=workflow)
         self.session.add(dummy_output_task)
 
+        validate_unique_links(workflow_data['links'])
+        link = models.Link(source_task=workflow.root_task,
+            destination_task=dummy_output_task)
+        self.session.add(link)
         for link_data in workflow_data['links']:
             if 'output connector' == link_data['destination']:
-                self.session.add(models.Link(source_task=workflow.root_task,
-                        source_property=link_data['destinationProperty'],
-                        destination_task=dummy_output_task,
-                        destination_property=link_data['destinationProperty']))
+                for source_property, destination_part in link_data.get('dataFlow', {}).items():
+                    if isinstance(destination_part, basestring):
+                        self.session.add(models.DataFlowEntry(source_property=destination_part,
+                            destination_property=destination_part,
+                            link=link))
+                    else:
+                        for destination_property in destination_part:
+                            self.session.add(models.DataFlowEntry(source_property=destination_property,
+                                destination_property=destination_property,
+                                link=link))
 
         self.session.add(workflow)
         self.session.commit()
@@ -113,12 +124,12 @@ class Backend(object):
         required_inputs = set()
         for link in workflow_data['links']:
             if link['source'] == 'input connector':
-                required_inputs.add(link['sourceProperty'])
+                required_inputs.update(link.get('dataFlow', {}).keys())
 
         supplied_inputs = set(workflow_data['inputs'].keys())
         missing_inputs = required_inputs - supplied_inputs
         if missing_inputs:
-            raise exceptions.InvalidWorkflow("Missing required inputs: %s" %
+            raise exceptions.MissingInputsError("Missing required inputs: %s" %
                     ', '.join(sorted(missing_inputs)))
 
     def _get_workflow_eagerly(self, workflow_id):

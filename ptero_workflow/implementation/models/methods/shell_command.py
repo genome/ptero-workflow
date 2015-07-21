@@ -110,7 +110,12 @@ class ShellCommand(Method):
     def succeeded(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
-        if execution.outputs_are_set:
+        missing_outputs = execution.missing_outputs
+        if execution.missing_outputs:
+            execution.data['error'] = 'Command failed to set required outputs %s' %\
+                    sorted(execution.missing_outputs)
+            self.errored(body_data, query_string_data)
+        else:
             execution.status = succeeded
             execution.data.update(body_data)
 
@@ -120,10 +125,6 @@ class ShellCommand(Method):
             response_url = execution.data['petri_response_links_for_shell_command']['success']
 
             self.http.delay('PUT', response_url)
-        else:
-            execution.data['error'] = 'Command failed to set required outputs %s' %\
-                    sorted(execution.missing_outputs)
-            self.errored(body_data, query_string_data)
 
     def failed(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])

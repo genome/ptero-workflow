@@ -1,0 +1,69 @@
+{
+    "inputs": {}, 
+    "links": [
+        {
+            "dataFlow": {
+                "filename": "filename"
+            }, 
+            "destination": "B", 
+            "source": "A"
+        }, 
+        {
+            "destination": "output connector", 
+            "source": "B"
+        }, 
+        {
+            "destination": "A", 
+            "source": "input connector"
+        }
+    ], 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "executions": {
+                "0": {
+                    "status": "succeeded"
+                }
+            }, 
+            "methods": [
+                {
+                    "executions": {
+                        "0": {
+                            "status": "succeeded"
+                        }
+                    }, 
+                    "name": "execute", 
+                    "parameters": {
+                        "commandLine": [
+                            "./create_delete_file_command"
+                        ]
+                    }, 
+                    "service": "shell-command"
+                }
+            ]
+        }, 
+        "B": {
+            "executions": {
+                "0": {
+                    "status": "succeeded"
+                }
+            }, 
+            "methods": [
+                {
+                    "executions": {
+                        "0": {
+                            "status": "succeeded"
+                        }
+                    }, 
+                    "name": "execute", 
+                    "parameters": {
+                        "commandLine": [
+                            "./create_delete_file_command"
+                        ]
+                    }, 
+                    "service": "shell-command"
+                }
+            ]
+        }
+    }
+}

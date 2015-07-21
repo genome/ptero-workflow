@@ -26,14 +26,16 @@ class TestGzippedWorkflow(BaseAPITest):
                     {
                         'source': 'input connector',
                         'destination': 'A',
-                        'sourceProperty': 'in_a',
-                        'destinationProperty': 'param',
+                        'dataFlow': {
+                            'in_a': 'param',
+                            },
                         },
                     {
                         'source': 'A',
                         'destination': 'output connector',
-                        'sourceProperty': 'result',
-                        'destinationProperty': 'out_a',
+                        'dataFlow': {
+                            'result': 'out_a',
+                            },
                         },
                     ],
                 'inputs': {
