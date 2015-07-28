@@ -144,6 +144,10 @@ class Method(Base):
         return url_for('execution-detail', execution_id=execution_id,
                 _external=True)
 
+    @property
+    def workflow_submit_url(self):
+        return url_for('workflow-list', _external=True)
+
     def create_input_sources(self, session, parallel_depths):
         pass
 
