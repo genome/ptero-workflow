@@ -30,7 +30,21 @@ class Backend(object):
     def http_task(self):
         return self.celery_app.tasks['ptero_common.celery.http.HTTP']
 
+    def create_spawned_workflow(self, workflow_data, parent_execution_id):
+        workflow = self._create_workflow(workflow_data)
+        parent_execution = self._get_execution(parent_execution_id)
+
+        workflow.parent_execution = parent_execution
+
+        self.session.commit()
+
+        return workflow.id, workflow.as_dict(detailed=False)
+
     def create_workflow(self, workflow_data):
+        workflow = self._create_workflow(workflow_data)
+        return workflow.id, workflow.as_dict(detailed=False)
+
+    def _create_workflow(self, workflow_data):
         try:
             workflow = self._save_workflow(workflow_data)
         except IntegrityError as e:
@@ -47,7 +61,7 @@ class Backend(object):
             else:
                 raise e
         self.submit_net_task.delay(workflow.id)
-        return workflow.id, workflow.as_dict(detailed=False)
+        return workflow
 
     def submit_net(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
@@ -273,8 +287,6 @@ class Backend(object):
             return [e.as_dict_for_executions_report() for e in executions], timestamp
         else:
             return [], None
-
-
 
     def _get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)

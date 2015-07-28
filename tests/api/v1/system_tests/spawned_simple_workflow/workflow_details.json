@@ -1,0 +1,45 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./echo_command"],
+                        "user": "",
+                        "workingDirectory": "",
+                        "environment": ""
+                    },
+                    "executions": {
+                        "0": { "status": "succeeded" }
+                    }
+                }
+            ],
+            "executions": {
+                "0": { "status": "succeeded" }
+            }
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "dataFlow": {
+                "in_a": "param"
+            }
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "dataFlow": {
+                "param": "out_a"
+            }
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens"
+    }
+}

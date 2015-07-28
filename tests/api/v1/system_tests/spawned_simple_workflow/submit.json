@@ -1,0 +1,47 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "shell-command",
+                    "parameters": {
+                        "commandLine": ["./spawn_workflow_command"],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {{ environment }}
+                    }
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "dataFlow": {
+                "workflow_data": "workflow_data"
+            }
+        },
+        {
+            "source": "A",
+            "destination": "output connector"
+        }
+    ],
+
+    "inputs": {
+        "workflow_data": {
+            "tasks": {
+            },
+            "links": [
+                {
+                    "source": "input connector",
+                    "destination": "output connector"
+                }
+            ],
+            "inputs": {
+            }
+        }
+    }
+}

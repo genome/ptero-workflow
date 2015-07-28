@@ -114,6 +114,9 @@ class Execution(Base):
         result['status_history'] = [h.as_dict(detailed=detailed)
                 for h in self.ordered_status_history]
 
+        if self.child_workflow_urls:
+            result['childWorkflowUrls'] = self.child_workflow_urls
+
         if not detailed:
             result['inputs'] = self.get_inputs()
             result['outputs'] = self.get_outputs()
@@ -135,7 +138,14 @@ class Execution(Base):
 
         result['detailsUrl'] = self.url
 
+        if self.child_workflow_urls:
+            result['childWorkflowUrls'] = self.child_workflow_urls
+
         return result
+
+    @property
+    def child_workflow_urls(self):
+        return []
 
     def update(self, update_data):
         old_data = self.as_dict(detailed=False)

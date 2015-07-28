@@ -4,6 +4,11 @@
 
     "type": "object",
     "properties": {
+        "parentExecutionUrl": {
+            "type": "string",
+            "description": "OPTIONAL: The url of the execution that spawned this workflow.",
+            "format": "uri"
+        },
         "inputs": { "type": "object" },
         "tasks": { "$ref": "#/definitions/taskDictionary" },
         "links": { "$ref": "#/definitions/linkList" },
