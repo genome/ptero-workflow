@@ -1,0 +1,19 @@
+{
+    "id": 1, 
+    "name": "PGH4ptKETuax1FD2MreSaQ", 
+    "rootTaskId": 2, 
+    "status": "succeeded", 
+    "tasks": {
+        "A": {
+            "id": 6, 
+            "methods": [
+                {
+                    "id": 2, 
+                    "name": "execute", 
+                    "service": "shell-command"
+                }
+            ], 
+            "topologicalIndex": 0
+        }
+    }
+}

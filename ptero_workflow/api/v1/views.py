@@ -1,5 +1,6 @@
 from . import reports
 from . import validators
+from . import utils
 from ...implementation import exceptions
 from flask import g, request, url_for
 from flask.ext.restful import Resource
@@ -53,19 +54,31 @@ class WorkflowListView(Resource):
     def post(self):
         try:
             data = validators.get_workflow_post_data()
-            workflow_id, workflow_as_dict = g.backend.create_workflow(data)
-            request.workflow_id = workflow_id
-            return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
-                'Location': url_for('workflow-detail', workflow_id=workflow_id)
-            }
-
         except ValidationError as e:
             msg = "JSON schema validation error: %s" % e.message
             LOG.error(msg)
             return {'error': msg}, 400
+
+        try:
+            if 'parentExecutionUrl' in data:
+                parent_execution_id = get_execution_id_from_url(
+                        data['parentExecutionUrl'])
+                workflow_id, workflow_as_dict = g.backend.create_spawned_workflow(data,
+                    parent_execution_id=parent_execution_id)
+            else:
+                workflow_id, workflow_as_dict = g.backend.create_workflow(data)
         except PteroValidationError as e:
             LOG.exception(e)
             return {'error': e.message}, 400
+
+        request.workflow_id = workflow_id # for logging
+        return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
+            'Location': url_for('workflow-detail', workflow_id=workflow_id)
+        }
+
+def get_execution_id_from_url(url):
+    (endpoint, params) = utils.split_url(url, method='GET')
+    return params['execution_id']
 
 
 class WorkflowDetailView(Resource):

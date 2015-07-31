@@ -1,4 +1,5 @@
 from .base import Base
+from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
 import base64
@@ -37,6 +38,12 @@ class Workflow(Base):
 
     root_task = relationship('Task', post_update=True,
             foreign_keys=[root_task_id], lazy='joined')
+
+    parent_execution_id = Column(Integer, ForeignKey('execution.id'),
+            nullable=True, index=True)
+    parent_execution = relationship('MethodExecution',
+            backref='child_workflows',
+            foreign_keys=[parent_execution_id])
 
     start_place_name = 'workflow-start-place'
 
@@ -80,6 +87,10 @@ class Workflow(Base):
         else:
             for task in self.all_tasks:
                 task.cancel()
+
+    @property
+    def url(self):
+        return url_for('workflow-detail', workflow_id=self.id, _external=True)
 
     def get_webhooks(self, *args, **kwargs):
         return self.root_task.method_list[0].get_webhooks(*args, **kwargs)

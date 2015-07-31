@@ -7,6 +7,7 @@ from collections import defaultdict
 import celery
 import logging
 from ptero_common.statuses import succeeded, failed, canceled, errored
+from ptero_common.utils import format_dict_of_lists
 
 LOG = logging.getLogger(__name__)
 
@@ -63,14 +64,7 @@ def get_sorted_webhook_dict(entity):
     for webhook in entity.webhooks:
         unsorted_webhook_dict[webhook.name].append(webhook.url)
 
-    sorted_webhook_dict = {}
-    for name, unsorted_urls in unsorted_webhook_dict.iteritems():
-        if len(unsorted_urls) == 1:
-            entry = unsorted_urls.pop()
-        else:
-            entry = sorted(unsorted_urls)
-        sorted_webhook_dict[name] = entry
-    return sorted_webhook_dict
+    return format_dict_of_lists(unsorted_webhook_dict)
 
 def get_webhooks_for_task(task, name):
     s = object_session(task)

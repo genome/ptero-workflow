@@ -182,6 +182,7 @@ class ShellCommand(Method):
 
         submit_data['environment'].update({
             'PTERO_WORKFLOW_EXECUTION_URL': self.execution_url(execution_id),
+            'PTERO_WORKFLOW_SUBMIT_URL': self.workflow_submit_url,
         })
 
         submit_data.update({

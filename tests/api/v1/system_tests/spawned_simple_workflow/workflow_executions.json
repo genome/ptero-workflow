@@ -1,0 +1,190 @@
+{
+    "executions": [
+        {
+            "begins": [], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/1", 
+            "id": 1, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-28 04:26:48.493272+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-28 04:26:51.725886+00:00"
+                }
+            ], 
+            "taskId": 2
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/2", 
+            "id": 2, 
+            "methodId": 1, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-28 04:26:49.614574+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-28 04:26:49.767275+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-28 04:26:49.767275+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-28 04:26:51.681993+00:00"
+                }
+            ]
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/3", 
+            "id": 3, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-28 04:26:49.702737+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-28 04:26:49.702737+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-28 04:26:49.702737+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-28 04:26:49.889746+00:00"
+                }
+            ], 
+            "taskId": 4
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/4", 
+            "id": 4, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-28 04:26:49.934389+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-28 04:26:49.934389+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-28 04:26:49.934389+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-28 04:26:51.091295+00:00"
+                }
+            ], 
+            "taskId": 6
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "childWorkflowUrls": [
+                "http://localhost:7000/v1/workflows/2"
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/5", 
+            "id": 5, 
+            "methodId": 2, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-28 04:26:50.004432+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-28 04:26:50.079270+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-28 04:26:50.612823+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-28 04:26:50.954876+00:00"
+                }
+            ]
+        }, 
+        {
+            "begins": [
+                0
+            ], 
+            "color": 0, 
+            "colors": [
+                0
+            ], 
+            "detailsUrl": "http://localhost:7000/v1/executions/7", 
+            "id": 7, 
+            "parentColor": null, 
+            "status": "succeeded", 
+            "statusHistory": [
+                {
+                    "status": "new", 
+                    "timestamp": "2015-07-28 04:26:51.185401+00:00"
+                }, 
+                {
+                    "status": "scheduled", 
+                    "timestamp": "2015-07-28 04:26:51.185401+00:00"
+                }, 
+                {
+                    "status": "running", 
+                    "timestamp": "2015-07-28 04:26:51.185401+00:00"
+                }, 
+                {
+                    "status": "succeeded", 
+                    "timestamp": "2015-07-28 04:26:51.554558+00:00"
+                }
+            ], 
+            "taskId": 5
+        }
+    ], 
+    "updateUrl": "http://localhost:7000/v1/reports/workflow-executions?workflow_id=1&since=2015-07-28+04%3A26%3A51.725886"
+}

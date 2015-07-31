@@ -21,6 +21,10 @@ class MethodExecution(Execution):
     def parent(self):
         return self.method
 
+    @property
+    def child_workflow_urls(self):
+        return [w.url for w in self.child_workflows]
+
     def get_inputs(self):
         return self.method.task.get_inputs(colors=self.colors,
                 begins=self.begins)
