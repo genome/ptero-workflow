@@ -35,5 +35,3 @@ class TestTopologicalOrdering(unittest.TestCase):
         links = ((0,1), (0,2), (1,3), (1,4), (2, 4), (3, 999), (4, 999), (999, 0))
         with self.assertRaises(NetworkXUnfeasible):
             get_deterministic_topological_ordering(nodes, links, 0)
-
-

@@ -64,4 +64,3 @@ class TestCancelWorkflow(BaseAPITest):
         status_response = self.get(status_url)
         self.assertEqual(200, status_response.status_code)
         self.assertEqual(status_response.json()['status'], 'canceled')
-

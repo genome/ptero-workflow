@@ -34,4 +34,3 @@ class PetriMixin(object):
             },
         ])
         return self._pn('success', name), self._pn('failure', name)
-
