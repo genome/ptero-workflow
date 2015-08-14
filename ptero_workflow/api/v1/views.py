@@ -71,7 +71,7 @@ class WorkflowListView(Resource):
             LOG.exception(e)
             return {'error': e.message}, 400
 
-        request.workflow_id = workflow_id # for logging
+        request.workflow_id = workflow_id  # for logging
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
             'Location': url_for('workflow-detail', workflow_id=workflow_id)
         }
