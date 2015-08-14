@@ -95,7 +95,7 @@ class Execution(Base):
             # we know that there are webhooks to send.
             webhook_data = {
                 # not sure how to get to the workflow, but would be nice...
-                #'workflowUrl': self.workflow.url
+                # 'workflowUrl': self.workflow.url
                 'executionUrl': self.url,
                 'targetName': self.parent.name,
                 'targetType': self.parent.type,
