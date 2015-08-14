@@ -4,6 +4,7 @@ import os
 import time
 from factory import Factory
 from ptero_common.logging_configuration import configure_celery_logging
+from ptero_common.celery.utils import get_config_from_env
 
 
 app = celery.Celery('PTero-workflow-celery',
@@ -17,20 +18,9 @@ app.conf['CELERY_ROUTES'] = (
     },
 )
 
-_DEFAULT_CELERY_CONFIG = {
-    'CELERY_BROKER_URL': 'amqp://localhost',
-    'CELERY_RESULT_BACKEND': 'redis://localhost',
-    'CELERY_ACCEPT_CONTENT': ['json'],
-    'CELERY_ACKS_LATE': True,
-    'CELERY_RESULT_SERIALIZER': 'json',
-    'CELERY_TASK_SERIALIZER': 'json',
-    'CELERYD_PREFETCH_MULTIPLIER': 10,
-}
-for var, default in _DEFAULT_CELERY_CONFIG.iteritems():
-    if var in os.environ:
-        app.conf[var] = os.environ[var]
-    else:
-        app.conf[var] = default
+config = get_config_from_env('WORKFLOW')
+app.conf.update(config)
+
 
 # This has to be imported AFTER the app.conf is set up or
 # the tasks will default to using pickle serialization which is forbidden by
