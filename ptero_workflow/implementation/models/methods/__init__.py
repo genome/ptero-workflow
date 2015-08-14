@@ -1,8 +1,8 @@
-from dag import *
-from .method_base import *
-from .shell_command import *
-from .block import *
-from .converge import *
+from dag import *  # noqa
+from .method_base import *  # noqa
+from .shell_command import *  # noqa
+from .block import *  # noqa
+from .converge import *  # noqa
 
 METHOD_SUBCLASSES = [DAG, ShellCommand, Block, Converge]
 
