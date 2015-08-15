@@ -4,6 +4,17 @@ import sqlalchemy
 import os
 import time
 import logging
+from ptero_workflow.utils import base_dir
+from alembic.config import Config
+from alembic import command
+
+
+alembic_cfg = Config()
+versions_dir = os.path.join(base_dir(), 'alembic', 'versions')
+alembic_cfg.set_main_option('version_locations', versions_dir)
+scripts_dir = os.path.join(base_dir(), 'alembic')
+alembic_cfg.set_main_option('script_location', scripts_dir)
+alembic_cfg.set_main_option('url', os.environ['PTERO_WORKFLOW_DB_STRING'])
 
 
 __all__ = ['Factory']
@@ -32,12 +43,11 @@ class Factory(object):
         logging.getLogger('sqlalchemy.engine').setLevel(getattr(logging,
                 os.environ.get('PTERO_WORKFLOW_ORM_LOG_LEVEL', 'WARN').upper()))
         self._engine = sqlalchemy.create_engine(self.connection_string)
-        for i in xrange(3):
-            try:
-                models.Base.metadata.create_all(self._engine)
-                break
-            except sqlalchemy.exc.SQLAlchemyError:
-                time.sleep(0.5)
+
+        with self._engine.begin() as connection:
+
+            alembic_cfg.attributes['connection'] = connection
+            command.upgrade(alembic_cfg, "head")
 
         self._Session = sqlalchemy.orm.sessionmaker(bind=self._engine)
 
