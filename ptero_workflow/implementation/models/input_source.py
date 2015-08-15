@@ -2,7 +2,7 @@ from . import result
 from .base import Base
 from .json_type import JSON
 from sqlalchemy import Column, UniqueConstraint
-from sqlalchemy import Boolean, ForeignKey, Integer, Text
+from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound

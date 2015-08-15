@@ -1,6 +1,5 @@
 from .base_case import TestCaseMixin
 import os
-import socket
 import unittest
 
 

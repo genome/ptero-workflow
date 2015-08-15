@@ -1,6 +1,4 @@
 from ptero_workflow.implementation.models.execution import Execution
-from sqlalchemy.orm.session import object_session
-from .. import result
 
 __all__ = ['MethodExecution']
 

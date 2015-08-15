@@ -1,4 +1,3 @@
-from ptero_workflow.api import application
 import requests
 import json
 import os

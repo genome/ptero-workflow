@@ -1,4 +1,3 @@
-from ..base import Base
 from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship

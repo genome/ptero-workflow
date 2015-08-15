@@ -1,7 +1,6 @@
 from celery.signals import worker_process_init, setup_logging
 import celery
 import os
-import time
 from factory import Factory
 from ptero_common.logging_configuration import configure_celery_logging
 from ptero_common.celery.utils import get_config_from_env
@@ -25,7 +24,7 @@ app.conf.update(config)
 # This has to be imported AFTER the app.conf is set up or
 # the tasks will default to using pickle serialization which is forbidden by
 # this configuration.
-from . import celery_tasks
+from . import celery_tasks  # noqa
 
 
 @setup_logging.connect

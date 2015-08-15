@@ -1,10 +1,9 @@
 from .base import Base
 from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text
-from sqlalchemy.orm import backref, relationship
+from sqlalchemy.orm import relationship
 import base64
 import logging
-import json
 import os
 import uuid
 

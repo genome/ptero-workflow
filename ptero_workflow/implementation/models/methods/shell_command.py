@@ -1,13 +1,11 @@
 from ..execution.method_execution import MethodExecution
 from ..json_type import JSON
 from .method_base import Method
-from ptero_common.logging_configuration import logged_request
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
 import os
-import json
 from pprint import pformat
 from ptero_common.statuses import (scheduled, running, canceled, errored,
         succeeded, failed)

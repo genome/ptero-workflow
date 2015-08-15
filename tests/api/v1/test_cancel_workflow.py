@@ -1,5 +1,4 @@
 from ..base import BaseAPITest
-import time
 import logging
 from pprint import pformat
 

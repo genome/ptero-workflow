@@ -1,6 +1,6 @@
 from .base import Base
-from sqlalchemy import Column, UniqueConstraint, Index
-from sqlalchemy import Boolean, ForeignKey, Integer, Text
+from sqlalchemy import Column, UniqueConstraint
+from sqlalchemy import ForeignKey, Integer, Text
 from sqlalchemy.orm import backref, relationship
 from collections import defaultdict
 from ptero_common.utils import format_dict_of_lists

@@ -6,7 +6,6 @@ from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
-from sqlalchemy.orm.session import object_session
 from operator import attrgetter
 import logging
 from ptero_common import statuses

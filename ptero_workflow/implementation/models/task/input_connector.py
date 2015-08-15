@@ -1,4 +1,3 @@
-from .. import result
 from .task_base import Task
 from ..execution.method_execution import MethodExecution
 from sqlalchemy import Column, ForeignKey, Integer
