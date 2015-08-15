@@ -4,6 +4,7 @@ from .. import result
 
 __all__ = ['TaskExecution']
 
+
 class TaskExecution(Execution):
     __mapper_args__ = {
         'polymorphic_identity': 'TaskExecution',

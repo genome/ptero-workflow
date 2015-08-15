@@ -76,6 +76,7 @@ class WorkflowListView(Resource):
             'Location': url_for('workflow-detail', workflow_id=workflow_id)
         }
 
+
 def get_execution_id_from_url(url):
     (endpoint, params) = utils.split_url(url, method='GET')
     return params['execution_id']

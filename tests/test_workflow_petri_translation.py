@@ -4,6 +4,7 @@ from ptero_workflow.api.v1 import validators
 from ptero_workflow.implementation.factory import Factory
 from ptero_workflow.implementation import translator
 
+
 class TestWorkflowPetriTranslation(unittest.TestCase):
 
     @property

@@ -6,6 +6,7 @@ from .converge import *  # noqa
 
 METHOD_SUBCLASSES = [DAG, ShellCommand, Block, Converge]
 
+
 def _calculate_subclass_lookup():
     result = {}
     for subclass in METHOD_SUBCLASSES:

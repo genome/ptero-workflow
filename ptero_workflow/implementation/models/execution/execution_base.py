@@ -15,6 +15,7 @@ LOG = logging.getLogger(__name__)
 
 __all__ = ['Execution', 'ExecutionStatusHistory']
 
+
 class Execution(Base):
     __tablename__ = 'execution'
 

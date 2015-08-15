@@ -3,6 +3,7 @@ from networkx.exception import NetworkXUnfeasible
 from ptero_workflow.implementation.tasks import\
         get_deterministic_topological_ordering
 
+
 class TestTopologicalOrdering(unittest.TestCase):
     def test_n_shaped_dag(self):
         nodes = (999, 1, 3, 2, 4)

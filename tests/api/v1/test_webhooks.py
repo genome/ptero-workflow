@@ -6,6 +6,7 @@ import platform
 import pwd
 from pprint import pformat
 
+
 class WebhookTest(RoundTripSuccess):
     __metaclass__ = abc.ABCMeta
 

@@ -4,6 +4,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+
 def validate_unique_links(links):
     link_counts = defaultdict(lambda:0)
     for link in links:

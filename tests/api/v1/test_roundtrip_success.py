@@ -6,6 +6,7 @@ import sys
 import base64
 import uuid
 
+
 class RoundTripSuccess(object):
     __metaclass__ = abc.ABCMeta
 
@@ -56,6 +57,7 @@ class RoundTripSuccess(object):
         # get retried.
         return self.post_url + '?webhook_name=%s' % name
 
+
 class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
@@ -94,6 +96,7 @@ class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
         },
     }
 
+
 class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
     post_data = {
         'tasks': {
@@ -127,6 +130,7 @@ class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
             'in_a': 'kittens',
         },
     }
+
 
 class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
     post_data = {
@@ -190,6 +194,7 @@ class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
         },
         'name': unique_name,
     }
+
 
 class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
     @property

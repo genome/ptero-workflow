@@ -4,6 +4,7 @@ import logging
 
 LOG = logging.getLogger(__name__)
 
+
 def report(workflow_id, since=None):
     executions, timestamp = g.backend.get_workflow_executions(
             workflow_id=workflow_id, since=since)

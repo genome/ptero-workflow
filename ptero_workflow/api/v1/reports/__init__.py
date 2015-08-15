@@ -14,8 +14,10 @@ _REPORTS = {
     'workflow-submission-data': workflow_submission_data.report,
     }
 
+
 def report_names():
     return _REPORTS.keys()
+
 
 def get_report_generator(report_type):
     return _REPORTS[report_type]

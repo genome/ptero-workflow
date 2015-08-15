@@ -3,6 +3,7 @@ import requests
 import json
 import zlib
 
+
 class TestGzippedWorkflow(BaseAPITest):
     @property
     def post_data(self):
@@ -64,6 +65,7 @@ class TestGzippedWorkflow(BaseAPITest):
         patch_response = self.patch(workflow_url, data={'is_canceled':True})
 
         self.assertEqual(200, patch_response.status_code)
+
 
 def _deserialize_response(response):
     response.DATA = response.json()

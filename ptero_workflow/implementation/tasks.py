@@ -28,6 +28,7 @@ def build_task(name, data, workflow, parent_method=None):
 
     return task
 
+
 def build_method(data, workflow, index=None, parent_task=None):
     if data['service'] == 'workflow':
         method = _build_dag_method(data, workflow, index, parent_task)
@@ -93,6 +94,7 @@ def _build_dag_method(data, workflow, index, parent_task):
                         link=link)
 
     return method
+
 
 def get_deterministic_topological_ordering(nodes, links, start_node):
     """

@@ -4,6 +4,7 @@ from .. import result
 
 __all__ = ['MethodExecution']
 
+
 class MethodExecution(Execution):
     __mapper_args__ = {
         'polymorphic_identity': 'MethodExecution',

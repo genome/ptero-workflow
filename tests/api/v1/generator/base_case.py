@@ -39,6 +39,7 @@ FILTERS = [
         re.compile('"rootTaskId".*:'),
 ]
 
+
 def get_lines_to_compare(struct):
     json_str = json.dumps(struct, indent=4, sort_keys=True, default=str)
     lines = []

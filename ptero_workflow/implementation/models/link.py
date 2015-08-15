@@ -55,6 +55,7 @@ class Link(Base):
 
     as_skeleton_dict = as_dict
 
+
 class DataFlowEntry(Base):
     __tablename__ = 'data_flow_entry'
     __table_args__ = (
