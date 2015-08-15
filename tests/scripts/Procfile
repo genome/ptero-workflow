@@ -1,7 +1,7 @@
-shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -r -e dev-noenv -- --num-workers=$PTERO_WORKFLOW_TEST_NUM_SHELL_COMMAND_WORKERS
-petri: cd $PTERO_PETRI_HOME; tox -r -e dev-noenv
-web: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run ptero_workflow/api/wsgi.py
+shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -r -e dev -- --num-workers=$PTERO_WORKFLOW_TEST_NUM_SHELL_COMMAND_WORKERS
+petri: cd $PTERO_PETRI_HOME; tox -r -e dev
+web: coverage run ptero_workflow/api/wsgi.py
 redis: redis-server --port $PTERO_WORKFLOW_REDIS_PORT
 rabbit: RABBITMQ_NODE_PORT=$PTERO_WORKFLOW_RABBITMQ_NODE_PORT RABBITMQ_NODENAME=ptero-workflow-rabbitmq RABBITMQ_LOG_BASE=$PWD/var/log RABBITMQ_MNESIA_BASE=$PWD/var/rabbitmq-data rabbitmq-server
-http_worker: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run $(which celery) worker -n workflow_http_worker.%h.$PORT -A ptero_workflow.implementation.celery_app -Q http
-worker: CELERY_BROKER_URL=$PTERO_WORKFLOW_CELERY_BROKER_URL CELERY_RESULT_BACKEND=$PTERO_WORKFLOW_CELERY_RESULT_BACKEND coverage run $(which celery) worker -n workflow_submit_worker.%h.$PORT -A ptero_workflow.implementation.celery_app -Q submit
+http_worker: coverage run $(which celery) worker -n workflow_http_worker.%h.$PORT -A ptero_workflow.implementation.celery_app -Q http
+worker: coverage run $(which celery) worker -n workflow_submit_worker.%h.$PORT -A ptero_workflow.implementation.celery_app -Q submit
