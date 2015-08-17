@@ -124,7 +124,7 @@ class Execution(Base):
         return result
 
     def as_dict_for_executions_report(self):
-        result =  {name: getattr(self, name) for name in ['color',
+        result = {name: getattr(self, name) for name in ['color',
             'colors', 'begins', 'status', 'id']}
 
         result['statusHistory'] = [h.as_dict()
