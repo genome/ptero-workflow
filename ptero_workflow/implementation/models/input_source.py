@@ -32,7 +32,7 @@ class InputSource(Base):
     source_property      = Column(Text, nullable=False, index=True)
     destination_property = Column(Text, nullable=False, index=True)
 
-    parallel_depths = Column(JSON, nullable=None)
+    parallel_depths = Column(JSON, nullable=False)
 
     source_task = relationship('Task', foreign_keys=[source_id])
     destination_task = relationship('Task', backref='input_sources',

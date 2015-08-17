@@ -40,8 +40,8 @@ class Task(Base, PetriMixin):
     ])
 
     id        = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('dag.id', use_alter=True,
-        name='fk_task_parent_dag'), nullable=True, index=True)
+    parent_id = Column(Integer, ForeignKey('dag.id', use_alter=True),
+            nullable=True, index=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
     is_canceled = Column(Boolean, default=False)

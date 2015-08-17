@@ -33,7 +33,7 @@ class Workflow(Base):
             default=_generate_uuid)
 
     root_task_id = Column(Integer, ForeignKey('task.id',
-        use_alter=True, name='fk_workflow_root_task'))
+        use_alter=True))
 
 
     root_task = relationship('Task', post_update=True,
