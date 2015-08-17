@@ -4,8 +4,7 @@ from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import logging
-from ptero_common.statuses import (scheduled, running, canceled, errored,
-        succeeded, failed)
+from ptero_common.statuses import (scheduled, running, canceled, succeeded)
 
 LOG = logging.getLogger(__name__)
 

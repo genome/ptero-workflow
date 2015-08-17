@@ -2,9 +2,9 @@ from ..base import BaseAPITest
 from .test_roundtrip_success import RoundTripSuccess
 import os
 import abc
-import platform
 import pwd
 from pprint import pformat
+
 
 class WebhookTest(RoundTripSuccess):
     __metaclass__ = abc.ABCMeta

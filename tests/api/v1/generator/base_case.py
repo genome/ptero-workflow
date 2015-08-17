@@ -1,19 +1,12 @@
 import abc
-import collections
-import errno
 import itertools
 import jinja2
 import json
 import os
 import requests
-import signal
 import json
-import subprocess
 import sys
 import time
-import urllib
-import urlparse
-import yaml
 import logging
 import difflib
 import re
@@ -38,6 +31,7 @@ FILTERS = [
         re.compile('"name".*:'),
         re.compile('"rootTaskId".*:'),
 ]
+
 
 def get_lines_to_compare(struct):
     json_str = json.dumps(struct, indent=4, sort_keys=True, default=str)

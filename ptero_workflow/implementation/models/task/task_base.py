@@ -540,6 +540,7 @@ class Task(Base, PetriMixin):
         if results:
             return {r.name: r.data for r in results}
 
+
 def _get_parent_color(colors):
     if len(colors) == 1:
         return None

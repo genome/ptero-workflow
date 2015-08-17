@@ -19,6 +19,7 @@ class PostWorkflowFailure(object):
         self.assertEqual({'error': self.expected_error_message},
                 self.response.DATA)
 
+
 class BorkIsInvalidWebhookName(PostWorkflowFailure, BaseAPITest):
     expected_error_message = "JSON schema validation error: Additional properties are not allowed (u'bork' was unexpected)"
     post_data = {
@@ -175,6 +176,7 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
         },
     }
 
+
 class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     expected_error_message = '"input connector" is an illegal task name'
     post_data = {
@@ -254,6 +256,7 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
         },
     }
 
+
 class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
     expected_error_message = '"output connector" is an illegal task name'
     post_data = {
@@ -332,6 +335,7 @@ class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
             'outer_input': 'kittens',
         },
     }
+
 
 class MissingInputs(PostWorkflowFailure, BaseAPITest):
     expected_error_message = 'Missing required inputs: in_a'

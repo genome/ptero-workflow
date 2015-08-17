@@ -6,7 +6,6 @@ from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
-from sqlalchemy.orm.session import object_session
 from operator import attrgetter
 import logging
 from ptero_common import statuses
@@ -14,6 +13,7 @@ from ptero_common import statuses
 LOG = logging.getLogger(__name__)
 
 __all__ = ['Execution', 'ExecutionStatusHistory']
+
 
 class Execution(Base):
     __tablename__ = 'execution'
@@ -95,7 +95,7 @@ class Execution(Base):
             # we know that there are webhooks to send.
             webhook_data = {
                 # not sure how to get to the workflow, but would be nice...
-                #'workflowUrl': self.workflow.url
+                # 'workflowUrl': self.workflow.url
                 'executionUrl': self.url,
                 'targetName': self.parent.name,
                 'targetType': self.parent.type,
@@ -124,7 +124,7 @@ class Execution(Base):
         return result
 
     def as_dict_for_executions_report(self):
-        result =  {name: getattr(self, name) for name in ['color',
+        result = {name: getattr(self, name) for name in ['color',
             'colors', 'begins', 'status', 'id']}
 
         result['statusHistory'] = [h.as_dict()

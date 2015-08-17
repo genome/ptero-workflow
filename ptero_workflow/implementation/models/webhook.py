@@ -13,6 +13,7 @@ LOG = logging.getLogger(__name__)
 
 __all__ = ['Webhook']
 
+
 class Webhook(Base):
     __tablename__ = 'webhook'
     __table_args__ = (
@@ -59,6 +60,7 @@ NAME_SYNONYMS = {
         errored : [errored, "ended"],
 }
 
+
 def get_sorted_webhook_dict(entity):
     unsorted_webhook_dict = defaultdict(list)
     for webhook in entity.webhooks:
@@ -66,11 +68,13 @@ def get_sorted_webhook_dict(entity):
 
     return format_dict_of_lists(unsorted_webhook_dict)
 
+
 def get_webhooks_for_task(task, name):
     s = object_session(task)
     equivalent_names = NAME_SYNONYMS.get(name, [name])
     return s.query(Webhook).filter_by(task_id=task.id).filter(
         Webhook.name.in_(equivalent_names)).all()
+
 
 def get_webhooks_for_method(method, name):
     s = object_session(method)

@@ -1,5 +1,4 @@
 from ..base import BaseAPITest
-import time
 import logging
 from pprint import pformat
 
@@ -64,4 +63,3 @@ class TestCancelWorkflow(BaseAPITest):
         status_response = self.get(status_url)
         self.assertEqual(200, status_response.status_code)
         self.assertEqual(status_response.json()['status'], 'canceled')
-

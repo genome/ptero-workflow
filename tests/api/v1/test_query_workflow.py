@@ -8,12 +8,14 @@ import uuid
 def _generate_uuid():
     return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]
 
+
 def _generate_unique_name(prefix):
     return prefix + _generate_uuid()
 
 bunnies = _generate_unique_name('bunnies')
 walrus = _generate_unique_name('walrus')
 elephant = _generate_unique_name('elephant')
+
 
 class QueryWorkflow(object):
     __metaclass__ = abc.ABCMeta
@@ -111,6 +113,7 @@ class QueryByName(QueryWorkflow, BaseAPITest):
         }
     }
 
+
 class InvalidQuery(QueryWorkflow, BaseAPITest):
     queries = [
         {
@@ -127,6 +130,7 @@ class InvalidQuery(QueryWorkflow, BaseAPITest):
             'error': 'Invalid query arguments: pizza'
         }
     }
+
 
 class NullQuery(QueryWorkflow, BaseAPITest):
     queries = [

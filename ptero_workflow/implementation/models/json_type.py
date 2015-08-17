@@ -22,6 +22,7 @@ def get_data_element_postgres_extensions(task, indexes):
 class json_array_length(GenericFunction):
     type = Integer
 
+
 def get_data_size_postgres_extensions(task, indexes):
     if indexes:
         q = task.__class__.data[indexes]
