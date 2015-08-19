@@ -10,8 +10,8 @@ import os
 def janitor_factory():
     janitors = []
 
-    janitors.append(RabbitMQJanitor(os.environ['CELERY_BROKER_URL']))
-    janitors.append(RedisJanitor(os.environ['CELERY_RESULT_BACKEND']))
+    janitors.append(RabbitMQJanitor(os.environ['PTERO_WORKFLOW_CELERY_BROKER_URL']))
+    janitors.append(RedisJanitor(os.environ['PTERO_WORKFLOW_CELERY_RESULT_BACKEND']))
     janitors.append(PostgresJanitor(os.environ['PTERO_WORKFLOW_DB_STRING']))
 
     return janitors
@@ -19,7 +19,7 @@ def janitor_factory():
 
 if __name__ == '__main__':
     perform_cleanup(janitor_factory=janitor_factory, required_envvars=[
-        'CELERY_BROKER_URL',
-        'CELERY_RESULT_BACKEND',
+        'PTERO_WORKFLOW_CELERY_BROKER_URL',
+        'PTERO_WORKFLOW_CELERY_RESULT_BACKEND',
         'PTERO_WORKFLOW_DB_STRING',
     ])
