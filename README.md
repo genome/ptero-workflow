@@ -8,9 +8,9 @@ This system is designed to be a highly scalable replacement of the [legacy
 Workflow](https://github.com/genome/tgi-workflow) system from [The Genome
 Institute](http://genome.wustl.edu/).
 
-The current implementation, which does not provide an easy to use API, easily
-handles our production workflows with tens of thousands of nodes.  For
-reference, it can be found in two parts:
+A prototype implementation, which does not provide an easy to use API 
+(like this project does), easily handles our production workflows with tens 
+of thousands of nodes.  For reference, it can be found in two parts:
 [core](https://github.com/genome/flow-core) and
 [workflow](https://github.com/genome/flow-workflow)
 
