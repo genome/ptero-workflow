@@ -18,8 +18,6 @@ The workflows are driven using an implementation of [Petri
 nets](https://en.wikipedia.org/wiki/Petri_net) with some extensions for
 [color](https://en.wikipedia.org/wiki/Coloured_Petri_net) and token data.
 
-The API is currently described
-[here](https://github.com/genome/ptero-apis/blob/master/workflow.md).
 The other existing components are: the [petri
 core](https://github.com/genome/ptero-petri) service and a [forking shell
 command](https://github.com/genome/ptero-shell-command) service.
