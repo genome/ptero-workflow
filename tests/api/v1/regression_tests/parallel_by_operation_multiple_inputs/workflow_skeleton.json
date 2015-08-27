@@ -1,30 +1,32 @@
 {
-    "id": 7, 
-    "name": "X7mV61KhQD-gVwYB9odhfA", 
-    "rootTaskId": 29, 
-    "status": "succeeded", 
+    "id": 7,
+    "name": "X7mV61KhQD-gVwYB9odhfA",
+    "rootTaskId": 29,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 33, 
+            "id": 33,
             "methods": [
                 {
-                    "id": 10, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 10,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
-            "parallelBy": "parallel_param", 
+            ],
+            "parallelBy": "parallel_param",
             "topologicalIndex": 1
-        }, 
+        },
         "intermediate": {
-            "id": 31, 
+            "id": 31,
             "methods": [
                 {
-                    "id": 9, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 9,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
         }
     }

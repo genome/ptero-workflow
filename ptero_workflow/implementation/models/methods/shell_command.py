@@ -1,7 +1,7 @@
 from ..execution.method_execution import MethodExecution
 from ..json_type import JSON
 from .method_base import Method
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
@@ -17,11 +17,13 @@ __all__ = ['ShellCommand']
 
 class ShellCommand(Method):
     __tablename__ = 'shell_command'
-    service = 'shell-command'
+    service = 'job'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
     parameters = Column(JSON, nullable=False)
+
+    service_url = Column(Text, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'ShellCommand',
@@ -196,3 +198,13 @@ class ShellCommand(Method):
         if webhooks:
             parameters['webhooks'] = self.get_webhooks()
         return parameters
+
+    def as_dict(self, detailed):
+        result = Method.as_dict(self, detailed)
+        result['serviceUrl'] = self.service_url
+        return result;
+
+    def as_skeleton_dict(self):
+        result = Method.as_skeleton_dict(self)
+        result['serviceUrl'] = self.service_url
+        return result;

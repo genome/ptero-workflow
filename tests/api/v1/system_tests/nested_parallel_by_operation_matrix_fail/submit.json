@@ -50,7 +50,8 @@
                       "user": "{{ user }}",
                       "workingDirectory": "{{ workingDirectory }}"
                     },
-                    "service": "shell-command"
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}"
                   }
                 ],
                 "parallelBy": "name"

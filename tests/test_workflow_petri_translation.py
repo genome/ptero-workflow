@@ -1,5 +1,6 @@
 import os
 import unittest
+import tests.util
 from ptero_workflow.implementation.factory import Factory
 from ptero_workflow.implementation import translator
 
@@ -30,7 +31,8 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
                     'methods': [
                         {
                             'name': 'execute',
-                            'service': 'shell-command',
+                            'service': 'job',
+                            'serviceUrl': tests.util.shell_command_url(),
                             'parameters': {
                                 'commandLine': ['./echo_command'],
                                 'user': 'dummy-user',

@@ -1,55 +1,58 @@
 {
-    "id": 20, 
-    "name": "angfJutHS0OkaX4hiE14Sg", 
-    "rootTaskId": 125, 
-    "status": "succeeded", 
+    "id": 20,
+    "name": "angfJutHS0OkaX4hiE14Sg",
+    "rootTaskId": 125,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 131, 
+            "id": 131,
             "methods": [
                 {
-                    "id": 49, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 49,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
-        }, 
+        },
         "C": {
-            "id": 130, 
+            "id": 130,
             "methods": [
                 {
-                    "id": 48, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 48,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 2
-        }, 
+        },
         "Inner": {
-            "id": 127, 
+            "id": 127,
             "methods": [
                 {
-                    "id": 47, 
-                    "name": "some_workflow", 
+                    "id": 47,
+                    "name": "some_workflow",
                     "parameters": {
                         "tasks": {
                             "B": {
-                                "id": 134, 
+                                "id": 134,
                                 "methods": [
                                     {
-                                        "id": 50, 
-                                        "name": "execute", 
-                                        "service": "shell-command"
+                                        "id": 50,
+                                        "name": "execute",
+                                        "service": "job",
+                                        "serviceUrl": "http://localhost:5000/v1"
                                     }
-                                ], 
+                                ],
                                 "topologicalIndex": 0
                             }
                         }
-                    }, 
+                    },
                     "service": "workflow"
                 }
-            ], 
+            ],
             "topologicalIndex": 1
         }
     }

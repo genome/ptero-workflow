@@ -1,50 +1,51 @@
 {
-    "id": 21, 
-    "name": "WP8HaWmbQAqcN44iPWXGRA", 
-    "rootTaskId": 136, 
-    "status": "succeeded", 
+    "id": 21,
+    "name": "WP8HaWmbQAqcN44iPWXGRA",
+    "rootTaskId": 136,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 139, 
+            "id": 139,
             "methods": [
                 {
-                    "id": 52, 
-                    "name": "inner", 
+                    "id": 52,
+                    "name": "inner",
                     "parameters": {
                         "tasks": {
                             "Inner": {
-                                "id": 141, 
+                                "id": 141,
                                 "methods": [
                                     {
-                                        "id": 53, 
-                                        "name": "some_workflow", 
+                                        "id": 53,
+                                        "name": "some_workflow",
                                         "parameters": {
                                             "tasks": {
                                                 "A": {
-                                                    "id": 145, 
+                                                    "id": 145,
                                                     "methods": [
                                                         {
-                                                            "id": 54, 
-                                                            "name": "execute", 
-                                                            "service": "shell-command"
+                                                            "id": 54,
+                                                            "name": "execute",
+                                                            "service": "job",
+                                                            "serviceUrl": "http://localhost:5000/v1"
                                                         }
-                                                    ], 
+                                                    ],
                                                     "topologicalIndex": 0
                                                 }
                                             }
-                                        }, 
+                                        },
                                         "service": "workflow"
                                     }
-                                ], 
-                                "parallelBy": "kitten_name_in", 
+                                ],
+                                "parallelBy": "kitten_name_in",
                                 "topologicalIndex": 0
                             }
                         }
-                    }, 
+                    },
                     "service": "workflow"
                 }
-            ], 
-            "parallelBy": "in_outer_parallel", 
+            ],
+            "parallelBy": "in_outer_parallel",
             "topologicalIndex": 0
         }
     }

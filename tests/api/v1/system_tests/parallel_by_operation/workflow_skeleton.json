@@ -1,19 +1,20 @@
 {
-    "id": 29, 
-    "name": "sBgflHCSS0GC0PJ0Gypm6A", 
-    "rootTaskId": 211, 
-    "status": "succeeded", 
+    "id": 29,
+    "name": "sBgflHCSS0GC0PJ0Gypm6A",
+    "rootTaskId": 211,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 214, 
+            "id": 214,
             "methods": [
                 {
-                    "id": 77, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 77,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
-            "parallelBy": "parallel_param", 
+            ],
+            "parallelBy": "parallel_param",
             "topologicalIndex": 0
         }
     }

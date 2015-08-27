@@ -1,35 +1,36 @@
 {
-    "id": 23, 
-    "name": "eBTUZThZTj2janNycHW0Hw", 
-    "rootTaskId": 157, 
-    "status": "succeeded", 
+    "id": 23,
+    "name": "eBTUZThZTj2janNycHW0Hw",
+    "rootTaskId": 157,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 160, 
+            "id": 160,
             "methods": [
                 {
-                    "id": 59, 
-                    "name": "inner", 
+                    "id": 59,
+                    "name": "inner",
                     "parameters": {
                         "tasks": {
                             "A": {
-                                "id": 163, 
+                                "id": 163,
                                 "methods": [
                                     {
-                                        "id": 60, 
-                                        "name": "execute", 
-                                        "service": "shell-command"
+                                        "id": 60,
+                                        "name": "execute",
+                                        "service": "job",
+                                        "serviceUrl": "http://localhost:5000/v1"
                                     }
-                                ], 
-                                "parallelBy": "name", 
+                                ],
+                                "parallelBy": "name",
                                 "topologicalIndex": 0
                             }
                         }
-                    }, 
+                    },
                     "service": "workflow"
                 }
-            ], 
-            "parallelBy": "in_matrix", 
+            ],
+            "parallelBy": "in_matrix",
             "topologicalIndex": 0
         }
     }

@@ -1,4 +1,5 @@
 from ..base import BaseAPITest
+from tests.util import shell_command_url
 import requests
 import json
 import zlib
@@ -13,7 +14,8 @@ class TestGzippedWorkflow(BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'service': 'shell-command',
+                                'service': 'job',
+                                'serviceUrl': shell_command_url(),
                                 'parameters': {
                                     'commandLine': ['cat'],
                                     'user': 'testuser',

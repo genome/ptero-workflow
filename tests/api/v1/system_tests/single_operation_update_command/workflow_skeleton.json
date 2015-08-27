@@ -1,18 +1,19 @@
 {
-    "id": 36, 
-    "name": "BM5BPqn0QCKOUT26QAlPXw", 
-    "rootTaskId": 256, 
-    "status": "succeeded", 
+    "id": 36,
+    "name": "BM5BPqn0QCKOUT26QAlPXw",
+    "rootTaskId": 256,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 259, 
+            "id": 259,
             "methods": [
                 {
-                    "id": 96, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 96,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
         }
     }

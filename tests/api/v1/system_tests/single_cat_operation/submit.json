@@ -4,7 +4,8 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "shell-command",
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}",
                     "parameters": {
                         "commandLine": ["./cat_command"],
                         "user": "{{ user }}",
