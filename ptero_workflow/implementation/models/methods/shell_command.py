@@ -84,6 +84,8 @@ class ShellCommand(Method):
                 execution.status = scheduled
                 execution.data['job_id'] = job_id
             except Exception as e:
+                LOG.exception(
+                    'Failed to submit job to service. Execution id: %s' % execution.id)
                 execution.status = errored;
                 execution.data['error_message'] = e.message
 
