@@ -165,8 +165,8 @@ class Backend(object):
                         joinedload(m.DAG.webhooks),
                 ).filter_by(workflow_id=workflow_id).all()
 
-        shell_commands = self.session.query(m.ShellCommand).\
-                options(joinedload(m.ShellCommand.webhooks)).\
+        jobs = self.session.query(m.Job).\
+                options(joinedload(m.Job.webhooks)).\
                 filter_by(workflow_id=workflow_id).all()
 
 
@@ -243,8 +243,8 @@ class Backend(object):
                 options(joinedload(m.DAG.executions)).\
                 filter_by(workflow_id=workflow_id).all()
 
-        shell_commands = self.session.query(m.ShellCommand).\
-                options(joinedload(m.ShellCommand.executions)).\
+        jobs = self.session.query(m.Job).\
+                options(joinedload(m.Job.executions)).\
                 filter_by(workflow_id=workflow_id).all()
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=True)
 

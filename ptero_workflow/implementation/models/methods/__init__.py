@@ -1,10 +1,10 @@
 from dag import *  # noqa
 from .method_base import *  # noqa
-from .shell_command import *  # noqa
+from .job import *  # noqa
 from .block import *  # noqa
 from .converge import *  # noqa
 
-METHOD_SUBCLASSES = [DAG, ShellCommand, Block, Converge]
+METHOD_SUBCLASSES = [DAG, Job, Block, Converge]
 
 
 def _calculate_subclass_lookup():
