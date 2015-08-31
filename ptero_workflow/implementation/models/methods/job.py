@@ -161,8 +161,9 @@ class Job(Method):
         if 'json' in response_info:
             return response_info['json']['jobId']
         else:
-            raise RuntimeError("Cannot submit to job service:\n%s" %
-                    pformat(response_info))
+            raise RuntimeError("Cannot submit to job service.\n"
+                "URL: %s\nResponse info: %s" % (self._job_submit_url,
+                    pformat(response_info)))
 
     @property
     def http_with_result(self):
