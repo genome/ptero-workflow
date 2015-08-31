@@ -52,3 +52,6 @@ class DAGCycleError(ValidationError):
 
 class IllegalTaskNameError(ValidationError):
     pass
+
+class DuplicatePetriNetError(Exception):
+    pass
