@@ -1,45 +1,47 @@
 {
-    "id": 27, 
-    "name": "YvVM655qQ6i5UwE2X9drLg", 
-    "rootTaskId": 192, 
-    "status": "succeeded", 
+    "id": 27,
+    "name": "YvVM655qQ6i5UwE2X9drLg",
+    "rootTaskId": 192,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 196, 
+            "id": 196,
             "methods": [
                 {
-                    "id": 71, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 71,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 1
-        }, 
+        },
         "Inner": {
-            "id": 194, 
+            "id": 194,
             "methods": [
                 {
-                    "id": 70, 
-                    "name": "some_workflow", 
+                    "id": 70,
+                    "name": "some_workflow",
                     "parameters": {
                         "tasks": {
                             "michael": {
-                                "id": 198, 
+                                "id": 198,
                                 "methods": [
                                     {
-                                        "id": 72, 
-                                        "name": "execute", 
-                                        "service": "shell-command"
+                                        "id": 72,
+                                        "name": "execute",
+                                        "service": "job",
+                                        "serviceUrl": "http://localhost:5000/v1"
                                     }
-                                ], 
+                                ],
                                 "topologicalIndex": 0
                             }
                         }
-                    }, 
+                    },
                     "service": "workflow"
                 }
-            ], 
-            "parallelBy": "parallel_param_in", 
+            ],
+            "parallelBy": "parallel_param_in",
             "topologicalIndex": 0
         }
     }

@@ -1,6 +1,7 @@
 from ..base import BaseAPITest
 import logging
 from pprint import pformat
+from tests.util import shell_command_url
 
 LOG = logging.getLogger(__name__)
 
@@ -14,7 +15,8 @@ class TestCancelWorkflow(BaseAPITest):
                         'methods': [
                             {
                                 'name': 'execute',
-                                'service': 'shell-command',
+                                'service': 'job',
+                                'serviceUrl': shell_command_url(),
                                 'parameters': {
                                     'commandLine': ['cat'],
                                     'user': 'testuser',

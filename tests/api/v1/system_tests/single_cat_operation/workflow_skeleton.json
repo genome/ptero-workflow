@@ -1,18 +1,19 @@
 {
-    "id": 35, 
-    "name": "0LSxQUSSQjqwTky0_LI_dA", 
-    "rootTaskId": 250, 
-    "status": "succeeded", 
+    "id": 35,
+    "name": "0LSxQUSSQjqwTky0_LI_dA",
+    "rootTaskId": 250,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 253, 
+            "id": 253,
             "methods": [
                 {
-                    "id": 94, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 94,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
         }
     }

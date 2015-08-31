@@ -1,29 +1,31 @@
 {
-    "id": 1, 
-    "name": "Zc6-zEgHRWmFEWbjrCdhPQ", 
-    "rootTaskId": 2, 
-    "status": "succeeded", 
+    "id": 1,
+    "name": "Zc6-zEgHRWmFEWbjrCdhPQ",
+    "rootTaskId": 2,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 7, 
+            "id": 7,
             "methods": [
                 {
-                    "id": 3, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 3,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
-        }, 
+        },
         "B": {
-            "id": 6, 
+            "id": 6,
             "methods": [
                 {
-                    "id": 2, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 2,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 1
         }
     }

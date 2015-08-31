@@ -1,4 +1,5 @@
 from ..base import BaseAPITest
+from tests.util import shell_command_url
 from .test_roundtrip_success import RoundTripSuccess
 import os
 import abc
@@ -91,7 +92,8 @@ class NestedWorkflowWithWebhooks(WebhookTest, BaseAPITest):
                                         'methods': [
                                             {
                                                 'name': 'execute',
-                                                'service': 'shell-command',
+                                                'service': 'job',
+                                                'serviceUrl': shell_command_url(),
                                                 'parameters': {
                                                     'webhooks': {
                                                         'scheduled': self.webhook_server.url,

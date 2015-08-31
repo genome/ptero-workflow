@@ -1,23 +1,25 @@
 {
-    "id": 34, 
-    "name": "rkttWpaRTgq4WF4uCFiU5Q", 
-    "rootTaskId": 244, 
-    "status": "succeeded", 
+    "id": 34,
+    "name": "rkttWpaRTgq4WF4uCFiU5Q",
+    "rootTaskId": 244,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 247, 
+            "id": 247,
             "methods": [
                 {
-                    "id": 91, 
-                    "name": "shortcut", 
-                    "service": "shell-command"
-                }, 
+                    "id": 91,
+                    "name": "shortcut",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
+                },
                 {
-                    "id": 92, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 92,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
         }
     }

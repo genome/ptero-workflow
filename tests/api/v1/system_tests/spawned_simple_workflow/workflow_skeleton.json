@@ -1,18 +1,19 @@
 {
-    "id": 1, 
-    "name": "PGH4ptKETuax1FD2MreSaQ", 
-    "rootTaskId": 2, 
-    "status": "succeeded", 
+    "id": 1,
+    "name": "PGH4ptKETuax1FD2MreSaQ",
+    "rootTaskId": 2,
+    "status": "succeeded",
     "tasks": {
         "A": {
-            "id": 6, 
+            "id": 6,
             "methods": [
                 {
-                    "id": 2, 
-                    "name": "execute", 
-                    "service": "shell-command"
+                    "id": 2,
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "http://localhost:5000/v1"
                 }
-            ], 
+            ],
             "topologicalIndex": 0
         }
     }

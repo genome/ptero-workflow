@@ -52,7 +52,7 @@
             { "$ref": "#/definitions/blockMethod" },
             { "$ref": "#/definitions/convergeMethod" },
             { "$ref": "#/definitions/workflowMethod" },
-            { "$ref": "#/definitions/shellCommandMethod" }
+            { "$ref": "#/definitions/jobMethod" }
         ]},
 
 
@@ -157,17 +157,21 @@
             "additionalProperties": false
         },
 
-        "shellCommandMethod": {
+        "jobMethod": {
             "type": "object",
             "properties": {
                 "name": { "$ref": "#/definitions/name" },
                 "parameters": { "type": "object" },
                 "service": {
                     "type": "string",
-                    "pattern": "^shell-command$"
+                    "pattern": "^job$"
+                },
+                "serviceUrl": {
+                    "type": "string",
+                    "format": "uri"
                 }
             },
-            "required": ["name", "parameters", "service"],
+            "required": ["name", "parameters", "service", "serviceUrl"],
             "additionalProperties": false
         },
 

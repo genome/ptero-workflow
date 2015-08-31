@@ -4,7 +4,8 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "shell-command",
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -18,7 +19,8 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "shell-command",
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -32,7 +34,8 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "shell-command",
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",
@@ -46,7 +49,8 @@
             "methods": [
                 {
                     "name": "execute",
-                    "service": "shell-command",
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}",
                     "parameters": {
                         "commandLine": ["./echo_command"],
                         "user": "{{ user }}",

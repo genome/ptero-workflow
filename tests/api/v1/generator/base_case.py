@@ -10,6 +10,7 @@ import time
 import logging
 import difflib
 import re
+from tests.util import shell_command_url
 
 
 _POLLING_DELAY = 0.5
@@ -192,6 +193,7 @@ class TestCaseMixin(object):
             'user': os.environ.get('USER'),
             'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_SCRIPTS_DIR'],
             'environment': json.dumps(dict(os.environ)),
+            'shellCommandServiceUrl': shell_command_url(),
         }
 
     @property

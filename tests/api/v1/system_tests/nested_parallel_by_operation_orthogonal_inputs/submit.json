@@ -54,7 +54,8 @@
                       "user": "{{ user }}",
                       "workingDirectory": "{{ workingDirectory }}"
                     },
-                    "service": "shell-command"
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}"
                   }
                 ],
                 "parallelBy": "kitten_name"

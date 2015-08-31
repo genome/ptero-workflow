@@ -1,4 +1,5 @@
 from ..base import BaseAPITest
+from tests.util import shell_command_url
 import abc
 import difflib
 import json
@@ -59,115 +60,122 @@ class RoundTripSuccess(object):
 
 
 class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-            'Converge': {
-                'methods': [
+    @property
+    def post_data(self):
+        return  {
+                'tasks': {
+                    'Converge': {
+                        'methods': [
+                            {
+                                'name': 'converger',
+                                'service': 'workflow-converge',
+                                'parameters': {
+                                    'input_names': ['b', 'a'],
+                                    'output_name': 'c',
+                                    }
+                                }
+                            ]
+                        },
+                    },
+                'links': [
                     {
-                        'name': 'converger',
-                        'service': 'workflow-converge',
-                        'parameters': {
-                            'input_names': ['b', 'a'],
-                            'output_name': 'c',
-                        }
-                    }
-                ]
-            },
-        },
-        'links': [
-            {
-                'source': 'Converge',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'c': 'result',
-                },
-            }, {
-                'source': 'input connector',
-                'destination': 'Converge',
-                'dataFlow': {
-                    'in_a': 'a',
-                    'in_b': 'b',
-                },
-            },
-        ],
-        'inputs': {
-            'in_a': 'kittens',
-            'in_b': 'puppies',
-        },
-    }
+                        'source': 'Converge',
+                        'destination': 'output connector',
+                        'dataFlow': {
+                            'c': 'result',
+                            },
+                        }, {
+                            'source': 'input connector',
+                            'destination': 'Converge',
+                            'dataFlow': {
+                                'in_a': 'a',
+                                'in_b': 'b',
+                                },
+                            },
+                        ],
+                'inputs': {
+                    'in_a': 'kittens',
+                    'in_b': 'puppies',
+                    },
+                }
 
 
 class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-            'Block': {
-                'methods': [
+    @property
+    def post_data(self):
+        return  {
+                'tasks': {
+                    'Block': {
+                        'methods': [
+                            {
+                                'name': 'blocker',
+                                'service': 'workflow-block',
+                                'parameters': {
+                                    }
+                                }
+                            ]
+                        },
+                    },
+                'links': [
                     {
-                        'name': 'blocker',
-                        'service': 'workflow-block',
-                        'parameters': {
-                        }
-                    }
-                ]
-            },
-        },
-        'links': [
-            {
-                'source': 'Block',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'result': 'result',
-                },
-            }, {
-                'source': 'input connector',
-                'destination': 'Block',
-                'dataFlow': {
-                    'in_a': 'in_a',
-                },
-            },
-        ],
-        'inputs': {
-            'in_a': 'kittens',
-        },
-    }
+                        'source': 'Block',
+                        'destination': 'output connector',
+                        'dataFlow': {
+                            'result': 'result',
+                            },
+                        }, {
+                            'source': 'input connector',
+                            'destination': 'Block',
+                            'dataFlow': {
+                                'in_a': 'in_a',
+                                },
+                            },
+                        ],
+                'inputs': {
+                    'in_a': 'kittens',
+                    },
+                }
 
 
 class SingleNodeWorkflow(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-            'A': {
-                'methods': [
-                    {
-                        'name': 'execute',
-                        'service': 'shell-command',
-                        'parameters': {
-                            'commandLine': ['cat'],
-                            'user': 'testuser',
-                            'workingDirectory': '/test/working/directory'
+    @property
+    def post_data(self):
+        return {
+            'tasks': {
+                'A': {
+                    'methods': [
+                        {
+                            'name': 'execute',
+                            'service': 'job',
+                            'serviceUrl': shell_command_url(),
+                            'parameters': {
+                                'commandLine': ['cat'],
+                                'user': 'testuser',
+                                'workingDirectory': '/test/working/directory'
+                            }
                         }
-                    }
-                ]
-            },
-        },
-        'links': [
-            {
-                'source': 'A',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'result': 'out_a',
-                },
-            }, {
-                'source': 'input connector',
-                'destination': 'A',
-                'dataFlow': {
-                    'in_a': 'param',
+                    ]
                 },
             },
-        ],
-        'inputs': {
-            'in_a': 'kittens',
-        },
-    }
+            'links': [
+                {
+                    'source': 'A',
+                    'destination': 'output connector',
+                    'dataFlow': {
+                        'result': 'out_a',
+                    },
+                }, {
+                    'source': 'input connector',
+                    'destination': 'A',
+                    'dataFlow': {
+                        'in_a': 'param',
+                    },
+                },
+            ],
+            'inputs': {
+                'in_a': 'kittens',
+            },
+        }
 
 
 def _generate_uuid():
@@ -177,23 +185,25 @@ unique_name = _generate_uuid()
 
 
 class MinimalNamedWorkflow(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-        },
-        'links': [
-            {
-                'source': 'input connector',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'in_a': 'out_a',
-                },
-            },
-        ],
-        'inputs': {
-            'in_a': 'kittens',
-        },
-        'name': unique_name,
-    }
+    @property
+    def post_data(self):
+        return {
+                'tasks': {
+                    },
+                'links': [
+                    {
+                        'source': 'input connector',
+                        'destination': 'output connector',
+                        'dataFlow': {
+                            'in_a': 'out_a',
+                            },
+                        },
+                    ],
+                'inputs': {
+                    'in_a': 'kittens',
+                    },
+                'name': unique_name,
+                }
 
 
 class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
@@ -226,7 +236,8 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
                                 'methods': [
                                     {
                                         'name': 'execute',
-                                        'service': 'shell-command',
+                                        'service': 'job',
+                                        'serviceUrl': shell_command_url(),
                                         'parameters': {
                                             'commandLine': ['cat'],
                                             'user': 'testuser',
@@ -283,166 +294,175 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
 
 
 class NestedWorkflow(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-            'Inner': {
-                'methods': [{
-                    'name': 'some_workflow',
-                    'parameters': {
-                        'tasks': {
-                            'A': {
-                                'methods': [
+    @property
+    def post_data(self):
+        return {
+                'tasks': {
+                    'Inner': {
+                        'methods': [{
+                            'name': 'some_workflow',
+                            'parameters': {
+                                'tasks': {
+                                    'A': {
+                                        'methods': [
+                                            {
+                                                'name': 'execute',
+                                                'service': 'job',
+                                                'serviceUrl': shell_command_url(),
+                                                'parameters': {
+                                                    'commandLine': ['cat'],
+                                                    'user': 'testuser',
+                                                    'workingDirectory': '/test/working/directory'
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                    },
+                                'links': [
                                     {
-                                        'name': 'execute',
-                                        'service': 'shell-command',
-                                        'parameters': {
-                                            'commandLine': ['cat'],
-                                            'user': 'testuser',
-                                            'workingDirectory': '/test/working/directory'
-                                        }
-                                    }
-                                ]
-                            },
-                        },
-                        'links': [
-                            {
-                                'source': 'A',
-                                'destination': 'output connector',
-                                'dataFlow': {
-                                    'result': 'inner_output',
+                                        'source': 'A',
+                                        'destination': 'output connector',
+                                        'dataFlow': {
+                                            'result': 'inner_output',
+                                            },
+                                        }, {
+                                            'source': 'input connector',
+                                            'destination': 'A',
+                                            'dataFlow': {
+                                                'inner_input': 'param',
+                                                },
+                                            },
+                                        ],
                                 },
-                            }, {
-                                'source': 'input connector',
-                                'destination': 'A',
-                                'dataFlow': {
-                                    'inner_input': 'param',
+                            'service': 'workflow',
+                            }]
+                        },
+                    },
+
+                'links': [
+                    {
+                        'source': 'Inner',
+                        'destination': 'output connector',
+                        'dataFlow': {
+                            'inner_output': 'outer_output',
+                            },
+                        }, {
+                            'source': 'input connector',
+                            'destination': 'Inner',
+                            'dataFlow': {
+                                'outer_input': 'inner_input',
                                 },
                             },
                         ],
-                    },
-                    'service': 'workflow',
-                }]
-            },
-        },
-
-        'links': [
-            {
-                'source': 'Inner',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'inner_output': 'outer_output',
-                },
-            }, {
-                'source': 'input connector',
-                'destination': 'Inner',
-                'dataFlow': {
-                    'outer_input': 'inner_input',
-                },
-            },
-        ],
-        'inputs': {
-            'outer_input': 'kittens',
-        },
-    }
+                'inputs': {
+                        'outer_input': 'kittens',
+                        },
+                }
 
 
 class ParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-            'A': {
-                'methods': [
-                    {
-                        'name': 'execute',
-                        'service': 'shell-command',
-                        'parameters': {
-                            'commandLine': ['cat'],
-                            'user': 'testuser',
-                            'workingDirectory': '/test/working/directory'
-                        }
-                    }
-                ]
-            },
-        },
-        'links': [
-            {
-                'source': 'A',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'result': 'out_a',
-                },
-            }, {
-                'source': 'input connector',
-                'destination': 'A',
-                'dataFlow': {
-                    'in_a': 'param',
-                },
-            },
-        ],
-        'inputs': {
-            'in_a': 'kittens',
-        },
-    }
-
-
-class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
-    post_data = {
-        'tasks': {
-            'Inner': {
-                'methods': [{
-                    'name': 'some_workflow',
-                    'parameters': {
-                        'tasks': {
-                            'A': {
-                                'methods': [
-                                    {
-                                        'name': 'execute',
-                                        'service': 'shell-command',
-                                        'parameters': {
-                                            'commandLine': ['cat'],
-                                            'user': 'testuser',
-                                            'workingDirectory': '/test/working/directory'
-                                        }
-                                    }
-                                ]
-                            },
-                        },
-                        'links': [
+    @property
+    def post_data(self):
+        return {
+                'tasks': {
+                    'A': {
+                        'methods': [
                             {
-                                'source': 'A',
-                                'destination': 'output connector',
-                                'dataFlow': {
-                                    'result': 'inner_output',
-                                },
-                            }, {
-                                'source': 'input connector',
-                                'destination': 'A',
-                                'dataFlow': {
-                                    'inner_input': 'param',
+                                'name': 'execute',
+                                'service': 'job',
+                                'serviceUrl': shell_command_url(),
+                                'parameters': {
+                                    'commandLine': ['cat'],
+                                    'user': 'testuser',
+                                    'workingDirectory': '/test/working/directory'
+                                    }
+                                }
+                            ]
+                        },
+                    },
+                'links': [
+                    {
+                        'source': 'A',
+                        'destination': 'output connector',
+                        'dataFlow': {
+                            'result': 'out_a',
+                            },
+                        }, {
+                            'source': 'input connector',
+                            'destination': 'A',
+                            'dataFlow': {
+                                'in_a': 'param',
                                 },
                             },
                         ],
+                'inputs': {
+                    'in_a': 'kittens',
                     },
-                    'service': 'workflow',
-                }],
-            },
-        },
+                }
 
-        'links': [
-            {
-                'source': 'Inner',
-                'destination': 'output connector',
-                'dataFlow': {
-                    'inner_output': 'outer_output',
-                },
-            }, {
-                'source': 'input connector',
-                'destination': 'Inner',
-                'dataFlow': {
-                    'outer_input': 'inner_input',
-                },
-            },
-        ],
-        'inputs': {
-            'outer_input': 'kittens',
-        },
-    }
+
+class NestedParallelByTaskWorkflow(RoundTripSuccess, BaseAPITest):
+    @property
+    def post_data(self):
+        return {
+                'tasks': {
+                    'Inner': {
+                        'methods': [{
+                            'name': 'some_workflow',
+                            'parameters': {
+                                'tasks': {
+                                    'A': {
+                                        'methods': [
+                                            {
+                                                'name': 'execute',
+                                                'service': 'job',
+                                                'serviceUrl': shell_command_url(),
+                                                'parameters': {
+                                                    'commandLine': ['cat'],
+                                                    'user': 'testuser',
+                                                    'workingDirectory': '/test/working/directory'
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                    },
+                                'links': [
+                                    {
+                                        'source': 'A',
+                                        'destination': 'output connector',
+                                        'dataFlow': {
+                                            'result': 'inner_output',
+                                            },
+                                        }, {
+                                            'source': 'input connector',
+                                            'destination': 'A',
+                                            'dataFlow': {
+                                                'inner_input': 'param',
+                                                },
+                                            },
+                                        ],
+                                },
+                            'service': 'workflow',
+                            }],
+                        },
+                    },
+
+                'links': [
+                    {
+                        'source': 'Inner',
+                        'destination': 'output connector',
+                        'dataFlow': {
+                            'inner_output': 'outer_output',
+                            },
+                        }, {
+                            'source': 'input connector',
+                            'destination': 'Inner',
+                            'dataFlow': {
+                                'outer_input': 'inner_input',
+                                },
+                            },
+                        ],
+                'inputs': {
+                        'outer_input': 'kittens',
+                        },
+                }

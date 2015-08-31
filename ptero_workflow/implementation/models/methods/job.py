@@ -1,7 +1,7 @@
 from ..execution.method_execution import MethodExecution
 from ..json_type import JSON
 from .method_base import Method
-from sqlalchemy import Column, ForeignKey, Integer
+from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
@@ -12,19 +12,21 @@ from ptero_common.statuses import (scheduled, running, canceled, errored,
 
 LOG = logging.getLogger(__name__)
 
-__all__ = ['ShellCommand']
+__all__ = ['Job']
 
 
-class ShellCommand(Method):
-    __tablename__ = 'shell_command'
-    service = 'shell-command'
+class Job(Method):
+    __tablename__ = 'job'
+    service = 'job'
 
     id = Column(Integer, ForeignKey('method.id'), primary_key=True)
 
     parameters = Column(JSON, nullable=False)
 
+    service_url = Column(Text, nullable=False)
+
     __mapper_args__ = {
-        'polymorphic_identity': 'ShellCommand',
+        'polymorphic_identity': 'Job',
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
@@ -64,7 +66,7 @@ class ShellCommand(Method):
         execution = s.query(MethodExecution).filter(
                 MethodExecution.method==self,
                 MethodExecution.color==color).one()
-        execution.data['petri_response_links_for_shell_command'] = \
+        execution.data['petri_response_links_for_job'] = \
                 body_data['response_links']
         s.commit()
 
@@ -78,10 +80,12 @@ class ShellCommand(Method):
             begins = group.get('begin_lineage', []) + [group['begin']]
 
             try:
-                job_id = self._submit_to_shell_command(colors, begins, execution.id)
+                job_id = self._submit_to_job_service(colors, begins, execution.id)
                 execution.status = scheduled
                 execution.data['job_id'] = job_id
             except Exception as e:
+                LOG.exception(
+                    'Failed to submit job to service. Execution id: %s' % execution.id)
                 execution.status = errored;
                 execution.data['error_message'] = e.message
 
@@ -120,7 +124,7 @@ class ShellCommand(Method):
             s = object_session(self)
             s.commit()
 
-            response_url = execution.data['petri_response_links_for_shell_command']['success']
+            response_url = execution.data['petri_response_links_for_job']['success']
 
             self.http.delay('PUT', response_url)
 
@@ -132,7 +136,7 @@ class ShellCommand(Method):
 
         s = object_session(self)
         s.commit()
-        response_url = execution.data['petri_response_links_for_shell_command']['failure']
+        response_url = execution.data['petri_response_links_for_job']['failure']
 
         self.http.delay('PUT', response_url)
 
@@ -145,20 +149,21 @@ class ShellCommand(Method):
         s = object_session(self)
         s.commit()
 
-        response_url = execution.data['petri_response_links_for_shell_command']['failure']
+        response_url = execution.data['petri_response_links_for_job']['failure']
         self.http.delay('PUT', response_url)
 
-    def _submit_to_shell_command(self, colors, begins, execution_id):
-        body_data = self._shell_command_submit_data(colors, begins,
+    def _submit_to_job_service(self, colors, begins, execution_id):
+        body_data = self._job_submit_data(colors, begins,
                 execution_id)
-        result = self.http_with_result.delay('POST', self._shell_command_submit_url,
+        result = self.http_with_result.delay('POST', self._job_submit_url,
                 **body_data)
         response_info = result.wait()
         if 'json' in response_info:
             return response_info['json']['jobId']
         else:
-            raise RuntimeError("Cannot submit to shell-command:\n%s" %
-                    pformat(response_info))
+            raise RuntimeError("Cannot submit to job service.\n"
+                "URL: %s\nResponse info: %s" % (self._job_submit_url,
+                    pformat(response_info)))
 
     @property
     def http_with_result(self):
@@ -166,13 +171,10 @@ class ShellCommand(Method):
                 'ptero_common.celery.http.HTTPWithResult']
 
     @property
-    def _shell_command_submit_url(self):
-        return 'http://%s:%d/v1/jobs' % (
-            os.environ['PTERO_SHELL_COMMAND_HOST'],
-            int(os.environ['PTERO_SHELL_COMMAND_PORT']),
-        )
+    def _job_submit_url(self):
+        return '%s/jobs' % self.service_url
 
-    def _shell_command_submit_data(self, colors, begins, execution_id):
+    def _job_submit_data(self, colors, begins, execution_id):
         submit_data = self.parameters
 
         if 'environment' not in submit_data:
@@ -196,3 +198,13 @@ class ShellCommand(Method):
         if webhooks:
             parameters['webhooks'] = self.get_webhooks()
         return parameters
+
+    def as_dict(self, detailed):
+        result = Method.as_dict(self, detailed)
+        result['serviceUrl'] = self.service_url
+        return result;
+
+    def as_skeleton_dict(self):
+        result = Method.as_skeleton_dict(self)
+        result['serviceUrl'] = self.service_url
+        return result;

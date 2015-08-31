@@ -141,8 +141,18 @@ def _build_service_method(data, workflow, index, parent_task, cls):
     build_parameters = data['parameters'].copy()
     if 'webhooks' in build_parameters:
         del build_parameters['webhooks']
-    return cls(name=data['name'], index=index, task=parent_task,
-            parameters=build_parameters, workflow=workflow)
+
+    constructor_args = {
+            'name': data['name'],
+            'index': index,
+            'task': parent_task,
+            'parameters': build_parameters,
+            'workflow': workflow}
+
+    if 'serviceUrl' in data:
+        constructor_args['service_url'] = data['serviceUrl']
+
+    return cls(**constructor_args)
 
 
 def create_input_holder(root, workflow, inputs, color, parent_color):

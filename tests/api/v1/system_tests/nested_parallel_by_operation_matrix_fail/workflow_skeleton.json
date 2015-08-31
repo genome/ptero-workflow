@@ -1,35 +1,36 @@
 {
-    "id": 22, 
-    "name": "_zbsVS5BTqenCw0blHaH2g", 
-    "rootTaskId": 148, 
-    "status": "failed", 
+    "id": 22,
+    "name": "_zbsVS5BTqenCw0blHaH2g",
+    "rootTaskId": 148,
+    "status": "failed",
     "tasks": {
         "A": {
-            "id": 151, 
+            "id": 151,
             "methods": [
                 {
-                    "id": 56, 
-                    "name": "inner", 
+                    "id": 56,
+                    "name": "inner",
                     "parameters": {
                         "tasks": {
                             "A": {
-                                "id": 154, 
+                                "id": 154,
                                 "methods": [
                                     {
-                                        "id": 57, 
-                                        "name": "execute", 
-                                        "service": "shell-command"
+                                        "id": 57,
+                                        "name": "execute",
+                                        "service": "job",
+                                        "serviceUrl": "http://localhost:5000/v1"
                                     }
-                                ], 
-                                "parallelBy": "name", 
+                                ],
+                                "parallelBy": "name",
                                 "topologicalIndex": 0
                             }
                         }
-                    }, 
+                    },
                     "service": "workflow"
                 }
-            ], 
-            "parallelBy": "in_matrix", 
+            ],
+            "parallelBy": "in_matrix",
             "topologicalIndex": 0
         }
     }
