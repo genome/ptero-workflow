@@ -5,7 +5,6 @@ from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session
 import celery
 import logging
-import os
 from pprint import pformat
 from ptero_common.statuses import (scheduled, running, canceled, errored,
         succeeded, failed)
