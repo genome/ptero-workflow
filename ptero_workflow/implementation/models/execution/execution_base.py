@@ -32,7 +32,7 @@ class Execution(Base):
             index=True, nullable=True)
     task_id = Column(Integer, ForeignKey('task.id'),
             index=True, nullable=True)
-    _status = Column('status', Text, nullable=False)
+    _status = Column('status', Text, index=True, nullable=False)
 
     data = Column(MutableJSONDict, nullable=False)
     colors = Column(JSON)
@@ -42,7 +42,7 @@ class Execution(Base):
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
-    type = Column(String, nullable=False)
+    type = Column(String, index=True, nullable=False)
     __mapper_args__ = {
             'polymorphic_on': 'type',
     }
@@ -186,10 +186,11 @@ class ExecutionStatusHistory(Base):
     __tablename__ = 'execution_status_history'
 
     id = Column(Integer, primary_key=True)
-    execution_id = Column(Integer, ForeignKey('execution.id'), nullable=False)
+    execution_id = Column(Integer, ForeignKey('execution.id'), 
+            index=True, nullable=False)
 
     timestamp = Column(DateTime(timezone=True), default=func.now(),
-            nullable=False)
+            index=True, nullable=False)
 
     status = Column(Text, index=True, nullable=False)
 
