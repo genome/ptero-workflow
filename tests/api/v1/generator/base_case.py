@@ -200,7 +200,7 @@ class TestCaseMixin(object):
             'shellCommandServiceUrl': shell_command_url(),
             'lsfServiceUrl': lsf_url(),
             'lsfOutputsDirectory': os.environ.get(
-                'PTERO_WORKFLOW_LSF_TEST_OUTPUTS_DIR', '/tmp'),
+                'PTERO_WORKFLOW_TEST_LSF_OUTPUTS_DIR', '/tmp'),
         }
 
     @property
