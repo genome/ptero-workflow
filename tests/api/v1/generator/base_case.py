@@ -193,15 +193,21 @@ class TestCaseMixin(object):
 
     @property
     def _template_data(self):
-        return {
+        template_data = {
             'user': os.environ.get('USER'),
             'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_SCRIPTS_DIR'],
             'environment': json.dumps(dict(os.environ)),
             'shellCommandServiceUrl': shell_command_url(),
-            'lsfServiceUrl': lsf_url(),
-            'lsfOutputsDirectory': os.environ.get(
-                'PTERO_WORKFLOW_TEST_LSF_OUTPUTS_DIR', '/tmp'),
         }
+
+        if os.environ.get('PTERO_LSF_HOST') is not None:
+            template_data.update({
+                'lsfServiceUrl': lsf_url(),
+                'lsfOutputsDirectory':
+                os.environ['PTERO_WORKFLOW_TEST_LSF_OUTPUTS_DIR'],
+            })
+
+        return template_data
 
     @property
     def _workflow_file_path(self):
