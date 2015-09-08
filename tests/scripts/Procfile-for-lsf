@@ -1,3 +1,4 @@
+shellcommand: cd $PTERO_SHELL_COMMAND_HOME; tox -r -e dev -- --num-workers=$PTERO_WORKFLOW_TEST_NUM_SHELL_COMMAND_WORKERS --procfile=Procfile
 lsf: cd $PTERO_LSF_HOME; tox -r -e dev -- --num-workers=$PTERO_WORKFLOW_TEST_NUM_LSF_WORKERS --procfile=Procfile
 petri: cd $PTERO_PETRI_HOME; tox -r -e dev -- --procfile=Procfile
 web: coverage run ptero_workflow/api/wsgi.py
