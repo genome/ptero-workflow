@@ -10,7 +10,7 @@ import time
 import logging
 import difflib
 import re
-from tests.util import shell_command_url
+from tests.util import lsf_url, shell_command_url
 
 
 _POLLING_DELAY = 0.5
@@ -24,7 +24,11 @@ LOG = logging.getLogger(__name__)
 
 
 def validate_json(text):
-    data = json.loads(text)
+    try:
+        data = json.loads(text)
+    except Exception as e:
+        print(text)
+        raise e
 
 FILTERS = [
         re.compile('"id".*:'),
@@ -189,12 +193,21 @@ class TestCaseMixin(object):
 
     @property
     def _template_data(self):
-        return {
+        template_data = {
             'user': os.environ.get('USER'),
             'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_SCRIPTS_DIR'],
             'environment': json.dumps(dict(os.environ)),
             'shellCommandServiceUrl': shell_command_url(),
         }
+
+        if os.environ.get('PTERO_LSF_HOST') is not None:
+            template_data.update({
+                'lsfServiceUrl': lsf_url(),
+                'lsfOutputsDirectory':
+                os.environ['PTERO_WORKFLOW_TEST_LSF_OUTPUTS_DIR'],
+            })
+
+        return template_data
 
     @property
     def _workflow_file_path(self):

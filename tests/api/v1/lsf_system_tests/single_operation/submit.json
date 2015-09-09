@@ -1,0 +1,47 @@
+{
+    "tasks": {
+        "A": {
+            "methods": [
+                {
+                    "name": "execute",
+                    "service": "job",
+                    "serviceUrl": "{{ lsfServiceUrl }}",
+                    "parameters": {
+                        "user": "{{ user }}",
+                        "cwd": "{{ workingDirectory }}",
+                        "environment": {{ environment }},
+                        "command": "./echo_command",
+                        "pollingInterval": 3,
+                        "options": {
+                            "outFile": "{{ lsfOutputsDirectory }}"
+                        },
+                        "rLimits": {
+                            "cpuTime": 1
+                        }
+                    }
+                }
+            ]
+        }
+    },
+
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "A",
+            "dataFlow": {
+                "in_a": "param"
+            }
+        },
+        {
+            "source": "A",
+            "destination": "output connector",
+            "dataFlow": {
+                "param": "out_a"
+            }
+        }
+    ],
+
+    "inputs": {
+        "in_a": "kittens"
+    }
+}

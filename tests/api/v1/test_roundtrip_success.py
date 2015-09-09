@@ -62,7 +62,7 @@ class RoundTripSuccess(object):
 class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
     @property
     def post_data(self):
-        return  {
+        return {
                 'tasks': {
                     'Converge': {
                         'methods': [
@@ -103,7 +103,7 @@ class WorkflowWithConvergeOperation(RoundTripSuccess, BaseAPITest):
 class WorkflowWithBlockOperation(RoundTripSuccess, BaseAPITest):
     @property
     def post_data(self):
-        return  {
+        return {
                 'tasks': {
                     'Block': {
                         'methods': [
