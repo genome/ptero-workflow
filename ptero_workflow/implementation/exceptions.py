@@ -57,5 +57,6 @@ class IllegalTaskNameError(ValidationError):
 class DuplicatePetriNetError(Exception):
     pass
 
+
 class DuplicateJobError(Exception):
     pass
