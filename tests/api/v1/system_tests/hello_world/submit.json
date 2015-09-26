@@ -1,0 +1,35 @@
+{
+    "inputs": {
+    },
+    "links": [
+        {
+            "source": "input connector",
+            "destination": "Say Hello"
+        },
+        {
+            "source": "Say Hello",
+            "destination": "output connector"
+        }
+    ],
+    "tasks": {
+        "Say Hello": {
+            "methods": [
+                {
+                    "name": "print hello",
+                    "service": "job",
+                    "serviceUrl": "{{ shellCommandServiceUrl }}",
+                    "parameters": {
+                        "commandLine": [
+                            "bash",
+                            "-c",
+                            "echo hello 1>&2; echo world!"
+                        ],
+                        "user": "{{ user }}",
+                        "workingDirectory": "{{ workingDirectory }}",
+                        "environment": {}
+                    }
+                }
+            ]
+        }
+    }
+}
