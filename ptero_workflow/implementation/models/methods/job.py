@@ -8,6 +8,7 @@ import logging
 from pprint import pformat
 from ptero_common.statuses import (scheduled, running, canceled, errored,
         succeeded, failed)
+from ptero_workflow.implementation import exceptions
 
 LOG = logging.getLogger(__name__)
 
@@ -94,13 +95,13 @@ class Job(Method):
         s.commit()
 
     def running(self, body_data, query_string_data):
-        execution_id = query_string_data['execution_id']
+        execution = self._get_execution(query_string_data['execution_id'])
 
-        s = object_session(self)
-        execution = s.query(MethodExecution).filter_by(id=execution_id,
-                method_id=self.id).one()
+        self.validate_source(body_data, execution)
 
         execution.status = running
+
+        s = object_session(self)
         s.commit()
 
     def _get_execution(self, execution_id):
@@ -110,6 +111,8 @@ class Job(Method):
 
     def succeeded(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
+
+        self.validate_source(body_data, execution)
 
         missing_outputs = execution.missing_outputs
         if execution.missing_outputs:
@@ -130,6 +133,8 @@ class Job(Method):
     def failed(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
+        self.validate_source(body_data, execution)
+
         execution.status = failed
         execution.data.update(body_data)
 
@@ -141,6 +146,8 @@ class Job(Method):
 
     def errored(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
+
+        self.validate_source(body_data, execution)
 
         execution.status = errored
         execution.data.update(body_data)
@@ -207,3 +214,9 @@ class Job(Method):
         result = Method.as_skeleton_dict(self)
         result['serviceUrl'] = self.service_url
         return result;
+
+    def validate_source(self, request_body_data, execution):
+        if execution.data['job_id'] != request_body_data['jobId']:
+            raise exceptions.DuplicateJobError('Job from service (%s) '
+                    'with id (%s) does not match submitted job id (%s)',
+                    execution.data['job_id'], request_body_data['jobId'])
