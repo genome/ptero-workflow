@@ -23,9 +23,7 @@ class Workflow(Base):
     __tablename__ = 'workflow'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True, nullable=False,
-            index=True,
-            default=_generate_uuid)
+    name = Column(Text, unique=True, nullable=False, index=True)
 
     net_key = Column(Text, unique=True,
             index=True,

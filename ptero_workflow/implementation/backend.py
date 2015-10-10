@@ -48,18 +48,14 @@ class Backend(object):
         try:
             workflow = self._save_workflow(workflow_data)
         except IntegrityError as e:
-            if 'name' in workflow_data:
-                sqlite_error = 'UNIQUE constraint failed: workflow.name' == e.orig.message
-                postgres_error = re.search(
-                        "Key.*%s.*already exists" % workflow_data['name'],
-                        e.orig.message) is not None
-                if sqlite_error or postgres_error:
-                    raise exceptions.NonUniqueNameError(
-                        "Workflow with name '%s' already exists" % workflow_data['name'])
-                else:
-                    raise exceptions.UnknownIntegrityError('Unknown IntegrityError: %s' % e.message)
+            postgres_error = re.search(
+                    "Key.*%s.*already exists" % workflow_data['name'],
+                    e.orig.message) is not None
+            if postgres_error:
+                raise exceptions.NonUniqueNameError(
+                    "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
-                raise e
+                raise exceptions.UnknownIntegrityError('Unknown IntegrityError: %s' % e.message)
         self.submit_net_task.delay(workflow.id)
         return workflow
 

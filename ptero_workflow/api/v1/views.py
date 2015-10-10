@@ -8,6 +8,7 @@ from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
 from ptero_common.logging_configuration import logged_response
 from functools import wraps
+import uuid
 
 import logging
 import urllib
@@ -52,8 +53,14 @@ class WorkflowListView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def post(self):
+        if 'name' in request.json:
+            name = request.json['name']
+        else:
+            name = str(uuid.uuid4())
+
         try:
             data = validators.get_workflow_post_data()
+            data['name'] = name
         except ValidationError as e:
             msg = "JSON schema validation error: %s" % e.message
             LOG.error(msg)
