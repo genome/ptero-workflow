@@ -56,11 +56,11 @@ class Backend(object):
                     "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
                 raise exceptions.UnknownIntegrityError('Unknown IntegrityError: %s' % e.message)
-        self.submit_net_task.delay(workflow.id)
+        self.submit_net_task.delay(workflow.name)
         return workflow
 
-    def submit_net(self, workflow_id):
-        workflow = self.session.query(models.Workflow).get(workflow_id)
+    def submit_net(self, workflow_name):
+        workflow = self._get_workflow_by_name(workflow_name)
         petri_data = translator.build_petri_net(workflow)
         self.http_task.delay('PUT', self._petri_submit_url(workflow.net_key), **petri_data)
 
@@ -211,16 +211,21 @@ class Backend(object):
         return self._get_workflow_eagerly(workflow_id).as_dict(detailed=False)
 
     def get_workflow_by_name(self, workflow_name):
+        workflow = self._get_workflow_by_name(workflow_name)
+        return workflow.id, {
+                'name': workflow.name,
+                'status': workflow.status,
+        }
+
+    def _get_workflow_by_name(self, workflow_name):
         try:
             workflow = self.session.query(models.Workflow).filter_by(
                 name=workflow_name).one()
-            return workflow.id, {
-                    'name': workflow.name,
-                    'status': workflow.status,
-            }
+            return workflow
         except NoResultFound:
             raise exceptions.NoSuchEntityError(
                     "Workflow with name %s was not found." % workflow_name)
+
 
     def cancel_workflow(self, workflow_id):
         self._get_workflow_eagerly(workflow_id).cancel()
