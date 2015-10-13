@@ -6,6 +6,8 @@ from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 import celery
 import os
 import urllib
@@ -55,35 +57,11 @@ class Method(Base):
         return '-'.join([name_base] + list(args))
 
     def attach_transitions(self, transitions, start_place):
-        execution_created_place = \
-                self.attach_execution_transitions(transitions, start_place)
-
         return self.attach_subclass_transitions(transitions,
-                        execution_created_place)
+                        start_place)
 
-    def attach_execution_transitions(self, transitions, start_place):
-        transitions.extend([
-            {
-                'inputs': [start_place],
-                'outputs': [self._pn('create_execution_wait')],
-                'action': {
-                    'type': 'notify',
-                    'url': self.callback_url('create_execution'),
-                    'response_places': {
-                        'created': self._pn('create_execution_success'),
-                    },
-                },
-            },
 
-            {
-                'inputs': [self._pn('create_execution_wait'),
-                    self._pn('create_execution_success')],
-                'outputs': [self._pn('execution_created_success')],
-            },
-        ])
-        return self._pn('execution_created_success')
-
-    def create_execution(self, body_data, query_string_data):
+    def get_or_create_execution(self, body_data, query_string_data):
         color = body_data['color']
         group = body_data['group']
 
@@ -92,18 +70,30 @@ class Method(Base):
         parent_color = _get_parent_color(colors)
 
         s = object_session(self)
-        execution = MethodExecution(method=self, color=color,
-                colors=colors, begins=begins,
-                parent_color=parent_color,
-                workflow_id=self.workflow_id,
-                data={
-                    'petri_response_links': body_data['response_links']
-        })
-        s.add(execution)
-        s.commit()
 
-        response_links = body_data['response_links']
-        self.http.delay('PUT', response_links['created'])
+        try:
+            return s.query(MethodExecution).filter(
+                    MethodExecution.method==self,
+                    MethodExecution.color==color).one()
+        except NoResultFound:
+            execution = MethodExecution(method=self, color=color,
+                    colors=colors, begins=begins,
+                    parent_color=parent_color,
+                    workflow_id=self.workflow_id,
+                    data={
+                        'petri_response_links': body_data['response_links']
+            })
+            s.add(execution)
+
+            try:
+                s.commit()
+                return execution
+            except IntegrityError:
+                s.rollback()
+                return s.query(MethodExecution).filter(
+                        MethodExecution.method==self,
+                        MethodExecution.color==color).one()
+
 
     def get_webhooks(self, name=None):
         if name is not None:

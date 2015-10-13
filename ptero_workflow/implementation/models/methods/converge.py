@@ -1,4 +1,3 @@
-from ..execution.method_execution import MethodExecution
 from ..json_type import JSON
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
@@ -56,9 +55,7 @@ class Converge(Method):
         s = object_session(self)
 
         color = body_data['color']
-        execution = s.query(MethodExecution).filter(
-                MethodExecution.method==self,
-                MethodExecution.color==color).one()
+        execution = self.get_or_create_execution(body_data, query_string_data)
 
         execution.status = scheduled
         s.flush()

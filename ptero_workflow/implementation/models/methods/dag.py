@@ -1,8 +1,6 @@
 from .method_base import Method
 from ptero_workflow.implementation.models.link import Link
 from ptero_workflow.implementation.models.task import Task
-from ptero_workflow.implementation.models.execution.method_execution import \
-        MethodExecution
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import backref, aliased, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -113,10 +111,7 @@ class DAG(Method):
     def set_status(self, body_data, query_string_data):
         s = object_session(self)
 
-        color = body_data['color']
-        execution = s.query(MethodExecution).filter(
-                MethodExecution.method==self,
-                MethodExecution.color==color).one()
+        execution = self.get_or_create_execution(body_data, query_string_data)
         execution.status = query_string_data['status']
 
         s.commit()
