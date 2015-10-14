@@ -306,6 +306,10 @@ class Backend(object):
         try:
             execution.update(update_data)
         except exceptions.UpdateError:
+            LOG.exception('Exception while updating execution (%s) '
+                    'in workflow "%s"', execution_id,
+                    execution.workflow.name,
+                    extra={'workflowName':execution.workflow.name})
             self.session.rollback()
             raise
 

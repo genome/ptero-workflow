@@ -130,9 +130,6 @@ class ExecutionDetailView(Resource):
                     update_data=update_data)
             return execution_data, 200
         except exceptions.UpdateError as e:
-            LOG.exception('%s - Error occured while updating execution (%s): %s',
-                g.backend.get_workflow_id_from_execution_id(execution_id),
-                execution_id, e.message)
             return e.message, 409
 
 
