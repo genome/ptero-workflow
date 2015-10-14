@@ -62,10 +62,7 @@ class Job(Method):
     def execute(self, body_data, query_string_data):
         s = object_session(self)
 
-        color = body_data['color']
-        execution = s.query(MethodExecution).filter(
-                MethodExecution.method==self,
-                MethodExecution.color==color).one()
+        execution = self.get_or_create_execution(body_data, query_string_data)
         execution.data['petri_response_links_for_job'] = \
                 body_data['response_links']
         s.commit()
@@ -76,6 +73,7 @@ class Job(Method):
             self.http.delay('PUT', response_url)
         else:
             group = body_data['group']
+            color = body_data['color']
             colors = group.get('color_lineage', []) + [color]
             begins = group.get('begin_lineage', []) + [group['begin']]
 

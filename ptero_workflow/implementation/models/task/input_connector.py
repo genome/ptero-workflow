@@ -1,5 +1,4 @@
 from .task_base import Task
-from ..execution.method_execution import MethodExecution
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
 import logging
@@ -28,10 +27,10 @@ class InputConnector(Task):
                 'set_dag_status_running')
 
     def set_dag_status_running(self, body_data, query_string_data):
-        color = body_data['color']
+        execution = self.get_or_create_execution(body_data, query_string_data)
 
         try:
-            self._set_dag_status_running(color)
+            self._set_dag_status_running(execution)
             response_url = body_data['response_links']['success']
         except:
             LOG.exception("%s Unexpected exception setting dag status to running",
@@ -39,11 +38,8 @@ class InputConnector(Task):
             response_url = body_data['response_links']['failure']
         self.http.delay('PUT', response_url)
 
-    def _set_dag_status_running(self, color):
+    def _set_dag_status_running(self, execution):
         s = object_session(self)
-        execution = s.query(MethodExecution).filter(
-                MethodExecution.method==self.parent,
-                MethodExecution.color==color).one()
         execution.status = statuses.scheduled
         s.flush()
         execution.status = statuses.running

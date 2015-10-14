@@ -11,6 +11,7 @@ from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import IntegrityError
 import celery
 import logging
 import os
@@ -33,7 +34,6 @@ class Task(Base, PetriMixin):
 
     VALID_CALLBACK_TYPES = set([
         'create_array_result',
-        'create_execution',
         'get_split_size',
         'succeeded',
         'failed',
@@ -100,20 +100,15 @@ class Task(Base, PetriMixin):
 
     def attach_transitions(self, transitions, start_place):
 
-        execution_created = \
-                self.attach_execution_transitions(transitions, start_place, 'outer')
-
         if self.parallel_by is None:
             action_success, action_failure = \
                     self.attach_subclass_transitions(transitions,
-                            execution_created)
+                            start_place)
         else:
             split, split_failure = self._attach_split_transitions(
-                    transitions, execution_created)
-            inner_execution_created = \
-                    self.attach_execution_transitions(transitions, split, 'inner')
+                    transitions, start_place)
             subclass_success, subclass_failure = \
-                    self.attach_subclass_transitions(transitions, inner_execution_created)
+                    self.attach_subclass_transitions(transitions, split)
             update_success, update_failure = self._attach_status_update_actions(
                     transitions, subclass_success, subclass_failure, 'inner')
             action_success, join_failure = \
@@ -128,28 +123,6 @@ class Task(Base, PetriMixin):
 
 
         return success, failure
-
-    def attach_execution_transitions(self, transitions, start_place, name):
-        transitions.extend([
-            {
-                'inputs': [start_place],
-                'outputs': [self._pn('create_execution_wait', name)],
-                'action': {
-                    'type': 'notify',
-                    'url': self.callback_url('create_execution'),
-                    'response_places': {
-                        'created': self._pn('create_execution_success', name),
-                    },
-                },
-            },
-
-            {
-                'inputs': [self._pn('create_execution_wait', name),
-                    self._pn('create_execution_success', name)],
-                'outputs': [self._pn('execution_created_success', name)],
-            },
-        ])
-        return self._pn('execution_created_success', name)
 
     def attach_subclass_transitions(self, transitions, start_place):
         return start_place, None
@@ -314,9 +287,8 @@ class Task(Base, PetriMixin):
             s.rollback()
             LOG.exception('%s - Failed to get split size', self.workflow_id)
             self.http.delay('PUT', response_links['failure'])
-            execution = s.query(TaskExecution).filter(
-                    TaskExecution.task==self,
-                    TaskExecution.color==color).one()
+            execution = self.get_or_create_execution(body_data,
+                    query_string_data)
             execution.data['error'] = \
                 'Failed to get split size: %s' % e.message
             s.commit()
@@ -326,6 +298,7 @@ class Task(Base, PetriMixin):
                 self.workflow_id, self.name, self.parallel_by, colors, size)
         self.http.delay('PUT', response_links['send_data'],
                 color_group_size=size)
+
 
     def create_array_result(self, body_data, query_string_data):
 
@@ -443,7 +416,7 @@ class Task(Base, PetriMixin):
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
-    def create_execution(self, body_data, query_string_data):
+    def get_or_create_execution(self, body_data, query_string_data):
 
         self.validate_source(body_data)
 
@@ -455,6 +428,7 @@ class Task(Base, PetriMixin):
             execution = s.query(TaskExecution).filter(
                     TaskExecution.task==self,
                     TaskExecution.color==color).one()
+            created_execution = False
         except NoResultFound:
             group = body_data['group']
 
@@ -469,7 +443,17 @@ class Task(Base, PetriMixin):
                         'petri_response_links': response_links,
             })
             s.add(execution)
-            s.flush()
+            try:
+                s.commit()
+                created_execution = True
+            except IntegrityError:
+                s.rollback()
+                execution = s.query(TaskExecution).filter(
+                        TaskExecution.task==self,
+                        TaskExecution.color==color).one()
+                created_execution = False
+
+        if created_execution:
             execution.status = statuses.scheduled
             s.flush()
             execution.status = statuses.running
@@ -480,24 +464,21 @@ class Task(Base, PetriMixin):
 
         s.commit()
 
-        self.http.delay('PUT', response_links['created'])
+        return execution
 
     def succeeded(self, body_data, query_string_data):
-        self._ended(body_data, statuses.succeeded)
+        self._ended(body_data, query_string_data, statuses.succeeded)
 
     def failed(self, body_data, query_string_data):
-        self._ended(body_data, statuses.failed)
+        self._ended(body_data, query_string_data, statuses.failed)
 
-    def _ended(self, body_data, status):
+    def _ended(self, body_data, query_string_data, status):
 
         self.validate_source(body_data)
 
         s = object_session(self)
 
-        color = body_data['color']
-        execution = s.query(TaskExecution).filter(
-                TaskExecution.task==self,
-                TaskExecution.color==color).one()
+        execution = self.get_or_create_execution(body_data, query_string_data)
         execution.status = status
 
         s.commit()
