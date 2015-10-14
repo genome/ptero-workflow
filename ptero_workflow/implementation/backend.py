@@ -168,30 +168,6 @@ class Backend(object):
 
         return workflow
 
-    def get_workflow_id_from_execution_id(self, execution_id):
-        execution = self.session.query(Execution).get(execution_id)
-        if execution is not None:
-            return execution.workflow_id
-        else:
-            raise exceptions.NoSuchEntityError(
-                    "Execution with id %s was not found." % execution_id)
-
-    def get_workflow_id_from_task_id(self, task_id):
-        task = self.session.query(models.Task).get(task_id)
-        if task is not None:
-            return task.workflow_id
-        else:
-            raise exceptions.NoSuchEntityError(
-                    "Task with id %s was not found." % task_id)
-
-    def get_workflow_id_from_method_id(self, method_id):
-        method = self.session.query(models.Method).get(method_id)
-        if method is not None:
-            return method.workflow_id
-        else:
-            raise exceptions.NoSuchEntityError(
-                    "Method with id %s was not found." % method_id)
-
     def _get_workflow(self, workflow_id):
         workflow = self.session.query(models.Workflow).get(workflow_id)
         if workflow is not None:
