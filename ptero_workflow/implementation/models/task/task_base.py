@@ -269,6 +269,9 @@ class Task(Base, PetriMixin):
 
         self.validate_source(body_data)
 
+        execution = self.get_or_create_execution(body_data,
+                query_string_data)
+
         color = body_data['color']
         group = body_data['group']
         response_links = body_data['response_links']
@@ -285,17 +288,22 @@ class Task(Base, PetriMixin):
             size = source.get_size(colors, begins)
         except Exception as e:
             s.rollback()
-            LOG.exception('%s - Failed to get split size', self.workflow_id)
+            LOG.exception('%s - Failed to get split size',
+                    self.workflow_id)
+            LOG.info('Notifying petri: execution "%s" failed to compute '
+                    'split size for workflow "%s"',
+                    execution.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
             self.http.delay('PUT', response_links['failure'])
-            execution = self.get_or_create_execution(body_data,
-                    query_string_data)
+
             execution.data['error'] = \
                 'Failed to get split size: %s' % e.message
             s.commit()
             return
 
-        LOG.debug('%s - Split size for %s[%s] colors=%s is %s',
-                self.workflow_id, self.name, self.parallel_by, colors, size)
+        LOG.info('Notifying petri: execution "%s" has split size %s for'
+                ' workflow "%s"', execution.name, size, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_links['send_data'],
                 color_group_size=size)
 
@@ -325,6 +333,9 @@ class Task(Base, PetriMixin):
 
         s.commit()
 
+        LOG.info('Notifying petri: created array result for task (%s) for'
+                ' workflow "%s"', self.name, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_links['created'])
 
     @property

@@ -67,6 +67,9 @@ class Converge(Method):
             s.commit()
 
             response_url = body_data['response_links']['failure']
+            LOG.info('Notifying petri: execution "%s" failed for'
+                    ' workflow "%s"', execution.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
             self.http.delay('PUT', response_url)
         else:
             execution.update({'outputs': self.get_outputs(execution.get_inputs())})
@@ -74,6 +77,9 @@ class Converge(Method):
             s.commit()
 
             response_url = body_data['response_links']['success']
+            LOG.info('Notifying petri: execution "%s" succeeded for'
+                    ' workflow "%s"', execution.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
             self.http.delay('PUT', response_url)
 
     def get_outputs(self, inputs):

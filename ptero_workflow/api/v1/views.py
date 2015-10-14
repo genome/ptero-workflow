@@ -50,20 +50,36 @@ class WorkflowListView(Resource):
             request.workflow_id = workflow_id
             return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
-    @logged_response(logger=LOG)
     @sends_404
     def post(self):
         if 'name' in request.json:
             name = request.json['name']
         else:
             name = str(uuid.uuid4())
+        name_part = ' for workflow named "%s"' % name
+
+        LOG.info("Handling POST request to %s from %s%s",
+                request.url, request.access_route[0], name_part,
+                extra={'workflowName':name})
+
+        name_part = ' for workflow "%s"' % name
+
+        LOG.info("Handling workflow POST from %s%s",
+                request.access_route[0], name_part,
+                extra={'workflowName':name})
 
         try:
+            LOG.debug("Validating JSON body of request%s", name_part,
+                extra={'workflowName':name})
             data = validators.get_workflow_post_data()
             data['name'] = name
         except ValidationError as e:
+            LOG.exception("Exception occured while validating JSON "
+                "body of workflow POST from %s%s", request.access_route[0],
+                name_part, extra={'workflowName':name})
+            LOG.info("Responding 400 to workflow POST %s",
+                    name_part, extra={'workflowName':name})
             msg = "JSON schema validation error: %s" % e.message
-            LOG.error(msg)
             return {'error': msg}, 400
 
         try:
@@ -75,10 +91,15 @@ class WorkflowListView(Resource):
             else:
                 workflow_id, workflow_as_dict = g.backend.create_workflow(data)
         except PteroValidationError as e:
-            LOG.exception(e)
+            LOG.exception('Exception occured while validating '
+                'specification of workflow "%s"', name,
+                extra={'workflowName':name})
+            LOG.info("Responding 400 to workflow POST %s",
+                    name_part, extra={'workflowName':name})
             return {'error': e.message}, 400
 
-        request.workflow_id = workflow_id  # for logging
+        LOG.info("Responding 201 to workflow POST%s",
+                name_part, extra={'workflowName':name})
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
             'Location': url_for('workflow-detail', workflow_id=workflow_id,
                 _external=True)

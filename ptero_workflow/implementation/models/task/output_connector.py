@@ -59,6 +59,10 @@ class OutputConnector(Task):
         s = object_session(self)
         s.commit()
 
+        LOG.info('Notifying petri: output connector (%s) copied outputs '
+                'to parent (%s) for workflow "%s"',
+                self.id, self.parent.name, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_links['continue'])
 
 

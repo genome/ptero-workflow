@@ -56,12 +56,19 @@ class Backend(object):
                     "Workflow with name '%s' already exists" % workflow_data['name'])
             else:
                 raise exceptions.UnknownIntegrityError('Unknown IntegrityError: %s' % e.message)
+
+        LOG.info('Submitting Celery SubmitNet task for workflow "%s"',
+                workflow.name, extra={'workflowName':workflow.name})
         self.submit_net_task.delay(workflow.name)
         return workflow
 
     def submit_net(self, workflow_name):
         workflow = self._get_workflow_by_name(workflow_name)
         petri_data = translator.build_petri_net(workflow)
+
+        LOG.info('Submitting petri net <%s> for'
+                ' workflow "%s"', workflow.net_key, workflow.name,
+                extra={'workflowName':workflow.name})
         self.http_task.delay('PUT', self._petri_submit_url(workflow.net_key), **petri_data)
 
     def _petri_submit_url(self, net_key):
@@ -280,6 +287,9 @@ class Backend(object):
         execution = self._get_execution(execution_id)
 
         try:
+            LOG.info('Updating execution (%s) in workflow "%s"',
+                    execution_id, execution.workflow.name,
+                    extra={'workflowName':execution.workflow.name})
             execution.update(update_data)
         except exceptions.UpdateError:
             LOG.exception('Exception while updating execution (%s) '
@@ -296,12 +306,19 @@ class Backend(object):
             query_string_data):
         task = self.session.query(models.Task
                 ).filter_by(id=task_id).one()
+        LOG.info('Got "%s" callback for task (%s:%s) in workflow "%s"',
+            callback_type, task.name, task_id, task.workflow.name,
+            extra={'workflowName':task.workflow.name})
         task.handle_callback(callback_type, body_data, query_string_data)
 
     def handle_method_callback(self, method_id, callback_type, body_data,
             query_string_data):
         method = self.session.query(models.Method
                 ).filter_by(id=method_id).one()
+        LOG.info('Got "%s" callback for %s method (%s:%s) in workflow "%s"',
+            callback_type, method.__class__.__name__, method.name,
+            method_id, method.workflow.name,
+            extra={'workflowName':method.workflow.name})
         method.handle_callback(callback_type, body_data, query_string_data)
 
     def cleanup(self):

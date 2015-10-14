@@ -32,10 +32,18 @@ class InputConnector(Task):
         try:
             self._set_dag_status_running(execution)
             response_url = body_data['response_links']['success']
+            LOG.info('Notifying petri: input connector (%s) set dag (%s) '
+                    'status to running for workflow "%s"',
+                    self.id, self.parent.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
         except:
-            LOG.exception("%s Unexpected exception setting dag status to running",
-                    self.workflow_id)
+            LOG.exception("Exception while setting dag (%s) status "
+                    "to running", self.parent.name)
             response_url = body_data['response_links']['failure']
+            LOG.info('Notifying petri: input connector (%s) failed to set '
+                    'dag (%s) status to running for workflow "%s"',
+                    self.id, self.parent.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_url)
 
     def _set_dag_status_running(self, execution):

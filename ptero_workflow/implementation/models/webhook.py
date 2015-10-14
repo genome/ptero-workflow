@@ -35,20 +35,47 @@ class Webhook(Base):
     url = Column(String, nullable=False)
 
     @property
+    def parent(self):
+        if self.parent_type is 'Method':
+            return self.method
+        else:
+            return self.task
+
+    @property
+    def parent_type(self):
+        if self.method_id is not None:
+            return 'Method'
+        else:
+            return 'Task'
+
+    @property
     def http(self):
         return celery.current_app.tasks[
                 'ptero_common.celery.http.HTTP']
 
     def send(self, **data):
+        LOG.info('Sending webhook: %s "%s" of workflow "%s" reached status %s '
+                '-- %s',
+                self.parent_type, self.parent.name, self.parent.workflow.name,
+                self.name, self.url,
+                extra={'workflowName':self.parent.workflow.name})
         self.http.delay('POST', self.url, webhookName=self.name, **data)
 
     def send_after_commit(self, **data):
         session = object_session(self)
         url = self.url
         name = self.name
+        workflow_name = self.parent.workflow.name
+        parent_type = self.parent_type
+        parent_name = self.parent.name
 
-        # Note: closure over self, url, name, and data
+        # Note: closure over self, url, name, data, ect...
+        # Closure is to ensure no SQL is emmitted on a 'committed' session
         def callback(session):
+            LOG.info('Sending webhook after commit: %s "%s" of workflow "%s" reached '
+                    'status %s -- %s',
+                    parent_type, parent_name, workflow_name, name, url,
+                    extra={'workflowName':workflow_name})
             self.http.delay('POST', url, webhookName=name, **data)
         event.listen(session, "after_commit", callback)
 
