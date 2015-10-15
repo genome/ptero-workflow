@@ -8,10 +8,10 @@ from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.validators import validate_unique_links
 import os
-import logging
+from ptero_common import nicer_logging
 import re
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 _TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'

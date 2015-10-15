@@ -7,10 +7,10 @@ from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
 from operator import attrgetter
-import logging
+from ptero_common import nicer_logging
 from ptero_common import statuses
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Execution', 'ExecutionStatusHistory']
 

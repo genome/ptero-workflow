@@ -5,13 +5,13 @@ from sqlalchemy.orm import backref, relationship
 from collections import defaultdict
 from ptero_common.utils import format_dict_of_lists
 
-import logging
+from ptero_common import nicer_logging
 
 
 __all__ = ['Link', 'DataFlowEntry']
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 class Link(Base):

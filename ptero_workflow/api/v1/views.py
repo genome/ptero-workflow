@@ -6,15 +6,15 @@ from flask import g, request, url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
-from ptero_common.logging_configuration import logged_response
 from functools import wraps
 import uuid
 
-import logging
+from ptero_common import nicer_logging
+from ptero_common.nicer_logging import logged_response
 import urllib
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 def sends_404(target):
@@ -118,7 +118,6 @@ class ExecutionDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, execution_id):
-        request.workflow_id = g.backend.get_workflow_id_from_execution_id(execution_id)
         execution_data = g.backend.get_execution(execution_id)
         return execution_data, 200
 
@@ -127,7 +126,6 @@ class ExecutionDetailView(Resource):
     def patch(self, execution_id):
         update_data = request.get_json()
         try:
-            request.workflow_id = g.backend.get_workflow_id_from_execution_id(execution_id)
             execution_data = g.backend.update_execution(execution_id,
                     update_data=update_data)
             return execution_data, 200
@@ -164,7 +162,6 @@ class TaskCallback(Resource):
     def post(self, task_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
-        request.workflow_id = g.backend.get_workflow_id_from_task_id(task_id)
         g.backend.handle_task_callback(task_id, callback_type, body_data,
                 query_string_data)
         return {"message": "Completed task callback"}, 200
@@ -176,7 +173,6 @@ class MethodCallback(Resource):
     def post(self, method_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
-        request.workflow_id = g.backend.get_workflow_id_from_method_id(method_id)
         g.backend.handle_method_callback(method_id, callback_type,
                 body_data, query_string_data)
         return {"message": "Completed method callback"}, 200

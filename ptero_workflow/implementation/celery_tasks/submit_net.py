@@ -1,5 +1,8 @@
 import celery
+from ptero_common import nicer_logging
 
+
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['SubmitNet']
 

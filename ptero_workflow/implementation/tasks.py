@@ -5,9 +5,9 @@ from networkx.exception import NetworkXUnfeasible
 from networkx import DiGraph
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.validators import validate_unique_links
-import logging
+from ptero_common import nicer_logging
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 def build_task(name, data, workflow, parent_method=None):

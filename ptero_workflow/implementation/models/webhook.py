@@ -5,11 +5,11 @@ from sqlalchemy.orm.session import object_session
 from sqlalchemy import event
 from collections import defaultdict
 import celery
-import logging
+from ptero_common import nicer_logging
 from ptero_common.statuses import succeeded, failed, canceled, errored
 from ptero_common.utils import format_dict_of_lists
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Webhook']
 

@@ -13,7 +13,7 @@ from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 import celery
-import logging
+from ptero_common import nicer_logging
 import os
 import urllib
 from ptero_common import statuses
@@ -23,7 +23,7 @@ from ptero_workflow.implementation import exceptions
 __all__ = ['Task']
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 class Task(Base, PetriMixin):

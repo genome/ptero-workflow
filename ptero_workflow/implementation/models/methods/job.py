@@ -4,13 +4,13 @@ from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session
 import celery
-import logging
+from ptero_common import nicer_logging
 from pprint import pformat
 from ptero_common.statuses import (scheduled, running, canceled, errored,
         succeeded, failed)
 from ptero_workflow.implementation import exceptions
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Job']
 

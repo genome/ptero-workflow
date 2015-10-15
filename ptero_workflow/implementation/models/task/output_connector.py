@@ -1,10 +1,10 @@
 from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
-import logging
+from ptero_common import nicer_logging
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 __all__ = ['OutputConnector']

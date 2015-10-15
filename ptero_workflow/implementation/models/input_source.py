@@ -7,13 +7,13 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound
 from ..exceptions import MissingResultError
-import logging
+from ptero_common import nicer_logging
 
 
 __all__ = ['InputSource']
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 class InputSource(Base):

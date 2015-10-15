@@ -2,10 +2,10 @@ from ..json_type import JSON
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
-import logging
+from ptero_common import nicer_logging
 from ptero_common.statuses import (scheduled, running, canceled, succeeded)
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Converge']
 
