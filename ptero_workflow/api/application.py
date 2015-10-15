@@ -10,7 +10,7 @@ __all__ = ['create_app']
 
 
 def create_app():
-    factory = Factory(os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'))
+    factory = Factory(os.environ['PTERO_WORKFLOW_DB_STRING'])
 
     app = _create_app_from_blueprints()
 

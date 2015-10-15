@@ -14,7 +14,7 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
 
     @property
     def petri_data(self):
-        factory = Factory(os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'))
+        factory = Factory(os.environ['PTERO_WORKFLOW_DB_STRING'])
         self.backend = factory.create_backend()
         data = self.workflow_data
         data['name'] = str(uuid.uuid4())
