@@ -292,11 +292,11 @@ class Backend(object):
                     extra={'workflowName':execution.workflow.name})
             execution.update(update_data)
         except exceptions.UpdateError:
+            # We log here because we have access to workflow.name here
             LOG.exception('Exception while updating execution (%s) '
                     'in workflow "%s"', execution_id,
                     execution.workflow.name,
                     extra={'workflowName':execution.workflow.name})
-            self.session.rollback()
             raise
 
         self.session.commit()
