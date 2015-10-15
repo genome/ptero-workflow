@@ -57,11 +57,6 @@ class WorkflowListView(Resource):
             name = request.json['name']
         else:
             name = str(uuid.uuid4())
-        name_part = ' for workflow named "%s"' % name
-
-        LOG.info("Handling POST request to %s from %s%s",
-                request.url, request.access_route[0], name_part,
-                extra={'workflowName':name})
 
         name_part = ' for workflow "%s"' % name
 
