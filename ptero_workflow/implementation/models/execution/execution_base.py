@@ -76,9 +76,11 @@ class Execution(Base):
                     (status, str(statuses.VALID_STATUSES)))
         else:
             if not statuses.is_valid_transition(self.status, status):
-                LOG.debug("%s - Refusing to change status from (%s) to (%s), valid status transitions are: %s",
-                    self.workflow_id, self.status, status,
-                    str(statuses.VALID_STATUS_TRANSITIONS[status]))
+                LOG.debug("Refusing to change status of execution (%s) from "
+                        "(%s) to (%s) in workflow %s",
+                        self.name, self.status, status,
+                        self.parent.workflow.name,
+                        extra={'workflowName':self.parent.workflow.name})
             else:
                 self.send_webhooks(status)
                 self._status = status

@@ -415,8 +415,8 @@ class Task(Base, PetriMixin):
             inputs[source.destination_property] = source.get_data(
                     colors, begins)
 
-        LOG.debug('%s - Got inputs for %s, colors=%s: %s', self.workflow_id, 
-                self.name, colors, inputs)
+        LOG.debug('Got inputs for Task (%s:%s), colors=%s in workflow %s: %s',
+                self.name, self.id, colors, self.workflow.name, inputs)
 
         return inputs
 
@@ -511,17 +511,21 @@ class Task(Base, PetriMixin):
         return self, name, parallel_depths
 
     def create_input_sources(self, session, parallel_depths):
-        LOG.debug('%s - Creating input sources for %s', self.workflow_id, 
-                self.name)
+        LOG.debug('Creating input sources for Task %s:%s in workflow %s',
+                self.name, self.id, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         for input_link in self.input_links:
             for entry in input_link.data_flow_entries:
                 source_task, source_property, source_parallel_depths = \
                         self.resolve_input_source(session, entry.destination_property,
                                 parallel_depths)
-                LOG.debug('%s - Found input source %s[%s] = %s[%s]: parallel_depths=%s',
-                        self.workflow_id, self.name, entry.destination_property,
-                        source_task.name, entry.source_property,
-                        source_parallel_depths)
+                LOG.debug('Found input source %s:%s[%s] = %s:%s[%s]: '
+                        'parallel_depths=%s in workflow %s',
+                        self.workflow_id, self.name, self.id,
+                        entry.destination_property,
+                        source_task.name, source_task.id, entry.source_property,
+                        source_parallel_depths,
+                        extra={'workflowName':self.workflow.name})
 
                 in_source = input_source.InputSource(
                         source_task=source_task,
