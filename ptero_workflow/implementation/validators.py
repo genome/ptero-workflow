@@ -1,8 +1,8 @@
 from collections import defaultdict
 from .exceptions import NonUniqueLinkError
-import logging
+from ptero_common import nicer_logging
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 def validate_unique_links(links):

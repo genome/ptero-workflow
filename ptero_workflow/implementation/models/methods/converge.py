@@ -2,10 +2,10 @@ from ..json_type import JSON
 from .method_base import Method
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
-import logging
+from ptero_common import nicer_logging
 from ptero_common.statuses import (scheduled, running, canceled, succeeded)
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Converge']
 
@@ -67,6 +67,9 @@ class Converge(Method):
             s.commit()
 
             response_url = body_data['response_links']['failure']
+            LOG.info('Notifying petri: execution "%s" failed for'
+                    ' workflow "%s"', execution.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
             self.http.delay('PUT', response_url)
         else:
             execution.update({'outputs': self.get_outputs(execution.get_inputs())})
@@ -74,6 +77,9 @@ class Converge(Method):
             s.commit()
 
             response_url = body_data['response_links']['success']
+            LOG.info('Notifying petri: execution "%s" succeeded for'
+                    ' workflow "%s"', execution.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
             self.http.delay('PUT', response_url)
 
     def get_outputs(self, inputs):

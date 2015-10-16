@@ -3,6 +3,7 @@ import unittest
 import tests.util
 from ptero_workflow.implementation.factory import Factory
 from ptero_workflow.implementation import translator
+import uuid
 
 
 class TestWorkflowPetriTranslation(unittest.TestCase):
@@ -13,9 +14,11 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
 
     @property
     def petri_data(self):
-        factory = Factory(os.environ.get('PTERO_WORKFLOW_DB_STRING', 'sqlite://'))
+        factory = Factory(os.environ['PTERO_WORKFLOW_DB_STRING'])
         self.backend = factory.create_backend()
-        workflow = self.backend._save_workflow(self.workflow_data)
+        data = self.workflow_data
+        data['name'] = str(uuid.uuid4())
+        workflow = self.backend._save_workflow(data)
         return translator.build_petri_net(workflow)
 
     @property

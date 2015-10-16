@@ -1,8 +1,8 @@
 from flask import g, url_for
 import urllib
-import logging
+from ptero_common import nicer_logging
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 def report(workflow_id, since=None):

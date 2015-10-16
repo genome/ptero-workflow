@@ -1,10 +1,10 @@
 from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm.session import object_session
-import logging
+from ptero_common import nicer_logging
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 __all__ = ['OutputConnector']
@@ -59,6 +59,10 @@ class OutputConnector(Task):
         s = object_session(self)
         s.commit()
 
+        LOG.info('Notifying petri: output connector (%s) copied outputs '
+                'to parent (%s) for workflow "%s"',
+                self.id, self.parent.name, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_links['continue'])
 
 

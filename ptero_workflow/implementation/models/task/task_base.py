@@ -13,7 +13,7 @@ from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 import celery
-import logging
+from ptero_common import nicer_logging
 import os
 import urllib
 from ptero_common import statuses
@@ -23,7 +23,7 @@ from ptero_workflow.implementation import exceptions
 __all__ = ['Task']
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 class Task(Base, PetriMixin):
@@ -269,6 +269,9 @@ class Task(Base, PetriMixin):
 
         self.validate_source(body_data)
 
+        execution = self.get_or_create_execution(body_data,
+                query_string_data)
+
         color = body_data['color']
         group = body_data['group']
         response_links = body_data['response_links']
@@ -285,17 +288,22 @@ class Task(Base, PetriMixin):
             size = source.get_size(colors, begins)
         except Exception as e:
             s.rollback()
-            LOG.exception('%s - Failed to get split size', self.workflow_id)
+            LOG.exception('%s - Failed to get split size',
+                    self.workflow_id)
+            LOG.info('Notifying petri: execution "%s" failed to compute '
+                    'split size for workflow "%s"',
+                    execution.name, self.workflow.name,
+                    extra={'workflowName':self.workflow.name})
             self.http.delay('PUT', response_links['failure'])
-            execution = self.get_or_create_execution(body_data,
-                    query_string_data)
+
             execution.data['error'] = \
                 'Failed to get split size: %s' % e.message
             s.commit()
             return
 
-        LOG.debug('%s - Split size for %s[%s] colors=%s is %s',
-                self.workflow_id, self.name, self.parallel_by, colors, size)
+        LOG.info('Notifying petri: execution "%s" has split size %s for'
+                ' workflow "%s"', execution.name, size, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_links['send_data'],
                 color_group_size=size)
 
@@ -325,6 +333,9 @@ class Task(Base, PetriMixin):
 
         s.commit()
 
+        LOG.info('Notifying petri: created array result for task (%s) for'
+                ' workflow "%s"', self.name, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_links['created'])
 
     @property
@@ -404,8 +415,8 @@ class Task(Base, PetriMixin):
             inputs[source.destination_property] = source.get_data(
                     colors, begins)
 
-        LOG.debug('%s - Got inputs for %s, colors=%s: %s', self.workflow_id, 
-                self.name, colors, inputs)
+        LOG.debug('Got inputs for Task (%s:%s), colors=%s in workflow %s: %s',
+                self.name, self.id, colors, self.workflow.name, inputs)
 
         return inputs
 
@@ -500,17 +511,21 @@ class Task(Base, PetriMixin):
         return self, name, parallel_depths
 
     def create_input_sources(self, session, parallel_depths):
-        LOG.debug('%s - Creating input sources for %s', self.workflow_id, 
-                self.name)
+        LOG.debug('Creating input sources for Task %s:%s in workflow %s',
+                self.name, self.id, self.workflow.name,
+                extra={'workflowName':self.workflow.name})
         for input_link in self.input_links:
             for entry in input_link.data_flow_entries:
                 source_task, source_property, source_parallel_depths = \
                         self.resolve_input_source(session, entry.destination_property,
                                 parallel_depths)
-                LOG.debug('%s - Found input source %s[%s] = %s[%s]: parallel_depths=%s',
-                        self.workflow_id, self.name, entry.destination_property,
-                        source_task.name, entry.source_property,
-                        source_parallel_depths)
+                LOG.debug('Found input source %s:%s[%s] = %s:%s[%s]: '
+                        'parallel_depths=%s in workflow %s',
+                        self.workflow_id, self.name, self.id,
+                        entry.destination_property,
+                        source_task.name, source_task.id, entry.source_property,
+                        source_parallel_depths,
+                        extra={'workflowName':self.workflow.name})
 
                 in_source = input_source.InputSource(
                         source_task=source_task,

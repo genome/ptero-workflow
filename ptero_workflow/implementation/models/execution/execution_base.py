@@ -7,10 +7,10 @@ from sqlalchemy.orm import backref, relationship
 from ptero_workflow.implementation.exceptions import (OutputsAlreadySet,
         ImmutableUpdateError, InvalidStatusError)
 from operator import attrgetter
-import logging
+from ptero_common import nicer_logging
 from ptero_common import statuses
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Execution', 'ExecutionStatusHistory']
 
@@ -76,9 +76,11 @@ class Execution(Base):
                     (status, str(statuses.VALID_STATUSES)))
         else:
             if not statuses.is_valid_transition(self.status, status):
-                LOG.debug("%s - Refusing to change status from (%s) to (%s), valid status transitions are: %s",
-                    self.workflow_id, self.status, status,
-                    str(statuses.VALID_STATUS_TRANSITIONS[status]))
+                LOG.debug("Refusing to change status of execution (%s) from "
+                        "(%s) to (%s) in workflow %s",
+                        self.name, self.status, status,
+                        self.parent.workflow.name,
+                        extra={'workflowName':self.parent.workflow.name})
             else:
                 self.send_webhooks(status)
                 self._status = status
@@ -94,8 +96,7 @@ class Execution(Base):
             # this involves at least a little overhead, so only do it once
             # we know that there are webhooks to send.
             webhook_data = {
-                # not sure how to get to the workflow, but would be nice...
-                # 'workflowUrl': self.workflow.url
+                'workflowUrl': self.parent.workflow.url,
                 'executionUrl': self.url,
                 'targetName': self.parent.name,
                 'targetType': self.parent.type,

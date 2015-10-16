@@ -3,7 +3,7 @@ from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship
 import base64
-import logging
+from ptero_common import nicer_logging
 import os
 import uuid
 
@@ -11,7 +11,7 @@ import uuid
 __all__ = ['Workflow']
 
 
-LOG = logging.getLogger(__name__)
+LOG = nicer_logging.getLogger(__name__)
 
 
 
@@ -23,9 +23,7 @@ class Workflow(Base):
     __tablename__ = 'workflow'
 
     id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True, nullable=False,
-            index=True,
-            default=_generate_uuid)
+    name = Column(Text, unique=True, nullable=False, index=True)
 
     net_key = Column(Text, unique=True,
             index=True,
