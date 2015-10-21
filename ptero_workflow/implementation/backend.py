@@ -7,8 +7,13 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.validators import validate_unique_links
+import subprocess
 import os
 from ptero_common import nicer_logging
+from pip.commands.freeze import freeze
+import psutil
+import datetime
+import json
 import re
 
 LOG = nicer_logging.getLogger(__name__)
@@ -18,9 +23,10 @@ _TASK_BASE = 'ptero_workflow.implementation.celery_tasks.'
 
 
 class Backend(object):
-    def __init__(self, session, celery_app):
+    def __init__(self, session, celery_app, db_revision):
         self.session = session
         self.celery_app = celery_app
+        self.db_revision = db_revision
 
     @property
     def submit_net_task(self):
@@ -321,5 +327,46 @@ class Backend(object):
             extra={'workflowName':method.workflow.name})
         method.handle_callback(callback_type, body_data, query_string_data)
 
+    def server_info(self):
+        p = psutil.Process()
+        started = datetime.datetime.fromtimestamp(p.create_time())
+        uptime = str(datetime.datetime.now() - started)
+        started_str = started.strftime("%Y-%m-%d %H:%M:%S")
+
+        installed_modules = [l for l in freeze()]
+        env = RedactedEnv().data
+
+        celery_status = subprocess.check_output(['celery', '-A',
+            'ptero_workflow.implementation.celery_app', '--no-color', '--timeout=1', 'status'])
+        celery_status_list = [s for s in celery_status.split('\n') if len(s)]
+
+        return {'startedAt': started_str,
+                'celeryStatus': celery_status_list,
+                'uptime': uptime,
+                'installedModules': installed_modules,
+                'env': env,
+                'databaseRevision': self.db_revision}
+
     def cleanup(self):
         self.session.rollback()
+
+
+class RedactedEnv(object):
+    def __init__(self):
+        self._data = dict(os.environ)
+
+        secret_key = 'PTERO_SECRETS'
+        if secret_key in self._data:
+            self.secrets = json.loads(self._data[secret_key])
+            del self._data[secret_key]
+        else:
+            self.secrets = []
+
+    @property
+    def data(self):
+        result = {}
+        for key, value in self._data.iteritems():
+            for secret in self.secrets:
+                value = re.sub(secret, '*****', value)
+            result[key] = value
+        return result
