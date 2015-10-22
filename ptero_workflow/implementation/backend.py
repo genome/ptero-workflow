@@ -13,7 +13,6 @@ from ptero_common import nicer_logging
 from pip.commands.freeze import freeze
 import psutil
 import datetime
-import json
 import re
 
 LOG = nicer_logging.getLogger(__name__)
@@ -334,7 +333,6 @@ class Backend(object):
         started_str = started.strftime("%Y-%m-%d %H:%M:%S")
 
         installed_modules = [l for l in freeze()]
-        env = RedactedEnv().data
 
         celery_status = subprocess.check_output(['celery', '-A',
             'ptero_workflow.implementation.celery_app', '--no-color', '--timeout=1', 'status'])
@@ -344,29 +342,7 @@ class Backend(object):
                 'celeryStatus': celery_status_list,
                 'uptime': uptime,
                 'installedModules': installed_modules,
-                'env': env,
                 'databaseRevision': self.db_revision}
 
     def cleanup(self):
         self.session.rollback()
-
-
-class RedactedEnv(object):
-    def __init__(self):
-        self._data = dict(os.environ)
-
-        secret_key = 'PTERO_SECRETS'
-        if secret_key in self._data:
-            self.secrets = json.loads(self._data[secret_key])
-            del self._data[secret_key]
-        else:
-            self.secrets = []
-
-    @property
-    def data(self):
-        result = {}
-        for key, value in self._data.iteritems():
-            for secret in self.secrets:
-                value = re.sub(secret, '*****', value)
-            result[key] = value
-        return result
