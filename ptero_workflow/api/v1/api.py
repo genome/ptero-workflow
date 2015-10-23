@@ -29,3 +29,5 @@ api.add_resource(views.MethodCallback,
 
 api.add_resource(views.ReportDetailView, '/reports/<string:report_type>',
         endpoint='report')
+
+api.add_resource(views.ServerInfo, '/server-info', endpoint='server-info')

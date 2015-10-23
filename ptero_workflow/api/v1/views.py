@@ -199,3 +199,9 @@ class ReportDetailView(Resource):
         request.workflow_id = request.args['workflow_id']
         generator = reports.get_report_generator(report_type)
         return generator(**request.args.to_dict(flat=True)), 200
+
+
+class ServerInfo(Resource):
+    @logged_response(logger=LOG)
+    def get(self):
+        return g.backend.server_info(), 200

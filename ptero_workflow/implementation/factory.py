@@ -4,6 +4,7 @@ import os
 import logging
 from ptero_workflow.utils import base_dir
 from alembic.config import Config
+from alembic.script import ScriptDirectory
 from alembic import command
 
 
@@ -26,8 +27,8 @@ class Factory(object):
         self.celery_app = celery_app
 
     def create_backend(self):
-        self._initialize()
-        return backend.Backend(self._Session(), self.celery_app)
+        db_revision = self._initialize()
+        return backend.Backend(self._Session(), self.celery_app, db_revision=db_revision)
 
     def _initialize(self):
         # Lazy initialize to be pre-fork friendly.
@@ -36,6 +37,13 @@ class Factory(object):
 
         if not self.celery_app:
             self._initialize_celery()
+
+        with self._engine.begin() as connection:
+            alembic_cfg.attributes['connection'] = connection
+            script = ScriptDirectory.from_config(alembic_cfg)
+            current_revision = script.as_revision_number("head")
+
+        return current_revision
 
     def _initialize_sqlalchemy(self):
         logging.getLogger('sqlalchemy.engine').setLevel(getattr(logging,
