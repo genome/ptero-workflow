@@ -84,6 +84,8 @@ class Job(Method):
                 job_id = self._submit_to_job_service(colors, begins, execution)
                 execution.status = scheduled
                 execution.data['jobId'] = job_id
+                execution.data['jobUrl'] = "%s/%s" % (
+                        self._job_submit_url, job_id)
             except Exception as e:
                 LOG.exception(
                         'Failed to submit job to service. Execution id: %s'
@@ -126,7 +128,6 @@ class Job(Method):
             self.errored(body_data, query_string_data)
         else:
             execution.status = succeeded
-            execution.data.update(body_data)
 
             s = object_session(self)
             s.commit()
@@ -144,7 +145,6 @@ class Job(Method):
         self.validate_source(body_data, execution)
 
         execution.status = failed
-        execution.data.update(body_data)
 
         s = object_session(self)
         s.commit()
@@ -161,7 +161,6 @@ class Job(Method):
         self.validate_source(body_data, execution)
 
         execution.status = errored
-        execution.data.update(body_data)
 
         s = object_session(self)
         s.commit()
