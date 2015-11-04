@@ -83,7 +83,7 @@ class Job(Method):
             try:
                 job_id = self._submit_to_job_service(colors, begins, execution)
                 execution.status = scheduled
-                execution.data['job_id'] = job_id
+                execution.data['jobId'] = job_id
             except Exception as e:
                 LOG.exception(
                         'Failed to submit job to service. Execution id: %s'
@@ -233,7 +233,7 @@ class Job(Method):
         return result;
 
     def validate_source(self, request_body_data, execution):
-        if execution.data['job_id'] != request_body_data['jobId']:
+        if execution.data['jobId'] != request_body_data['jobId']:
             raise exceptions.DuplicateJobError('Job from service (%s) '
                     'with id (%s) does not match submitted job id (%s)',
-                    execution.data['job_id'], request_body_data['jobId'])
+                    execution.data['jobId'], request_body_data['jobId'])
