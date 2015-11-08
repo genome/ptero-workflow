@@ -337,12 +337,19 @@ class Backend(object):
         celery_status = subprocess.check_output(['celery', '-A',
             'ptero_workflow.implementation.celery_app', '--no-color', '--timeout=1', 'status'])
         celery_status_list = [s for s in celery_status.split('\n') if len(s)]
+        if 'GIT_SHA' in os.environ:
+            git_sha = os.environ['GIT_SHA']
+        else:
+            git_sha = 'Unknown'
 
-        return {'startedAt': started_str,
+        return {
                 'celeryStatus': celery_status_list,
-                'uptime': uptime,
+                'databaseRevision': self.db_revision,
+                'gitSha': git_sha,
                 'installedModules': installed_modules,
-                'databaseRevision': self.db_revision}
+                'startedAt': started_str,
+                'uptime': uptime,
+                }
 
     def cleanup(self):
         self.session.rollback()
