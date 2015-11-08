@@ -7,12 +7,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.validators import validate_unique_links
-import subprocess
 import os
 from ptero_common import nicer_logging
-from pip.commands.freeze import freeze
-import psutil
-import datetime
+from ptero_common.server_info import get_server_info
 import re
 
 LOG = nicer_logging.getLogger(__name__)
@@ -327,29 +324,9 @@ class Backend(object):
         method.handle_callback(callback_type, body_data, query_string_data)
 
     def server_info(self):
-        p = psutil.Process()
-        started = datetime.datetime.fromtimestamp(p.create_time())
-        uptime = str(datetime.datetime.now() - started)
-        started_str = started.strftime("%Y-%m-%d %H:%M:%S")
-
-        installed_modules = [l for l in freeze()]
-
-        celery_status = subprocess.check_output(['celery', '-A',
-            'ptero_workflow.implementation.celery_app', '--no-color', '--timeout=1', 'status'])
-        celery_status_list = [s for s in celery_status.split('\n') if len(s)]
-        if 'GIT_SHA' in os.environ:
-            git_sha = os.environ['GIT_SHA']
-        else:
-            git_sha = 'Unknown'
-
-        return {
-                'celeryStatus': celery_status_list,
-                'databaseRevision': self.db_revision,
-                'gitSha': git_sha,
-                'installedModules': installed_modules,
-                'startedAt': started_str,
-                'uptime': uptime,
-                }
+        result = get_server_info('ptero_workflow.implementation.celery_app')
+        result['databaseRevision'] = self.db_revision
+        return result
 
     def cleanup(self):
         self.session.rollback()
