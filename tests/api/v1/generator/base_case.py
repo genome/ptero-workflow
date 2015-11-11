@@ -10,6 +10,7 @@ import time
 import logging
 import difflib
 import re
+import time
 from tests.util import lsf_url, shell_command_url
 
 
@@ -85,6 +86,7 @@ class TestCaseMixin(object):
             self._verify_result(outputs_report_url)
         else:
             LOG.info("Workflow failed... Checking expected details")
+            time.sleep(2)
 
             details_url = workflow_data['reports']['workflow-details']
             self._regenerate_details_data(details_url)
