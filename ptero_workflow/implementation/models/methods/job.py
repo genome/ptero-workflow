@@ -81,11 +81,11 @@ class Job(Method):
             begins = group.get('begin_lineage', []) + [group['begin']]
 
             try:
-                job_id = self._submit_to_job_service(colors, begins, execution)
+                job_id, job_url = self._submit_to_job_service(colors,
+                        begins, execution)
                 execution.status = scheduled
                 execution.data['jobId'] = job_id
-                execution.data['jobUrl'] = "%s/%s" % (
-                        self._job_submit_url, job_id)
+                execution.data['jobUrl'] = job_url
             except Exception as e:
                 LOG.exception(
                         'Failed to submit job to service. Execution id: %s'
@@ -181,7 +181,8 @@ class Job(Method):
                 **body_data)
         response_info = result.wait()
         if 'json' in response_info:
-            return response_info['json']['jobId']
+            return (response_info['json']['jobId'],
+                    response_info['headers']['location'])
         else:
             raise RuntimeError("Cannot submit to job service.\n"
                 "URL: %s\nResponse info: %s" % (self._job_submit_url,
