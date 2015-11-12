@@ -4,7 +4,7 @@ python: "2.7"
 addons:
     postgresql: "9.3"
 
-install: pip install tox
+install: pip install tox==2.1.1
 
 before_script:
     - sudo update-alternatives --install /bin/sh sh /bin/bash 100
