@@ -10,6 +10,7 @@ before_script:
     - sudo update-alternatives --install /bin/sh sh /bin/bash 100
     - sudo rabbitmq-plugins disable rabbitmq_management
     - sudo psql -c 'create database ptero_workflow;' -U postgres
+    - sudo psql -c 'create database ptero_shell_command;' -U postgres
     - git clone --depth 1 https://github.com/genome/ptero-petri.git
     - git clone --depth 1 https://github.com/genome/ptero-shell-command.git
 
