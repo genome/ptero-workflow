@@ -81,9 +81,11 @@ class Job(Method):
             begins = group.get('begin_lineage', []) + [group['begin']]
 
             try:
-                job_id = self._submit_to_job_service(colors, begins, execution)
+                job_id, job_url = self._submit_to_job_service(colors,
+                        begins, execution)
                 execution.status = scheduled
-                execution.data['job_id'] = job_id
+                execution.data['jobId'] = job_id
+                execution.data['jobUrl'] = job_url
             except Exception as e:
                 LOG.exception(
                         'Failed to submit job to service. Execution id: %s'
@@ -126,7 +128,6 @@ class Job(Method):
             self.errored(body_data, query_string_data)
         else:
             execution.status = succeeded
-            execution.data.update(body_data)
 
             s = object_session(self)
             s.commit()
@@ -144,7 +145,6 @@ class Job(Method):
         self.validate_source(body_data, execution)
 
         execution.status = failed
-        execution.data.update(body_data)
 
         s = object_session(self)
         s.commit()
@@ -161,7 +161,6 @@ class Job(Method):
         self.validate_source(body_data, execution)
 
         execution.status = errored
-        execution.data.update(body_data)
 
         s = object_session(self)
         s.commit()
@@ -182,7 +181,8 @@ class Job(Method):
                 **body_data)
         response_info = result.wait()
         if 'json' in response_info:
-            return response_info['json']['jobId']
+            return (response_info['json']['jobId'],
+                    response_info['headers']['location'])
         else:
             raise RuntimeError("Cannot submit to job service.\n"
                 "URL: %s\nResponse info: %s" % (self._job_submit_url,
@@ -233,7 +233,7 @@ class Job(Method):
         return result;
 
     def validate_source(self, request_body_data, execution):
-        if execution.data['job_id'] != request_body_data['jobId']:
+        if execution.data['jobId'] != request_body_data['jobId']:
             raise exceptions.DuplicateJobError('Job from service (%s) '
                     'with id (%s) does not match submitted job id (%s)',
-                    execution.data['job_id'], request_body_data['jobId'])
+                    execution.data['jobId'], request_body_data['jobId'])
