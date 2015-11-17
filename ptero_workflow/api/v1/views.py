@@ -32,22 +32,13 @@ class WorkflowListView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self):
-        given_keys = set(request.args.keys())
-        valid_keys = set(['name'])
-        invalid_keys = given_keys - valid_keys
-
-        if not given_keys:
-            error = 'No query arguments provided'
-            return { 'error': error }, 400
-
-        if invalid_keys:
-            error = 'Invalid query arguments: %s' % ', '.join(invalid_keys)
-            return { 'error': error }, 400
+        query_string_error = self._validate_querystring_args();
+        if query_string_error is not None:
+            return { 'error': query_string_error }, 400
 
         if 'name' in request.args:
             workflow_id, workflow_as_dict = g.backend.get_workflow_by_name(
                         request.args['name'])
-            request.workflow_id = workflow_id
             return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
@@ -101,6 +92,31 @@ class WorkflowListView(Resource):
                 _external=True)
         }
 
+    @logged_response(logger=LOG)
+    @sends_404
+    def patch(self):
+        query_string_error = self._validate_querystring_args();
+        if query_string_error is not None:
+            return { 'error': query_string_error }, 400
+
+        if 'name' in request.args:
+            workflow_id, workflow_as_dict = g.backend.get_workflow_by_name(
+                        request.args['name'])
+            return _patch_workflow(request.get_json(), workflow_id)
+
+    def _validate_querystring_args(self):
+        given_keys = set(request.args.keys())
+        valid_keys = set(['name'])
+        invalid_keys = given_keys - valid_keys
+
+        if not given_keys:
+            return 'No query arguments provided'
+
+        if invalid_keys:
+            return 'Invalid query arguments: %s' % ', '.join(invalid_keys)
+
+        return None
+
 
 def get_execution_id_from_url(url):
     (endpoint, params) = utils.split_url(url, method='GET')
@@ -111,24 +127,25 @@ class WorkflowDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, workflow_id):
-        request.workflow_id = workflow_id
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
     @sends_404
     def patch(self, workflow_id):
-        request.workflow_id = workflow_id
-        update_data = request.get_json()
-        forbidden_fields = set(update_data.keys()) - set(['is_canceled'])
-        if forbidden_fields:
-            msg = 'Cannot patch workflow fields: %s' % str(forbidden_fields)
-            return msg, 409
-        elif ('is_canceled' in update_data and update_data['is_canceled']):
-            g.backend.cancel_workflow(workflow_id)
+        return _patch_workflow(request.get_json(), workflow_id)
 
-            workflow_as_dict = g.backend.get_workflow(workflow_id)
-            return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
+
+def _patch_workflow(patch_data, workflow_id):
+    forbidden_fields = set(patch_data.keys()) - set(['is_canceled'])
+    if forbidden_fields:
+        msg = 'Cannot patch workflow fields: %s' % str(forbidden_fields)
+        return msg, 409
+    elif ('is_canceled' in patch_data and patch_data['is_canceled']):
+        g.backend.cancel_workflow(workflow_id)
+
+        workflow_as_dict = g.backend.get_workflow(workflow_id)
+        return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
 
 class ExecutionDetailView(Resource):
@@ -196,7 +213,6 @@ class ReportDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, report_type):
-        request.workflow_id = request.args['workflow_id']
         generator = reports.get_report_generator(report_type)
         return generator(**request.args.to_dict(flat=True)), 200
 
