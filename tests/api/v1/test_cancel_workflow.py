@@ -65,3 +65,22 @@ class TestCancelWorkflow(BaseAPITest):
         status_response = self.get(status_url)
         self.assertEqual(200, status_response.status_code)
         self.assertEqual(status_response.json()['status'], 'canceled')
+
+    def test_can_cancel_by_name(self):
+        post_response = self.post(self.post_url, self.post_data)
+
+        self.assertEqual(201, post_response.status_code)
+
+        workflow_url = "%s?name=%s" % (self.post_url,
+                post_response.json()['name'])
+        self.patch(workflow_url, data={'is_canceled':True})
+
+        details_url = post_response.json()['reports']['workflow-details']
+        details_response = self.get(details_url)
+        self.assertEqual(200, details_response.status_code)
+        LOG.warning(pformat(details_response.json()))
+
+        status_url = post_response.json()['reports']['workflow-status']
+        status_response = self.get(status_url)
+        self.assertEqual(200, status_response.status_code)
+        self.assertEqual(status_response.json()['status'], 'canceled')
