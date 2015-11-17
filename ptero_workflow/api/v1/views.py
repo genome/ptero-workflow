@@ -47,7 +47,6 @@ class WorkflowListView(Resource):
         if 'name' in request.args:
             workflow_id, workflow_as_dict = g.backend.get_workflow_by_name(
                         request.args['name'])
-            request.workflow_id = workflow_id
             return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
@@ -111,14 +110,12 @@ class WorkflowDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, workflow_id):
-        request.workflow_id = workflow_id
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
     @sends_404
     def patch(self, workflow_id):
-        request.workflow_id = workflow_id
         update_data = request.get_json()
         forbidden_fields = set(update_data.keys()) - set(['is_canceled'])
         if forbidden_fields:
@@ -196,7 +193,6 @@ class ReportDetailView(Resource):
     @logged_response(logger=LOG)
     @sends_404
     def get(self, report_type):
-        request.workflow_id = request.args['workflow_id']
         generator = reports.get_report_generator(report_type)
         return generator(**request.args.to_dict(flat=True)), 200
 
