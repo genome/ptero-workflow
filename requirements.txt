@@ -1,4 +1,4 @@
--e git+http://github.com/genome/ptero-common.git@aab4bbb#egg=ptero_common
+-e git+http://github.com/genome/ptero-common.git@d692d45#egg=ptero_common
 alembic == 0.7.7
 celery == 3.1.18
 flake8
