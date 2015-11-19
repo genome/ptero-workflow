@@ -4,3 +4,4 @@ nose-cov
 psutil
 pyyaml
 requests == 2.6.2
+eventlet
