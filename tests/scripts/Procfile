@@ -3,5 +3,5 @@ petri: cd $PTERO_PETRI_HOME; tox -r -e dev
 web: coverage run ptero_workflow/api/wsgi.py
 redis: redis-server --port $PTERO_WORKFLOW_REDIS_PORT
 rabbit: RABBITMQ_NODE_PORT=$PTERO_WORKFLOW_RABBITMQ_NODE_PORT RABBITMQ_NODENAME=ptero-workflow-rabbitmq RABBITMQ_LOG_BASE=$PWD/var/log RABBITMQ_MNESIA_BASE=$PWD/var/rabbitmq-data rabbitmq-server
-http_worker: coverage run $(which celery) worker -n workflow_http_worker.%h.$PORT -A ptero_workflow.implementation.celery_app -Q http
-worker: coverage run $(which celery) worker -n workflow_submit_worker.%h.$PORT -A ptero_workflow.implementation.celery_app -Q submit
+http_worker: coverage run $(which celery) worker -n workflow_http_worker.%h.$PORT -A ptero_workflow.implementation.celery_app --pool=eventlet --concurrency 1 -Q http
+worker: coverage run $(which celery) worker -n workflow_submit_worker.%h.$PORT -A ptero_workflow.implementation.celery_app --pool=eventlet --concurrency 1 -Q submit

@@ -1,4 +1,4 @@
-from celery.signals import worker_process_init, setup_logging
+from celery.signals import worker_init, setup_logging
 import celery
 import os
 from factory import Factory
@@ -32,7 +32,7 @@ def setup_celery_logging(**kwargs):
     configure_celery_logging("WORKFLOW")
 
 
-@worker_process_init.connect
+@worker_init.connect
 def initialize_factory(**kwargs):
     app.factory = Factory(
         connection_string=os.environ['PTERO_WORKFLOW_DB_STRING'],
