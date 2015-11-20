@@ -3,7 +3,7 @@ import celery
 import os
 from factory import Factory
 from ptero_common.logging_configuration import configure_celery_logging
-from ptero_common.celery.utils import get_config_from_env
+from ptero_common.celery.utils import get_celery_config
 
 
 app = celery.Celery('PTero-workflow-celery',
@@ -17,7 +17,7 @@ app.conf['CELERY_ROUTES'] = (
     },
 )
 
-config = get_config_from_env('WORKFLOW')
+config = get_celery_config('WORKFLOW')
 app.conf.update(config)
 
 
