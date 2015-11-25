@@ -171,6 +171,13 @@ class Method(Base):
         }
         return result
 
+    def status(self, color):
+        try:
+            return self.executions[color].status
+        except KeyError:
+            # if method hasn't created any Executions of this color yet
+            return None
+
     def cancel(self):
         LOG.info("Canceling method ID:NAME (%s:%s) of task (%s:%s)",
             self.id, self.name, self.task.id, self.task.name,

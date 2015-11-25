@@ -67,7 +67,7 @@ class Workflow(Base):
 
     @property
     def status(self):
-        return self.root_task.status(color=self.color)
+        return self.root_task.method_list[0].status(color=self.color)
 
     @property
     def executions(self):
