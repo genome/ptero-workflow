@@ -70,3 +70,8 @@ class MethodList(Task):
         if self.parallel_by is not None:
             result['parallelBy'] = self.parallel_by
         return result
+
+    def cancel(self):
+        super(MethodList, self).cancel()
+        for method in self.method_list:
+            method.cancel()
