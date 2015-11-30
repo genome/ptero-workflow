@@ -84,9 +84,9 @@ class Task(Base, PetriMixin):
                     (self.parent.id, self.parent.name)
         else:
             parent_info = ''
-        LOG.info(
-                "%s - Canceling task ID:%s with name (%s)%s",
-            self.workflow_id, self.id, self.name, parent_info)
+        LOG.info("Canceling task ID:%s with name (%s)%s",
+            self.id, self.name, parent_info,
+            extra={'workflowName':self.workflow.name})
         self.is_canceled = True
         for execution in self.executions.values():
             execution.status = statuses.canceled

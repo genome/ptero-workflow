@@ -11,7 +11,11 @@ from sqlalchemy.exc import IntegrityError
 import celery
 import os
 import urllib
+from ptero_common import statuses
+from ptero_common import nicer_logging
 
+
+LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Method']
 
@@ -166,6 +170,20 @@ class Method(Base):
             'service': self.service,
         }
         return result
+
+    def status(self, color):
+        try:
+            return self.executions[color].status
+        except KeyError:
+            # if method hasn't created any Executions of this color yet
+            return None
+
+    def cancel(self):
+        LOG.info("Canceling method ID:NAME (%s:%s) of task (%s:%s)",
+            self.id, self.name, self.task.id, self.task.name,
+            extra={'workflowName':self.workflow.name})
+        for execution in self.executions.values():
+            execution.status = statuses.canceled
 
 
 def _get_parent_color(colors):
