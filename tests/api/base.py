@@ -25,12 +25,27 @@ class WebhookServer:
         self._port = int(self._webserver.stderr.readline().rstrip())
 
     def stop(self):
-        if self._webserver is not None:
-            stdout, stderr = self._webserver.communicate()
-            self._webserver = None
-            if stdout:
-                return map(json.loads, stdout.split('\n')[:-1])
-        return []
+        while self._webserver is not None:
+            exit_code = self._webserver.poll()
+            if exit_code is not None:
+                if exit_code == 0:
+                    stdout, stderr = self._webserver.communicate()
+                    self._webserver = None
+                    self._webhook_stdout = stdout
+                    self._webhook_stderr = stderr
+
+                    if stdout:
+                        return map(json.loads, stdout.split('\n')[:-1])
+                    else:
+                        return []
+                elif exit_code == -14:
+                    raise RuntimeError("Webhook listener timed out after (%s) seconds" %
+                            self._timeout)
+                else:
+                    raise RuntimeError("Webhook listener exited non-zero (%s)" %
+                            exit_code)
+            else:
+                self._wait()
 
     def _wait(self):
         time.sleep(1)
