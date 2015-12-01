@@ -11,7 +11,6 @@ from sqlalchemy.exc import IntegrityError
 import celery
 import os
 import urllib
-from ptero_common import statuses
 from ptero_common import nicer_logging
 
 
