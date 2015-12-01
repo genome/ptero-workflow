@@ -183,7 +183,7 @@ class Method(Base):
             self.id, self.name, self.task.id, self.task.name,
             extra={'workflowName':self.workflow.name})
         for execution in self.executions.values():
-            execution.status = statuses.canceled
+            execution.cancel()
 
 
 def _get_parent_color(colors):
