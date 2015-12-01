@@ -1,4 +1,21 @@
 import os
+import json
+
+
+def environment():
+    return json.dumps(environment_dict())
+
+
+def environment_dict():
+    return dict(os.environ)
+
+
+def user():
+    return os.environ.get('USER')
+
+
+def working_directory():
+    return os.environ['PTERO_WORKFLOW_TEST_SCRIPTS_DIR']
 
 
 def lsf_url():

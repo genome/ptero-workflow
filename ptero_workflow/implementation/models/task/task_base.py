@@ -89,7 +89,7 @@ class Task(Base, PetriMixin):
             extra={'workflowName':self.workflow.name})
         self.is_canceled = True
         for execution in self.executions.values():
-            execution.status = statuses.canceled
+            execution.cancel()
 
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])

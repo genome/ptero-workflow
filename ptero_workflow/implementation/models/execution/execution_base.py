@@ -182,6 +182,9 @@ class Execution(Base):
         return url_for('execution-detail', execution_id=self.id,
                 _external=True)
 
+    def cancel(self):
+        self.status = statuses.canceled
+
 
 class ExecutionStatusHistory(Base):
     __tablename__ = 'execution_status_history'

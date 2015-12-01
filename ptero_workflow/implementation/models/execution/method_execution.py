@@ -1,4 +1,5 @@
 from ptero_workflow.implementation.models.execution import Execution
+from ptero_common import statuses
 
 __all__ = ['MethodExecution']
 
@@ -38,3 +39,8 @@ class MethodExecution(Execution):
             return self.method.task.output_names - set(self.get_outputs())
         else:
             return self.method.task.output_names
+
+    def cancel(self):
+        self.status = statuses.canceled
+        for child_workflow in self.child_workflows:
+            child_workflow.cancel()

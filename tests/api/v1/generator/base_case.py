@@ -11,7 +11,7 @@ import logging
 import difflib
 import re
 import time
-from tests.util import lsf_url, shell_command_url
+from tests import util
 
 
 _POLLING_DELAY = 0.5
@@ -196,15 +196,15 @@ class TestCaseMixin(object):
     @property
     def _template_data(self):
         template_data = {
-            'user': os.environ.get('USER'),
-            'workingDirectory': os.environ['PTERO_WORKFLOW_TEST_SCRIPTS_DIR'],
-            'environment': json.dumps(dict(os.environ)),
-            'shellCommandServiceUrl': shell_command_url(),
+            'user': util.user(),
+            'workingDirectory': util.working_directory(),
+            'environment': util.environment(),
+            'shellCommandServiceUrl': util.shell_command_url(),
         }
 
         if os.environ.get('PTERO_LSF_HOST') is not None:
             template_data.update({
-                'lsfServiceUrl': lsf_url(),
+                'lsfServiceUrl': util.lsf_url(),
                 'lsfOutputsDirectory':
                 os.environ['PTERO_WORKFLOW_TEST_LSF_OUTPUTS_DIR'],
             })

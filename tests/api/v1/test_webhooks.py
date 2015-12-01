@@ -36,8 +36,8 @@ class WebhookTest(RoundTripSuccess):
         self.evaluate_webhook_data(webhook_data)
 
 
-class NestedWorkflowWithWebhooks(WebhookTest, BaseAPITest):
-    webhook_server_responses = [200 for i in range(50)]
+class CountingWebhooks(WebhookTest, BaseAPITest):
+    webhook_server_responses = [200 for i in range(25)]
 
     def evaluate_webhook_data(self, webhook_data):
         print pformat(webhook_data)

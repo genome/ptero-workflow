@@ -82,6 +82,8 @@ class Workflow(Base):
         if self.is_canceled:
             return
         else:
+            LOG.info("Canceling workflow ID:NAME (%s:%s)",
+                self.id, self.name, extra={'workflowName':self.name})
             for task in self.all_tasks:
                 task.cancel()
 
