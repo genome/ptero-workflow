@@ -8,7 +8,6 @@ from ptero_common import nicer_logging
 from pprint import pformat
 from ptero_common.statuses import (scheduled, running, canceled, errored,
         succeeded, failed)
-from ptero_workflow.implementation import exceptions
 import uuid
 
 LOG = nicer_logging.getLogger(__name__)
