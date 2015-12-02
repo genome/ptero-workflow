@@ -267,8 +267,6 @@ class Task(Base, PetriMixin):
 
     def get_split_size(self, body_data, query_string_data):
 
-        self.validate_source(body_data)
-
         execution = self.get_or_create_execution(body_data,
                 query_string_data)
 
@@ -309,8 +307,6 @@ class Task(Base, PetriMixin):
 
 
     def create_array_result(self, body_data, query_string_data):
-
-        self.validate_source(body_data)
 
         color = body_data['color']
         group = body_data['group']
@@ -429,8 +425,6 @@ class Task(Base, PetriMixin):
 
     def get_or_create_execution(self, body_data, query_string_data):
 
-        self.validate_source(body_data)
-
         color = body_data['color']
         response_links = body_data['response_links']
         s = object_session(self)
@@ -484,8 +478,6 @@ class Task(Base, PetriMixin):
         self._ended(body_data, query_string_data, statuses.failed)
 
     def _ended(self, body_data, query_string_data, status):
-
-        self.validate_source(body_data)
 
         s = object_session(self)
 
@@ -547,12 +539,6 @@ class Task(Base, PetriMixin):
         results = s.query(result.Result).filter_by(task=self, color=color).all()
         if results:
             return {r.name: r.data for r in results}
-
-    def validate_source(self, request_body_data):
-        if self.workflow.net_key != request_body_data['net_key']:
-            raise exceptions.DuplicatePetriNetError('Petri net (%s) does '
-                    'not match submitted net (%s)', self.workflow.net_key,
-                    request_body_data['net_key'])
 
 
 def _get_parent_color(colors):

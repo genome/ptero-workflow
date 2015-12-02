@@ -8,7 +8,7 @@ from ptero_common import nicer_logging
 from pprint import pformat
 from ptero_common.statuses import (scheduled, running, canceled, errored,
         succeeded, failed)
-from ptero_workflow.implementation import exceptions
+import uuid
 
 LOG = nicer_logging.getLogger(__name__)
 
@@ -80,11 +80,14 @@ class Job(Method):
             colors = group.get('color_lineage', []) + [color]
             begins = group.get('begin_lineage', []) + [group['begin']]
 
+            job_id = str(uuid.uuid4())
+            execution.data['jobId'] = job_id
+            s.commit()
+
             try:
-                job_id, job_url = self._submit_to_job_service(colors,
+                job_url = self._submit_to_job_service(job_id, colors,
                         begins, execution)
                 execution.status = scheduled
-                execution.data['jobId'] = job_id
                 execution.data['jobUrl'] = job_url
             except Exception as e:
                 LOG.exception(
@@ -104,8 +107,6 @@ class Job(Method):
     def running(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
-        self.validate_source(body_data, execution)
-
         execution.status = running
 
         s = object_session(self)
@@ -118,8 +119,6 @@ class Job(Method):
 
     def succeeded(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
-
-        self.validate_source(body_data, execution)
 
         missing_outputs = execution.missing_outputs
         if execution.missing_outputs:
@@ -142,8 +141,6 @@ class Job(Method):
     def failed(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
-        self.validate_source(body_data, execution)
-
         execution.status = failed
 
         s = object_session(self)
@@ -158,8 +155,6 @@ class Job(Method):
     def errored(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
-        self.validate_source(body_data, execution)
-
         execution.status = errored
 
         s = object_session(self)
@@ -171,14 +166,14 @@ class Job(Method):
                 extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_url)
 
-    def _submit_to_job_service(self, colors, begins, execution):
+    def _submit_to_job_service(self, job_id, colors, begins, execution):
         body_data = self._job_submit_data(colors, begins,
                 execution.id)
+        job_url = "%s/%s" % (self._job_submit_url, job_id)
         LOG.info('Submitting Job for execution "%s" of workflow '
                 '"%s" -- %s', execution.name, self.workflow.name,
                 self._job_submit_url, extra={'workflowName':self.workflow.name})
-        result = self.http_with_result.delay('POST', self._job_submit_url,
-                **body_data)
+        result = self.http_with_result.delay('PUT', job_url, **body_data)
         response_info = result.wait()
         if 'json' in response_info:
             return (response_info['json']['jobId'],
@@ -231,9 +226,3 @@ class Job(Method):
         result = Method.as_skeleton_dict(self)
         result['serviceUrl'] = self.service_url
         return result;
-
-    def validate_source(self, request_body_data, execution):
-        if execution.data['jobId'] != request_body_data['jobId']:
-            raise exceptions.DuplicateJobError('Job from service (%s) '
-                    'with id (%s) does not match submitted job id (%s)',
-                    execution.data['jobId'], request_body_data['jobId'])
