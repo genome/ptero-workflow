@@ -27,7 +27,8 @@ class InputConnector(Task):
                 'set_dag_status_running')
 
     def set_dag_status_running(self, body_data, query_string_data):
-        execution = self.get_or_create_execution(body_data, query_string_data)
+        execution = self.parent.get_or_create_execution(body_data,
+                query_string_data)
 
         try:
             self._set_dag_status_running(execution)
@@ -47,7 +48,7 @@ class InputConnector(Task):
         self.http.delay('PUT', response_url)
 
     def _set_dag_status_running(self, execution):
-        s = object_session(self)
+        s = object_session(execution)
         execution.status = statuses.scheduled
         s.flush()
         execution.status = statuses.running
