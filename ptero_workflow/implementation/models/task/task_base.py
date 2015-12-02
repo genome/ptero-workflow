@@ -267,8 +267,6 @@ class Task(Base, PetriMixin):
 
     def get_split_size(self, body_data, query_string_data):
 
-        self.validate_source(body_data)
-
         execution = self.get_or_create_execution(body_data,
                 query_string_data)
 
@@ -309,8 +307,6 @@ class Task(Base, PetriMixin):
 
 
     def create_array_result(self, body_data, query_string_data):
-
-        self.validate_source(body_data)
 
         color = body_data['color']
         group = body_data['group']
