@@ -108,8 +108,6 @@ class Job(Method):
     def running(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
-        self.validate_source(body_data, execution)
-
         execution.status = running
 
         s = object_session(self)
@@ -122,8 +120,6 @@ class Job(Method):
 
     def succeeded(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
-
-        self.validate_source(body_data, execution)
 
         missing_outputs = execution.missing_outputs
         if execution.missing_outputs:
@@ -146,8 +142,6 @@ class Job(Method):
     def failed(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
 
-        self.validate_source(body_data, execution)
-
         execution.status = failed
 
         s = object_session(self)
@@ -161,8 +155,6 @@ class Job(Method):
 
     def errored(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
-
-        self.validate_source(body_data, execution)
 
         execution.status = errored
 
@@ -235,9 +227,3 @@ class Job(Method):
         result = Method.as_skeleton_dict(self)
         result['serviceUrl'] = self.service_url
         return result;
-
-    def validate_source(self, request_body_data, execution):
-        if execution.data['jobId'] != request_body_data['jobId']:
-            raise exceptions.DuplicateJobError('Job from service (%s) '
-                    'with id (%s) does not match submitted job id (%s)',
-                    execution.data['jobId'], request_body_data['jobId'])
