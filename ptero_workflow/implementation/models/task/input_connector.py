@@ -27,8 +27,8 @@ class InputConnector(Task):
                 'set_dag_status_running')
 
     def set_dag_status_running(self, body_data, query_string_data):
-        execution = self.parent.get_or_create_execution(body_data,
-                query_string_data)
+        execution = self.parent.get_or_create_execution(body_data['color'],
+                body_data['group'])
 
         try:
             self._set_dag_status_running(execution)

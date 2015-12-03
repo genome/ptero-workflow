@@ -34,7 +34,7 @@ class Execution(Base):
             index=True, nullable=True)
     _status = Column('status', Text, index=True, nullable=False)
 
-    data = Column(MutableJSONDict, nullable=False)
+    data = Column(MutableJSONDict, nullable=False, default=lambda:{})
     colors = Column(JSON)
     begins = Column(JSON)
 

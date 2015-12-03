@@ -54,8 +54,8 @@ class Converge(Method):
     def execute(self, body_data, query_string_data):
         s = object_session(self)
 
-        color = body_data['color']
-        execution = self.get_or_create_execution(body_data, query_string_data)
+        execution = self.get_or_create_execution(body_data['color'],
+                body_data['group'])
 
         execution.status = scheduled
         s.flush()
