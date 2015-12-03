@@ -27,9 +27,7 @@ class Method(Base):
         UniqueConstraint('task_id', 'name'),
     )
 
-    VALID_CALLBACK_TYPES = set([
-        'create_execution',
-    ])
+    VALID_CALLBACK_TYPES = set()
 
     id = Column(Integer, primary_key=True)
 
