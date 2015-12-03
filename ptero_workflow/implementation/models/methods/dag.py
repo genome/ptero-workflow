@@ -169,6 +169,15 @@ class DAG(Method):
         }
         return result
 
+    def set_status_running(self, color, group):
+        execution = self.get_or_create_execution(color, group)
+
+        s = object_session(execution)
+        execution.status = statuses.scheduled
+        s.flush()
+        execution.status = statuses.running
+        s.commit()
+
 
 def _get_parent_color(colors):
     if len(colors) == 1:
