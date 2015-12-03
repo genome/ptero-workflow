@@ -170,6 +170,9 @@ class DAG(Method):
         return result
 
     def set_status_running(self, color, group):
+        if self.index == 0:
+            self.task.set_status_running(color, group)
+
         execution = self.get_or_create_execution(color, group)
 
         s = object_session(execution)
