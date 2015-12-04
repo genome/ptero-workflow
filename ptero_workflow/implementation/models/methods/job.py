@@ -60,9 +60,14 @@ class Job(Method):
         return self._pn('success'), self._pn('failure')
 
     def execute(self, body_data, query_string_data):
+        if self.index == 0:
+            self.task.set_status_running(body_data['color'],
+                body_data['group'])
+
         s = object_session(self)
 
-        execution = self.get_or_create_execution(body_data, query_string_data)
+        execution = self.get_or_create_execution(body_data['color'],
+                body_data['group'])
         execution.data['petri_response_links_for_job'] = \
                 body_data['response_links']
         s.commit()

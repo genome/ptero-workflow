@@ -267,8 +267,8 @@ class Task(Base, PetriMixin):
 
     def get_split_size(self, body_data, query_string_data):
 
-        execution = self.get_or_create_execution(body_data,
-                query_string_data)
+        execution = self.get_or_create_execution(body_data['color'],
+                body_data['group'])
 
         color = body_data['color']
         group = body_data['group']
@@ -423,10 +423,7 @@ class Task(Base, PetriMixin):
             raise RuntimeError('Invalid callback type (%s).  Allowed types: %s'
                     % (callback_type, self.VALID_CALLBACK_TYPES))
 
-    def get_or_create_execution(self, body_data, query_string_data):
-
-        color = body_data['color']
-        response_links = body_data['response_links']
+    def get_or_create_execution(self, color, group):
         s = object_session(self)
 
         try:
@@ -435,8 +432,6 @@ class Task(Base, PetriMixin):
                     TaskExecution.color==color).one()
             created_execution = False
         except NoResultFound:
-            group = body_data['group']
-
             colors = group.get('color_lineage', []) + [color]
             begins = group.get('begin_lineage', []) + [group['begin']]
             parent_color = _get_parent_color(colors)
@@ -444,9 +439,8 @@ class Task(Base, PetriMixin):
             execution = TaskExecution(task=self, color=color,
                     colors=colors, begins=begins,
                     workflow_id=self.workflow_id,
-                    parent_color=parent_color, data={
-                        'petri_response_links': response_links,
-            })
+                    parent_color=parent_color,
+            )
             s.add(execution)
             try:
                 s.commit()
@@ -481,7 +475,8 @@ class Task(Base, PetriMixin):
 
         s = object_session(self)
 
-        execution = self.get_or_create_execution(body_data, query_string_data)
+        execution = self.get_or_create_execution(body_data['color'],
+                body_data['group'])
         execution.status = status
 
         s.commit()

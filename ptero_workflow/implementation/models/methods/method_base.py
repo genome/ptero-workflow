@@ -27,9 +27,7 @@ class Method(Base):
         UniqueConstraint('task_id', 'name'),
     )
 
-    VALID_CALLBACK_TYPES = set([
-        'create_execution',
-    ])
+    VALID_CALLBACK_TYPES = set()
 
     id = Column(Integer, primary_key=True)
 
@@ -64,10 +62,7 @@ class Method(Base):
                         start_place)
 
 
-    def get_or_create_execution(self, body_data, query_string_data):
-        color = body_data['color']
-        group = body_data['group']
-
+    def get_or_create_execution(self, color, group):
         colors = group.get('color_lineage', []) + [color]
         begins = group.get('begin_lineage', []) + [group['begin']]
         parent_color = _get_parent_color(colors)
@@ -83,9 +78,7 @@ class Method(Base):
                     colors=colors, begins=begins,
                     parent_color=parent_color,
                     workflow_id=self.workflow_id,
-                    data={
-                        'petri_response_links': body_data['response_links']
-            })
+            )
             s.add(execution)
 
             try:

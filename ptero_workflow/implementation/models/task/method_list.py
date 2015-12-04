@@ -75,3 +75,7 @@ class MethodList(Task):
         super(MethodList, self).cancel()
         for method in self.method_list:
             method.cancel()
+
+    def set_status_running(self, color, group):
+        # Task executions are automatically put into 'running' state
+        execution = self.get_or_create_execution(color, group)

@@ -111,7 +111,8 @@ class DAG(Method):
     def set_status(self, body_data, query_string_data):
         s = object_session(self)
 
-        execution = self.get_or_create_execution(body_data, query_string_data)
+        execution = self.get_or_create_execution(body_data['color'],
+                body_data['group'])
         execution.status = query_string_data['status']
 
         s.commit()
@@ -167,6 +168,18 @@ class DAG(Method):
                     if t.type not in ['InputConnector', 'OutputConnector']},
         }
         return result
+
+    def set_status_running(self, color, group):
+        if self.index == 0:
+            self.task.set_status_running(color, group)
+
+        execution = self.get_or_create_execution(color, group)
+
+        s = object_session(execution)
+        execution.status = statuses.scheduled
+        s.flush()
+        execution.status = statuses.running
+        s.commit()
 
 
 def _get_parent_color(colors):
