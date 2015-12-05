@@ -181,8 +181,7 @@ class Job(Method):
         result = self.http_with_result.delay('PUT', job_url, **body_data)
         response_info = result.wait()
         if 'json' in response_info:
-            return (response_info['json']['jobId'],
-                    response_info['headers']['location'])
+            return response_info['headers']['location']
         else:
             raise RuntimeError("Cannot submit to job service.\n"
                 "URL: %s\nResponse info: %s" % (self._job_submit_url,
