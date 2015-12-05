@@ -7,6 +7,11 @@ LOG = logging.getLogger(__name__)
 
 
 class TestCancelWorkflow(BaseAPITest):
+    def setUp(self):
+        super(TestCancelWorkflow, self).setUp()
+        self.canceled_listener = self.create_webhook_server([200])
+        self.running_listener = self.create_webhook_server([200])
+
     @property
     def post_data(self):
         return {
@@ -18,9 +23,16 @@ class TestCancelWorkflow(BaseAPITest):
                                 'service': 'job',
                                 'serviceUrl': util.shell_command_url(),
                                 'parameters': {
-                                    'commandLine': ['cat'],
-                                    'user': 'testuser',
-                                    'workingDirectory': '/test/working/directory'
+                                    'commandLine': ['true'],
+                                    "user": util.user(),
+                                    "workingDirectory": util.working_directory(),
+                                    "environment": util.environment_dict(),
+                                    'webhooks': {
+                                        'canceled': self.canceled_listener.url,
+                                        }
+                                    },
+                                'webhooks': {
+                                    'running': self.running_listener.url,
                                     }
                                 }
                             ]
@@ -84,6 +96,18 @@ class TestCancelWorkflow(BaseAPITest):
         status_response = self.get(status_url)
         self.assertEqual(200, status_response.status_code)
         self.assertEqual(status_response.json()['status'], 'canceled')
+
+    def test_jobs_canceled(self):
+        post_response = self.post(self.post_url, self.post_data)
+
+        self.assertEqual(201, post_response.status_code)
+
+        self.running_listener.stop()
+
+        workflow_url = post_response.headers['Location']
+        self.patch(workflow_url, data={'is_canceled':True})
+
+        self.canceled_listener.stop()
 
 
 class TestCancelSpawnedWorkflow(BaseAPITest):
