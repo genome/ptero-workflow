@@ -95,9 +95,9 @@ class Job(Method):
                 execution.status = scheduled
                 execution.data['jobUrl'] = job_url
             except Exception as e:
-                LOG.exception(
-                        'Failed to submit job to service. Execution id: %s'
-                        % execution.id)
+                LOG.exception('Failed to submit job to service. '
+                        'Execution id: %s', execution.id,
+                        extra={'workflowName': self.workflow.name})
                 execution.status = errored;
                 execution.data['error_message'] = e.message
 
