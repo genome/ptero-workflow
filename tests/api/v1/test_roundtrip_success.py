@@ -222,11 +222,11 @@ class NestedWorkflowWithWebhooks(RoundTripSuccess, BaseAPITest):
                 },
                 'methods': [{
                     'name': 'some_workflow',
+                    'webhooks': {
+                        'running': self.webhook_url('inner_dag'),
+                        'errored': [self.webhook_url('inner_dag'), self.webhook_url('inner_dag_2')]
+                    },
                     'parameters': {
-                        'webhooks': {
-                            'running': self.webhook_url('inner_dag'),
-                            'errored': [self.webhook_url('inner_dag'), self.webhook_url('inner_dag_2')]
-                        },
                         'tasks': {
                             'A': {
                                 'webhooks': {

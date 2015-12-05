@@ -92,8 +92,8 @@ class Backend(object):
                     'parameters': {
                         'tasks': workflow_data['tasks'],
                         'links': workflow_data['links'],
-                        'webhooks': workflow_data.get('webhooks', {}),
                     },
+                    'webhooks': workflow_data.get('webhooks', {}),
                     'service': 'workflow',
                 },
             ],

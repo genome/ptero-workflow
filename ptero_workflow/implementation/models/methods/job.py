@@ -208,19 +208,23 @@ class Job(Method):
             'PTERO_WORKFLOW_SUBMIT_URL': self.workflow_submit_url,
         })
 
-        submit_data.update({
-            'webhooks': {status: self.callback_url(status, execution_id=execution_id)
-                for status in (running, errored, failed, succeeded)
-            },
-        })
+        self.add_webhooks_to_submit_data(submit_data, execution_id)
         return submit_data
 
+    def add_webhooks_to_submit_data(self, submit_data, execution_id):
+        webhooks = submit_data.get('webhooks', {})
+
+        for status in (running, errored, failed, succeeded):
+            webhooks_entry = webhooks.get(status, [])
+            new_webhook = self.callback_url(status, execution_id=execution_id)
+            if isinstance(webhooks_entry, list):
+                webhooks[status] = webhooks_entry + [new_webhook]
+            else:
+                webhooks[status] = [webhooks_entry, new_webhook]
+        submit_data['webhooks'] = webhooks
+
     def get_parameters(self, detailed=False):
-        parameters = self.parameters.copy()
-        webhooks = self.get_webhooks()
-        if webhooks:
-            parameters['webhooks'] = self.get_webhooks()
-        return parameters
+        return self.parameters
 
     def as_dict(self, detailed):
         result = Method.as_dict(self, detailed)

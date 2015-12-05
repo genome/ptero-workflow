@@ -141,10 +141,10 @@ class TestCancelSpawnedWorkflow(BaseAPITest):
                                 "user": util.user(),
                                 "workingDirectory": util.working_directory(),
                                 "environment": {},
-                                "webhooks": {
-                                    "running": running_webhook_url,
-                                    "canceled": canceled_webhook_url,
-                                    }
+                            },
+                            "webhooks": {
+                                "running": running_webhook_url,
+                                "canceled": canceled_webhook_url,
                                 }
                             }
                         ]
