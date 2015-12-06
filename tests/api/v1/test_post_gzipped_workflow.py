@@ -57,7 +57,7 @@ class TestGzippedWorkflow(BaseAPITest):
             data=data))
 
 
-    def test_can_cancel(self):
+    def test_posting(self):
         post_response = self.post(self.post_url, self.post_data)
         self.assertEqual(201, post_response.status_code)
 
