@@ -23,6 +23,10 @@ class PostDuplicateWorkflowFailure(object):
         self.assertEqual({'error': self.expected_error_message},
                 duplicate_response.DATA)
 
+        url = initial_response.headers.get('Location')
+        delete_response = self.delete(url)
+        self.assertEqual(200, delete_response.status_code)
+
 
 def _generate_uuid():
     return base64.urlsafe_b64encode(uuid.uuid4().bytes)[:-2]

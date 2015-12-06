@@ -107,6 +107,12 @@ class TestCaseMixin(object):
         if self._expected_executions is not None:
             self._verify_workflow_executions(url)
 
+        self._delete(workflow_url)
+
+    def _delete(self, workflow_url):
+        delete_response = requests.delete(workflow_url)
+        self.assertEqual(200, delete_response.status_code)
+
     def _regenerate_details_data(self, url):
         if os.environ.get('PTERO_REGENERATE_TEST_DATA'):
             actual_result = self._get_actual_result(url)

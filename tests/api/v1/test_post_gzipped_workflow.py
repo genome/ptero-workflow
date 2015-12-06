@@ -68,6 +68,9 @@ class TestGzippedWorkflow(BaseAPITest):
 
         self.assertEqual(200, patch_response.status_code)
 
+        delete_response = self.delete(workflow_url)
+        self.assertEqual(200, delete_response.status_code)
+
 
 def _deserialize_response(response):
     response.DATA = response.json()

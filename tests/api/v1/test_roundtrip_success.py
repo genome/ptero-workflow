@@ -19,6 +19,12 @@ class RoundTripSuccess(object):
         super(RoundTripSuccess, self).setUp()
         self.response = self.post(self.post_url, self.post_data)
 
+    def tearDown(self):
+        url = self.response.headers.get('Location')
+        delete_response = self.delete(url)
+        self.assertEqual(200, delete_response.status_code)
+        super(RoundTripSuccess, self).tearDown()
+
     def test_roundtrip(self):
         self.should_return_201()
         self.should_set_location_header()
