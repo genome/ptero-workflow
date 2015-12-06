@@ -1,7 +1,7 @@
 from .base import Base
 from sqlalchemy import Column, UniqueConstraint, Index
 from sqlalchemy import ForeignKey, Integer, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 import json_type
 
 
@@ -16,13 +16,13 @@ class Result(Base):
     )
 
     id = Column(Integer, primary_key=True)
-    task_id = Column(Integer, ForeignKey('task.id'),
+    task_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
             index=True, nullable=False)
     name = Column(Text, nullable=False, index=True)
     color = Column(Integer, nullable=False, index=True)
     parent_color = Column(Integer, nullable=True, index=True)
 
-    task = relationship('Task', backref='results')
+    task = relationship('Task', backref=backref('results', passive_deletes='all'))
 
     data = Column(json_type.JSON)
 

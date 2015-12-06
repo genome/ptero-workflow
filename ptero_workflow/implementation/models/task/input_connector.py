@@ -12,7 +12,8 @@ __all__ = ['InputConnector']
 class InputConnector(Task):
     __tablename__ = 'input_connector'
 
-    id = Column(Integer, ForeignKey('task.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            primary_key=True)
 
     VALID_CALLBACK_TYPES = Task.VALID_CALLBACK_TYPES.union(['set_dag_status_running'])
 

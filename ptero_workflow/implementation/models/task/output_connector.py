@@ -13,7 +13,8 @@ __all__ = ['OutputConnector']
 class OutputConnector(Task):
     __tablename__ = 'output_connector'
 
-    id = Column(Integer, ForeignKey('task.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'OutputConnector',

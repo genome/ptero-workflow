@@ -22,17 +22,17 @@ class Link(Base):
 
     id = Column(Integer, primary_key=True)
 
-    source_id = Column(Integer, ForeignKey('task.id'), index=True,
-            nullable=False)
-    destination_id = Column(Integer, ForeignKey('task.id'), index=True,
-            nullable=False)
+    source_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            index=True, nullable=False)
+    destination_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            index=True, nullable=False)
 
     source_task = relationship('Task',
-            backref=backref('output_links'),
+            backref=backref('output_links', passive_deletes='all'),
             foreign_keys=[source_id])
 
     destination_task = relationship('Task',
-            backref=backref('input_links'),
+            backref=backref('input_links', passive_deletes='all'),
             foreign_keys=[destination_id])
 
     def as_dict(self, detailed=False):
@@ -64,10 +64,12 @@ class DataFlowEntry(Base):
 
     id = Column(Integer, primary_key=True)
 
-    link_id = Column(Integer, ForeignKey('link.id'), index=True,
-            nullable=False)
+    link_id = Column(Integer, ForeignKey('link.id', ondelete='CASCADE'),
+            index=True, nullable=False)
 
     source_property = Column(Text, nullable=False)
     destination_property = Column(Text, nullable=False)
 
-    link = relationship('Link', backref=backref('data_flow_entries', lazy='joined'))
+    link = relationship('Link',
+            backref=backref('data_flow_entries', lazy='joined',
+                passive_deletes='all'))

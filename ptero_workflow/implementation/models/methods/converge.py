@@ -14,7 +14,8 @@ class Converge(Method):
     __tablename__ = 'converge'
     service = 'workflow-converge'
 
-    id = Column(Integer, ForeignKey('method.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('method.id', ondelete='CASCADE'),
+            primary_key=True)
 
     parameters = Column(JSON, nullable=True)
 

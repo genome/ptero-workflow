@@ -3,7 +3,7 @@ from .base import Base
 from .json_type import JSON
 from sqlalchemy import Column, UniqueConstraint
 from sqlalchemy import ForeignKey, Integer, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound
 from ..exceptions import MissingResultError
@@ -24,9 +24,9 @@ class InputSource(Base):
 
     id = Column(Integer, primary_key=True)
 
-    source_id      = Column(Integer, ForeignKey('task.id'),
+    source_id      = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
             index=True, nullable=False)
-    destination_id = Column(Integer, ForeignKey('task.id'),
+    destination_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
             index=True, nullable=False)
 
     source_property      = Column(Text, nullable=False, index=True)
@@ -35,13 +35,14 @@ class InputSource(Base):
     parallel_depths = Column(JSON, nullable=False)
 
     source_task = relationship('Task', foreign_keys=[source_id])
-    destination_task = relationship('Task', backref='input_sources',
+    destination_task = relationship('Task', backref=backref('input_sources',
+            passive_deletes='all'),
             foreign_keys=[destination_id])
 
-    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+    workflow_id = Column(Integer, ForeignKey('workflow.id', ondelete='CASCADE'),
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id],
-            backref='all_input_sources')
+            backref=backref('all_input_sources', passive_deletes='all'))
 
     def parallel_indexes(self, colors, begins):
         indexes = []

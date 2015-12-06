@@ -28,9 +28,9 @@ class Execution(Base):
     color = Column(Integer, index=True, nullable=False)
     parent_color = Column(Integer, index=True, nullable=True)
 
-    method_id = Column(Integer, ForeignKey('method.id'),
+    method_id = Column(Integer, ForeignKey('method.id', ondelete='CASCADE'),
             index=True, nullable=True)
-    task_id = Column(Integer, ForeignKey('task.id'),
+    task_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
             index=True, nullable=True)
     _status = Column('status', Text, index=True, nullable=False)
 
@@ -38,7 +38,7 @@ class Execution(Base):
     colors = Column(JSON)
     begins = Column(JSON)
 
-    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+    workflow_id = Column(Integer, ForeignKey('workflow.id', ondelete='CASCADE'),
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
@@ -190,8 +190,8 @@ class ExecutionStatusHistory(Base):
     __tablename__ = 'execution_status_history'
 
     id = Column(Integer, primary_key=True)
-    execution_id = Column(Integer, ForeignKey('execution.id'), 
-            index=True, nullable=False)
+    execution_id = Column(Integer, ForeignKey('execution.id',
+            ondelete='CASCADE'), index=True, nullable=False)
 
     timestamp = Column(DateTime(timezone=True), default=func.now(),
             index=True, nullable=False)
@@ -199,7 +199,8 @@ class ExecutionStatusHistory(Base):
     status = Column(Text, index=True, nullable=False)
 
     execution = relationship(Execution,
-            backref=backref('status_history', order_by=timestamp, lazy='joined'))
+            backref=backref('status_history', order_by=timestamp, lazy='joined',
+            passive_deletes='all'))
 
     def as_dict(self, detailed=False):
         return {'timestamp': str(self.timestamp), 'status': self.status}

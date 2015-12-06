@@ -1,7 +1,7 @@
 from .base import Base
 from flask import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 import base64
 from ptero_common import nicer_logging
 import os
@@ -29,17 +29,18 @@ class Workflow(Base):
             index=True,
             default=_generate_uuid)
 
-    root_task_id = Column(Integer, ForeignKey('task.id',
+    root_task_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE',
         use_alter=True))
 
 
     root_task = relationship('Task', post_update=True,
-            foreign_keys=[root_task_id], lazy='joined')
+            foreign_keys=[root_task_id], lazy='joined', single_parent=True)
 
-    parent_execution_id = Column(Integer, ForeignKey('execution.id'),
-            nullable=True, index=True)
+    parent_execution_id = Column(Integer, ForeignKey('execution.id',
+            ondelete='CASCADE'), nullable=True, index=True)
     parent_execution = relationship('MethodExecution',
-            backref='child_workflows',
+            backref=backref('child_workflows',
+            passive_deletes='all'),
             foreign_keys=[parent_execution_id])
 
     start_place_name = 'workflow-start-place'

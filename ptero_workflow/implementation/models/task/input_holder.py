@@ -9,7 +9,8 @@ __all__ = ['InputHolder']
 class InputHolder(Task):
     __tablename__ = 'input_holder'
 
-    id = Column(Integer, ForeignKey('task.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            primary_key=True)
 
     __mapper_args__ = {
         'polymorphic_identity': 'InputHolder',

@@ -31,7 +31,8 @@ class Method(Base):
 
     id = Column(Integer, primary_key=True)
 
-    task_id = Column(Integer, ForeignKey('task.id'), index=True)
+    task_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            index=True)
     task = relationship('Task')
 
     name = Column(Text)
@@ -40,10 +41,10 @@ class Method(Base):
 
     executions = relationship('MethodExecution',
             backref=backref('method', uselist=False),
-            collection_class=attribute_mapped_collection('color'),
-            cascade='all, delete-orphan')
+            passive_deletes='all',
+            collection_class=attribute_mapped_collection('color'))
 
-    workflow_id = Column(Integer, ForeignKey('workflow.id'),
+    workflow_id = Column(Integer, ForeignKey('workflow.id', ondelete='CASCADE'),
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
