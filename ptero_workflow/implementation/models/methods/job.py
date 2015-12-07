@@ -177,7 +177,7 @@ class Job(Method):
         job_url = "%s/%s" % (self._job_submit_url, job_id)
         LOG.info('Submitting Job for execution "%s" of workflow '
                 '"%s" -- %s', execution.name, self.workflow.name,
-                self._job_submit_url, extra={'workflowName':self.workflow.name})
+                job_url, extra={'workflowName':self.workflow.name})
         result = self.http_with_result.delay('PUT', job_url, **body_data)
         response_info = result.wait()
         if 'json' in response_info:
