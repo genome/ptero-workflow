@@ -77,7 +77,7 @@ class Job(Method):
             response_url = body_data['response_links']['failure']
             LOG.info('Notifing petri: execution "%s" canceled for'
                     ' workflow "%s"', execution.name, self.workflow.name,
-                    extra={'workflowName':self.workflow.name})
+                    extra={'workflowName': self.workflow.name})
             self.http.delay('PUT', response_url)
         else:
             group = body_data['group']
@@ -95,9 +95,9 @@ class Job(Method):
                 execution.status = scheduled
                 execution.data['jobUrl'] = job_url
             except Exception as e:
-                LOG.exception(
-                        'Failed to submit job to service. Execution id: %s'
-                        % execution.id)
+                LOG.exception('Failed to submit job to service. '
+                        'Execution id: %s', execution.id,
+                        extra={'workflowName': self.workflow.name})
                 execution.status = errored;
                 execution.data['error_message'] = e.message
 
@@ -181,8 +181,7 @@ class Job(Method):
         result = self.http_with_result.delay('PUT', job_url, **body_data)
         response_info = result.wait()
         if 'json' in response_info:
-            return (response_info['json']['jobId'],
-                    response_info['headers']['location'])
+            return response_info['headers']['location']
         else:
             raise RuntimeError("Cannot submit to job service.\n"
                 "URL: %s\nResponse info: %s" % (self._job_submit_url,
@@ -208,19 +207,23 @@ class Job(Method):
             'PTERO_WORKFLOW_SUBMIT_URL': self.workflow_submit_url,
         })
 
-        submit_data.update({
-            'webhooks': {status: self.callback_url(status, execution_id=execution_id)
-                for status in (running, errored, failed, succeeded)
-            },
-        })
+        self.add_webhooks_to_submit_data(submit_data, execution_id)
         return submit_data
 
+    def add_webhooks_to_submit_data(self, submit_data, execution_id):
+        webhooks = submit_data.get('webhooks', {})
+
+        for status in (running, errored, failed, succeeded):
+            webhooks_entry = webhooks.get(status, [])
+            new_webhook = self.callback_url(status, execution_id=execution_id)
+            if isinstance(webhooks_entry, list):
+                webhooks[status] = webhooks_entry + [new_webhook]
+            else:
+                webhooks[status] = [webhooks_entry, new_webhook]
+        submit_data['webhooks'] = webhooks
+
     def get_parameters(self, detailed=False):
-        parameters = self.parameters.copy()
-        webhooks = self.get_webhooks()
-        if webhooks:
-            parameters['webhooks'] = self.get_webhooks()
-        return parameters
+        return self.parameters
 
     def as_dict(self, detailed):
         result = Method.as_dict(self, detailed)

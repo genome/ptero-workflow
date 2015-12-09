@@ -37,11 +37,11 @@ class WebhookTest(RoundTripSuccess):
 
 
 class CountingWebhooks(WebhookTest, BaseAPITest):
-    webhook_server_responses = [200 for i in range(25)]
+    webhook_server_responses = [200 for i in range(40)]
 
     def evaluate_webhook_data(self, webhook_data):
         print pformat(webhook_data)
-        self.assertEqual(len(webhook_data), 25)
+        self.assertEqual(len(webhook_data), 40)
 
     @property
     def post_data(self):
@@ -68,16 +68,16 @@ class CountingWebhooks(WebhookTest, BaseAPITest):
                             },
                         'methods': [{
                             'name': 'some_workflow',
+                            'webhooks': {
+                                'scheduled': self.webhook_server.url,
+                                'running': [self.webhook_server.url, self.webhook_server.url],
+                                'succeeded': self.webhook_server.url,
+                                'failed': self.webhook_server.url,
+                                'errored': self.webhook_server.url,
+                                'canceled': self.webhook_server.url,
+                                'ended': self.webhook_server.url,
+                                },
                             'parameters': {
-                                'webhooks': {
-                                    'scheduled': self.webhook_server.url,
-                                    'running': [self.webhook_server.url, self.webhook_server.url],
-                                    'succeeded': self.webhook_server.url,
-                                    'failed': self.webhook_server.url,
-                                    'errored': self.webhook_server.url,
-                                    'canceled': self.webhook_server.url,
-                                    'ended': self.webhook_server.url,
-                                    },
                                 'tasks': {
                                     'A': {
                                         'webhooks': {
@@ -94,16 +94,16 @@ class CountingWebhooks(WebhookTest, BaseAPITest):
                                                 'name': 'execute',
                                                 'service': 'job',
                                                 'serviceUrl': shell_command_url(),
+                                                'webhooks': {
+                                                    'scheduled': self.webhook_server.url,
+                                                    'running': [self.webhook_server.url, self.webhook_server.url],
+                                                    'succeeded': self.webhook_server.url,
+                                                    'failed': self.webhook_server.url,
+                                                    'errored': self.webhook_server.url,
+                                                    'canceled': self.webhook_server.url,
+                                                    'ended': self.webhook_server.url,
+                                                    },
                                                 'parameters': {
-                                                    'webhooks': {
-                                                        'scheduled': self.webhook_server.url,
-                                                        'running': [self.webhook_server.url, self.webhook_server.url],
-                                                        'succeeded': self.webhook_server.url,
-                                                        'failed': self.webhook_server.url,
-                                                        'errored': self.webhook_server.url,
-                                                        'canceled': self.webhook_server.url,
-                                                        'ended': self.webhook_server.url,
-                                                        },
                                                     'commandLine': ['./echo_command'],
                                                     'environment': dict(os.environ),
                                                     'user': self.user,

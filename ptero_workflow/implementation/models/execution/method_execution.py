@@ -1,7 +1,11 @@
 from ptero_workflow.implementation.models.execution import Execution
+from ptero_common import nicer_logging
 from ptero_common import statuses
 
 __all__ = ['MethodExecution']
+
+
+LOG = nicer_logging.getLogger(__name__)
 
 
 class MethodExecution(Execution):
@@ -44,3 +48,9 @@ class MethodExecution(Execution):
         self.status = statuses.canceled
         for child_workflow in self.child_workflows:
             child_workflow.cancel()
+
+        if 'jobUrl' in self.data:
+            url = self.data['jobUrl']
+            LOG.info("Sending PATCH request to cancel job at %s",
+                   url, extra={'workflowName':self.workflow.name})
+            self.method.http.delay('PATCH', url, status=statuses.canceled)

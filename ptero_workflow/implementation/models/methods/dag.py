@@ -144,9 +144,6 @@ class DAG(Method):
                     if t.type not in ['InputConnector', 'OutputConnector']},
             'links': [l.as_dict(detailed=detailed) for l in self.links],
         }
-        webhooks = self.get_webhooks()
-        if webhooks:
-            result['webhooks'] = webhooks
         return result
 
     @property

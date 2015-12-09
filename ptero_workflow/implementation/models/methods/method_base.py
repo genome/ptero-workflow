@@ -148,6 +148,10 @@ class Method(Base):
             'parameters': self.get_parameters(detailed=detailed),
         }
 
+        webhooks = self.get_webhooks()
+        if webhooks:
+            result['webhooks'] = webhooks
+
         if detailed:
             result['executions'] = {
                     color: execution.as_dict(detailed=detailed)

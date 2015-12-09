@@ -36,7 +36,7 @@ def build_method(data, workflow, index=None, parent_task=None):
         method = _build_service_method(data, workflow, index, parent_task,
                 models.SUBCLASS_LOOKUP[data['service']])
 
-    for name, webhooks in data['parameters'].get('webhooks', {}).items():
+    for name, webhooks in data.get('webhooks', {}).items():
         if not isinstance(webhooks, list):
             webhooks = [webhooks]
         for url in webhooks:
@@ -139,8 +139,6 @@ def get_deterministic_topological_ordering(nodes, links, start_node):
 
 def _build_service_method(data, workflow, index, parent_task, cls):
     build_parameters = data['parameters'].copy()
-    if 'webhooks' in build_parameters:
-        del build_parameters['webhooks']
 
     constructor_args = {
             'name': data['name'],

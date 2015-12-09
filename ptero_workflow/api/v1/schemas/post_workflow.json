@@ -93,7 +93,8 @@
                 "service": {
                     "type": "string",
                     "pattern": "^workflow$"
-                }
+                },
+                "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["name", "parameters", "service"],
             "additionalProperties": false
@@ -103,8 +104,7 @@
             "type": "object",
             "properties": {
                 "tasks": { "$ref": "#/definitions/taskDictionary" },
-                "links": { "$ref": "#/definitions/linkList" },
-                "webhooks": { "$ref": "#/definitions/webhook_set" }
+                "links": { "$ref": "#/definitions/linkList" }
             },
             "required": ["tasks", "links"],
             "additionalProperties": false
@@ -169,7 +169,8 @@
                 "serviceUrl": {
                     "type": "string",
                     "format": "uri"
-                }
+                },
+                "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["name", "parameters", "service", "serviceUrl"],
             "additionalProperties": false
