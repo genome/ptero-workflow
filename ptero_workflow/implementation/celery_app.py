@@ -35,5 +35,5 @@ def setup_celery_logging(**kwargs):
 @worker_init.connect
 def initialize_factory(**kwargs):
     app.factory = Factory(
-        connection_string=os.environ['PTERO_WORKFLOW_DB_STRING'],
+        database_url=os.environ['PTERO_WORKFLOW_DB_STRING'],
             celery_app=app)
