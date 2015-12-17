@@ -6,7 +6,7 @@ import os
 __all__ = ['Factory']
 
 
-class Factory(object):
+class Factory(BigFactory):
     @property
     def backend_class(self):
         return backend.Backend
