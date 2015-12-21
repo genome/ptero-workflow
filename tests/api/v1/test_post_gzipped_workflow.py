@@ -57,7 +57,7 @@ class TestGzippedWorkflow(BaseAPITest):
             data=data))
 
 
-    def test_can_cancel(self):
+    def test_posting(self):
         post_response = self.post(self.post_url, self.post_data)
         self.assertEqual(201, post_response.status_code)
 
@@ -67,6 +67,9 @@ class TestGzippedWorkflow(BaseAPITest):
         patch_response = self.patch(workflow_url, data={'is_canceled':True})
 
         self.assertEqual(200, patch_response.status_code)
+
+        delete_response = self.delete(workflow_url)
+        self.assertEqual(200, delete_response.status_code)
 
 
 def _deserialize_response(response):

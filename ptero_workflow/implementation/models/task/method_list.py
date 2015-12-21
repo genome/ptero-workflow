@@ -10,13 +10,15 @@ __all__ = ['MethodList']
 class MethodList(Task):
     __tablename__ = 'method_list'
 
-    id = Column(Integer, ForeignKey('task.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
+            primary_key=True)
 
     methods = relationship('Method',
             collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
+            passive_deletes='all')
 
-    method_list = relationship('Method', order_by='Method.index')
+    method_list = relationship('Method', order_by='Method.index',
+            passive_deletes='all')
 
     __mapper_args__ = {
         'polymorphic_identity': 'MethodList',

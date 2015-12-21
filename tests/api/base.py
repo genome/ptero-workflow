@@ -101,6 +101,14 @@ class BaseAPITest(unittest.TestCase):
             headers={'content-type': 'application/json'},
             data=json.dumps(data)))
 
+    def delete(self, url, data=None):
+        if data is not None:
+            return _deserialize_response(requests.delete(url,
+                headers={'content-type': 'application/json'},
+                data=json.dumps(data)))
+        else:
+            return _deserialize_response(requests.delete(url))
+
 
 def _deserialize_response(response):
     try:

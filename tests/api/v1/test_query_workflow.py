@@ -29,9 +29,11 @@ class QueryWorkflow(object):
 
 
     def test_query_produces_expected_results(self):
+        workflow_urls = []
         for workflow in self.workflows:
             response = self.post(self.post_url, self.submission_data[workflow])
             self.assertEqual(201, response.status_code)
+            workflow_urls.append(response.headers.get('Location'))
 
         for query in self.queries:
             response = self.get(self.get_url, **query['args'])
@@ -42,6 +44,10 @@ class QueryWorkflow(object):
 
             for key, val in self.expected_data[query['expected_data']].items():
                 self.assertEqual(val, response.DATA[key])
+
+        for workflow_url in workflow_urls:
+            delete_response = self.delete(workflow_url)
+            self.assertEqual(200, delete_response.status_code)
 
 
 class QueryByName(QueryWorkflow, BaseAPITest):

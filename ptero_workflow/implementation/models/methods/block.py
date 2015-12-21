@@ -14,7 +14,8 @@ class Block(Method):
     __tablename__ = 'block'
     service = 'workflow-block'
 
-    id = Column(Integer, ForeignKey('method.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('method.id', ondelete='CASCADE'),
+            primary_key=True)
 
     parameters = Column(JSON, nullable=True)
 

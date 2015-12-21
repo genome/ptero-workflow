@@ -331,3 +331,19 @@ class Backend(object):
 
     def cleanup(self):
         self.session.rollback()
+
+    def delete_workflow_by_name(self, name):
+        workflow = self._get_workflow_by_name(name)
+        self.delete_workflow(workflow.id)
+        return workflow.id
+
+    def delete_workflow(self, workflow_id):
+        workflow = self._get_workflow(workflow_id)
+        self._delete_workflow(workflow)
+
+    def _delete_workflow(self, workflow):
+        LOG.info("Deleting workflow with name (%s) and id (%s)",
+                workflow.name, workflow.id,
+                extra={'workflowName': workflow.name})
+        self.session.delete(workflow)
+        self.session.commit()

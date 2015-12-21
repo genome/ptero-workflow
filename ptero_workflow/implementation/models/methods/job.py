@@ -19,7 +19,8 @@ class Job(Method):
     __tablename__ = 'job'
     service = 'job'
 
-    id = Column(Integer, ForeignKey('method.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('method.id', ondelete='CASCADE'),
+            primary_key=True)
 
     parameters = Column(JSON, nullable=False)
 

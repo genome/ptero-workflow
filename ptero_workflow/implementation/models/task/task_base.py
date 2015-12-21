@@ -40,18 +40,18 @@ class Task(Base, PetriMixin):
     ])
 
     id        = Column(Integer, primary_key=True)
-    parent_id = Column(Integer, ForeignKey('dag.id', use_alter=True),
-            nullable=True, index=True)
+    parent_id = Column(Integer, ForeignKey('dag.id', use_alter=True,
+            ondelete='CASCADE'), nullable=True, index=True)
     name      = Column(Text, nullable=False)
     type      = Column(Text, nullable=False)
     is_canceled = Column(Boolean, default=False)
     parallel_by = Column(Text, nullable=True)
     topological_index = Column(Integer, nullable=False)
 
-    workflow_id = Column(Integer, ForeignKey('workflow.id'),
-        nullable=False, index=True)
+    workflow_id = Column(Integer, ForeignKey('workflow.id',
+            ondelete='CASCADE'), nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id],
-            backref='all_tasks')
+            backref=backref('all_tasks', passive_deletes='all'))
 
     __mapper_args__ = {
         'polymorphic_on': 'type',
@@ -59,8 +59,8 @@ class Task(Base, PetriMixin):
 
     executions = relationship('TaskExecution',
             backref=backref('task', uselist=False),
-            collection_class=attribute_mapped_collection('color'),
-            cascade='all, delete-orphan')
+            passive_deletes='all',
+            collection_class=attribute_mapped_collection('color'))
 
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)

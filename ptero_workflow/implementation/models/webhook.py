@@ -1,6 +1,6 @@
 from .base import Base
 from sqlalchemy import Column, ForeignKey, Integer, String, Index
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.session import object_session
 from sqlalchemy import event
 from collections import defaultdict
@@ -23,13 +23,15 @@ class Webhook(Base):
 
     id = Column(Integer, primary_key=True)
 
-    method_id = Column(Integer, ForeignKey('method.id'),
+    method_id = Column(Integer, ForeignKey('method.id', ondelete='CASCADE'),
             index=True, nullable=True)
-    task_id = Column(Integer, ForeignKey('task.id'),
+    task_id = Column(Integer, ForeignKey('task.id', ondelete='CASCADE'),
             index=True, nullable=True)
 
-    task = relationship('Task', backref='webhooks')
-    method = relationship('Method', backref='webhooks')
+    task = relationship('Task', backref=backref('webhooks',
+        passive_deletes='all'))
+    method = relationship('Method', backref=backref('webhooks',
+        passive_deletes='all'))
 
     name = Column(String, index=True, nullable=False)
     url = Column(String, nullable=False)

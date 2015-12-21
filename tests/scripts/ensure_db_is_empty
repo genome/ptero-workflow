@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+
+my @lines = split('\n', `psql -U postgres ptero_workflow -c 'SELECT relname FROM pg_stat_user_tables;'`);
+
+# throw out header and footer
+shift @lines;
+shift @lines;
+pop @lines;
+
+my %num_rows;
+my $bad = 0;
+for my $table_name (@lines) {
+    chomp($table_name);
+    next if $table_name =~ 'alembic';
+
+
+    my @query_lines = split('\n', `psql -U postgres ptero_workflow -c 'SELECT count(*) FROM $table_name;'`);
+    my $num_rows = $query_lines[2] + 0;
+
+    print "$table_name: $num_rows\n";
+    if ($num_rows > 0) {
+        $bad = 1;
+    }
+}
+
+if ($bad) {
+    exit 1;
+} else {
+    exit 0;
+}
+

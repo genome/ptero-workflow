@@ -19,7 +19,11 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
         data = self.workflow_data
         data['name'] = str(uuid.uuid4())
         workflow = self.backend._save_workflow(data)
-        return translator.build_petri_net(workflow)
+
+        petri_net = translator.build_petri_net(workflow)
+        self.backend._delete_workflow(workflow)
+
+        return petri_net
 
     @property
     def expire_actions(self):

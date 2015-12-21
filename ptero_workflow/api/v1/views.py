@@ -43,6 +43,19 @@ class WorkflowListView(Resource):
 
     @logged_response(logger=LOG)
     @sends_404
+    def delete(self):
+        query_string_error = self._validate_querystring_args();
+        if query_string_error is not None:
+            return { 'error': query_string_error }, 400
+
+        if 'name' in request.args:
+            workflow_id = g.backend.delete_workflow_by_name(
+                    request.args['name'])
+            return ({"message": "deleted workflow with id:%s" % workflow_id},
+                200)
+
+    @logged_response(logger=LOG)
+    @sends_404
     def post(self):
         if 'name' in request.json:
             name = request.json['name']
@@ -129,6 +142,13 @@ class WorkflowDetailView(Resource):
     def get(self, workflow_id):
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
+
+    @logged_response(logger=LOG)
+    @sends_404
+    def delete(self, workflow_id):
+        g.backend.delete_workflow(workflow_id)
+        return ({"message": "deleted workflow with id:%s" % workflow_id},
+            200)
 
     @logged_response(logger=LOG)
     @sends_404

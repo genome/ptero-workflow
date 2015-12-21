@@ -15,14 +15,15 @@ class DAG(Method):
     __tablename__ = 'dag'
     service = 'workflow'
 
-    id = Column(Integer, ForeignKey('method.id'), primary_key=True)
+    id = Column(Integer, ForeignKey('method.id', ondelete='CASCADE'),
+            primary_key=True)
 
     children = relationship('Task',
             backref=backref('parent', uselist=False, remote_side=[id]),
-            collection_class=attribute_mapped_collection('name'),
-            cascade='all, delete-orphan')
+            passive_deletes='all',
+            collection_class=attribute_mapped_collection('name'))
 
-    child_list = relationship('Task')
+    child_list = relationship('Task', passive_deletes='all')
 
     __mapper_args__ = {
         'polymorphic_identity': 'DAG',
