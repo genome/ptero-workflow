@@ -100,6 +100,9 @@ class TestCancelWorkflow(BaseAPITest):
         self.assertEqual(200, status_response.status_code)
         self.assertEqual(status_response.json()['status'], 'canceled')
 
+        delete_response = self.delete(workflow_url)
+        self.assertEqual(200, delete_response.status_code)
+
     def test_jobs_canceled(self):
         post_response = self.post(self.post_url, self.post_data)
 
