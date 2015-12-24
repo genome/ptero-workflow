@@ -2,7 +2,6 @@ import os
 import unittest
 import tests.util
 from ptero_workflow.implementation.factory import Factory
-from ptero_workflow.implementation import translator
 import uuid
 
 
@@ -20,7 +19,7 @@ class TestWorkflowPetriTranslation(unittest.TestCase):
         data['name'] = str(uuid.uuid4())
         workflow = self.backend._save_workflow(data)
 
-        petri_net = translator.build_petri_net(workflow)
+        petri_net = workflow.build_petri_net()
         self.backend._delete_workflow(workflow)
 
         return petri_net

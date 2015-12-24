@@ -162,3 +162,9 @@ class Workflow(Base):
 
     def get_outputs(self):
         return self.root_task.get_outputs(0)
+
+    def build_petri_net(self):
+        return {
+            'initialMarking': [self.start_place_name],
+            'transitions': self.get_petri_transitions(),
+        }

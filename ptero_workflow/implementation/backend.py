@@ -1,7 +1,6 @@
 from . import models
 from .models.execution.execution_base import Execution
 from . import tasks
-from . import translator
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
@@ -66,7 +65,7 @@ class Backend(object):
 
     def submit_net(self, workflow_name):
         workflow = self._get_workflow_by_name(workflow_name)
-        petri_data = translator.build_petri_net(workflow)
+        petri_data = workflow.build_petri_net()
 
         LOG.info('Submitting petri net <%s> for'
                 ' workflow "%s"', workflow.net_key, workflow.name,
