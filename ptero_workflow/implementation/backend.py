@@ -1,11 +1,10 @@
 from . import models
 from .models.execution.execution_base import Execution
-from . import tasks
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
-from ptero_workflow.implementation.validators import validate_unique_links
+from ptero_workflow.implementation.model_builder import ModelBuilder
 import os
 from ptero_common import nicer_logging
 from ptero_common.server_info import get_server_info
@@ -80,55 +79,9 @@ class Backend(object):
         )
 
     def _save_workflow(self, workflow_data):
-        self._ensure_required_inputs(workflow_data)
+        builder = ModelBuilder(workflow_data)
 
-        workflow = models.Workflow(name=workflow_data.get('name'))
-
-        root_data = {
-            'methods': [
-                {
-                    'name': 'root',
-                    'parameters': {
-                        'tasks': workflow_data['tasks'],
-                        'links': workflow_data['links'],
-                    },
-                    'webhooks': workflow_data.get('webhooks', {}),
-                    'service': 'workflow',
-                },
-            ],
-        }
-
-        workflow.root_task = tasks.build_task('root', root_data, workflow)
-        workflow.root_task.topological_index=-1
-
-        models.MethodExecution(method=workflow.root_task.method_list[0],
-                color=0, parent_color=None, colors=[0],
-                begins=[], workflow=workflow, data={})
-
-        tasks.create_input_holder(workflow.root_task, workflow, workflow_data['inputs'],
-                color=workflow.color, parent_color=workflow.parent_color)
-
-        dummy_output_task = models.InputHolder(name='dummy output task',
-                workflow=workflow)
-        self.session.add(dummy_output_task)
-
-        validate_unique_links(workflow_data['links'])
-        link = models.Link(source_task=workflow.root_task,
-            destination_task=dummy_output_task)
-        self.session.add(link)
-        for link_data in workflow_data['links']:
-            if 'output connector' == link_data['destination']:
-                for source_property, destination_part in link_data.get('dataFlow', {}).items():
-                    if isinstance(destination_part, basestring):
-                        self.session.add(models.DataFlowEntry(source_property=destination_part,
-                            destination_property=destination_part,
-                            link=link))
-                    else:
-                        for destination_property in destination_part:
-                            self.session.add(models.DataFlowEntry(source_property=destination_property,
-                                destination_property=destination_property,
-                                link=link))
-
+        workflow = builder.build_workflow()
         self.session.add(workflow)
         self.session.commit()
 
@@ -137,19 +90,6 @@ class Backend(object):
         self.session.commit()
 
         return workflow
-
-    @staticmethod
-    def _ensure_required_inputs(workflow_data):
-        required_inputs = set()
-        for link in workflow_data['links']:
-            if link['source'] == 'input connector':
-                required_inputs.update(link.get('dataFlow', {}).keys())
-
-        supplied_inputs = set(workflow_data['inputs'].keys())
-        missing_inputs = required_inputs - supplied_inputs
-        if missing_inputs:
-            raise exceptions.MissingInputsError("Missing required inputs: %s" %
-                    ', '.join(sorted(missing_inputs)))
 
     def _get_workflow_eagerly(self, workflow_id):
         workflow = self._get_workflow(workflow_id)

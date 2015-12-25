@@ -76,7 +76,7 @@ class BorkIsInvalidWebhookName(PostWorkflowFailure, BaseAPITest):
 
 
 class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
-    expected_error_message = '"input connector" is an illegal task name'
+    expected_error_message = "illegal task name(s): [u'input connector']"
 
     @property
     def post_data(self):
@@ -136,7 +136,7 @@ class InputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
 
 
 class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
-    expected_error_message = '"output connector" is an illegal task name'
+    expected_error_message = "illegal task name(s): [u'output connector']"
 
     @property
     def post_data(self):
@@ -193,7 +193,7 @@ class OutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
 
 
 class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
-    expected_error_message = '"input connector" is an illegal task name'
+    expected_error_message = "illegal task name(s): [u'input connector']"
 
     @property
     def post_data(self):
@@ -278,7 +278,7 @@ class NestedInputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
 
 
 class NestedOutputConnectorIsInvalidNodeName(PostWorkflowFailure, BaseAPITest):
-    expected_error_message = '"output connector" is an illegal task name'
+    expected_error_message = "illegal task name(s): [u'output connector']"
 
     @property
     def post_data(self):
