@@ -9,7 +9,7 @@ def report(workflow_id, since=None):
     executions, timestamp = g.backend.get_workflow_executions(
             workflow_id=workflow_id, since=since)
 
-    base_url = url_for('report', report_type='workflow-executions', _external=True)
+    base_url = url_for('.report', report_type='workflow-executions', _external=True)
 
     url_query_string_args = {'workflow_id': workflow_id}
 

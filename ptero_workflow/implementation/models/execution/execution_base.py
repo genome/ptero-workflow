@@ -179,7 +179,7 @@ class Execution(Base):
 
     @property
     def url(self):
-        return url_for('execution-detail', execution_id=self.id,
+        return url_for('.execution-detail', execution_id=self.id,
                 _external=True)
 
     def cancel(self):
