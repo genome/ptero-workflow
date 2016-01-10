@@ -248,7 +248,7 @@ class Backend(object):
                             model_class.workflow_id == workflow_id).count()
             return reports, timestamp, num_remaining
         else:
-            return [], None
+            return [], None, 0
 
     def get_limited_workflow_status_updates(self, **kwargs):
         model_class = models.ExecutionStatusHistory
