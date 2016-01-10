@@ -42,6 +42,10 @@ class Execution(Base):
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
+    # timestamp will be nullable until after database backfilling occurs
+    timestamp = Column(DateTime(timezone=True), default=func.now(),
+            index=True, nullable=True)
+
     type = Column(String, index=True, nullable=False)
     __mapper_args__ = {
             'polymorphic_on': 'type',
