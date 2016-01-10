@@ -148,6 +148,20 @@ class Execution(Base):
 
         return result
 
+    def as_dict_for_limited_executions_report(self):
+        result = {name: str(getattr(self, name)) for name in ['color',
+            'colors', 'begins', 'status', 'id', 'timestamp']}
+
+        result['parentColor'] = self.parent_color
+
+        if self.task_id is not None:
+            result['taskId'] = self.task_id
+        else:
+            result['methodId'] = self.method_id
+
+        result['detailsUrl'] = self.url
+        return result
+
     @property
     def child_workflow_urls(self):
         return []

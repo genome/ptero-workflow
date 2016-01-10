@@ -216,6 +216,35 @@ class Backend(object):
         else:
             return [], None
 
+    def get_limited_workflow_executions(self, workflow_id, limit, since=None):
+        query = self.session.query(models.Execution)
+
+        if since is not None:
+            query = query.filter(models.Execution.workflow_id == workflow_id,
+                            models.Execution.timestamp >= since)
+        else:
+            query = query.filter(models.Execution.workflow_id == workflow_id)
+
+        query = query.order_by(models.Execution.timestamp).limit(limit + 1)
+        executions = query.all()
+
+        if executions:
+            if len(executions) == limit + 1:
+                # ensure that we return exactly the right number of executions
+                next_execution = executions.pop()
+            else:
+                next_execution = executions[-1]
+
+            timestamp = next_execution.timestamp
+            reports = [e.as_dict_for_limited_executions_report()
+                    for e in executions]
+            num_remaining = self.session.query(models.Execution).\
+                    filter(models.Execution.id > executions[-1].id,
+                            models.Execution.workflow_id == workflow_id).count()
+            return reports, timestamp, num_remaining
+        else:
+            return [], None
+
     def _get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)
         if execution is not None:
