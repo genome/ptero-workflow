@@ -54,3 +54,9 @@ class MethodExecution(Execution):
             LOG.info("Sending PATCH request to cancel job at %s",
                    url, extra={'workflowName':self.workflow.name})
             self.method.http.delay('PATCH', url, status=statuses.canceled)
+
+    def as_dict_for_spawned_workflows_report(self):
+        return {
+                "executionId": self.id,
+                "spawnedWorkflowUrls": self.child_workflow_urls,
+        }

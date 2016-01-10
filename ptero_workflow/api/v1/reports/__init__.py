@@ -1,5 +1,6 @@
 from . import limited_workflow_executions
 from . import limited_workflow_status_updates
+from . import spawned_workflows
 from . import workflow_details
 from . import workflow_executions
 from . import workflow_outputs
@@ -12,6 +13,7 @@ from ptero_workflow.implementation.exceptions import NoSuchEntityError
 _REPORTS = {
     'limited-workflow-executions': limited_workflow_executions.report,
     'limited-workflow-status-updates': limited_workflow_status_updates.report,
+    'spawned-workflows': spawned_workflows.report,
     'workflow-details': workflow_details.report,
     'workflow-executions': workflow_executions.report,
     'workflow-outputs': workflow_outputs.report,

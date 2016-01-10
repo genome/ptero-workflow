@@ -2,7 +2,7 @@ from . import models
 from .models.execution.execution_base import Execution
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, contains_eager
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.model_builder import ModelBuilder
 from ptero_common import nicer_logging
@@ -392,3 +392,19 @@ class Backend(object):
                     extra={'workflowName': execution.workflow.name})
             self.http.delay('PUT', response_url)
         self.session.commit()
+
+    def get_spawned_workflows(self, workflow_id):
+        model_class = models.MethodExecution
+        query = self.session.query(model_class)
+        query = query.join(model_class.child_workflows)
+        query = query.options(contains_eager(model_class.child_workflows))
+        query = query.filter(model_class.workflow_id == workflow_id)
+        query = query.order_by(model_class.timestamp)
+        method_executions = query.all()
+        reports = [e.as_dict_for_spawned_workflows_report()
+                for e in method_executions]
+        if reports:
+            return reports
+        else:
+            workflow = self.get_workflow(workflow_id)
+            return []
