@@ -231,7 +231,7 @@ class ExecutionStatusHistory(Base):
 
     def as_dict_for_limited_report(self):
         return {
-                'execution_id': self.execution_id,
+                'executionId': self.execution_id,
                 'timestamp': str(self.timestamp),
                 'status': self.status
         }
