@@ -248,6 +248,9 @@ class Backend(object):
                             model_class.workflow_id == workflow_id).count()
             return reports, timestamp, num_remaining
         else:
+            # try to fetch the workflow, maybe it doesn't exist, in which case
+            # an exception will be raised and response will be 404
+            workflow = self._get_workflow(workflow_id)
             return [], None, 0
 
     def get_limited_workflow_status_updates(self, **kwargs):
