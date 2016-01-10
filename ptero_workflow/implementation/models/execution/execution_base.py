@@ -60,7 +60,8 @@ class Execution(Base):
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
         self._status = 'new'
-        ExecutionStatusHistory(execution=self, status='new')
+        ExecutionStatusHistory(execution=self, workflow=self.workflow,
+                status='new')
 
 
     @property
@@ -88,7 +89,8 @@ class Execution(Base):
             else:
                 self.send_webhooks(status)
                 self._status = status
-                return ExecutionStatusHistory(execution=self, status=status)
+                return ExecutionStatusHistory(execution=self,
+                        workflow=self.workflow, status=status)
 
     @property
     def update_timestamp(self):
@@ -218,6 +220,11 @@ class ExecutionStatusHistory(Base):
     execution = relationship(Execution,
             backref=backref('status_history', order_by=timestamp, lazy='joined',
             passive_deletes='all'))
+
+    # workflow_id will be nullable until after database backfilling occurs
+    workflow_id = Column(Integer, ForeignKey('workflow.id', ondelete='CASCADE'),
+        nullable=True, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
     def as_dict(self, detailed=False):
         return {'timestamp': str(self.timestamp), 'status': self.status}
