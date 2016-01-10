@@ -216,31 +216,36 @@ class Backend(object):
         else:
             return [], None
 
-    def get_limited_workflow_executions(self, workflow_id, limit, since=None):
-        query = self.session.query(models.Execution)
+    def get_limited_workflow_executions(self, **kwargs):
+        model_class = models.Execution
+        return self._get_limited_reports(model_class=model_class, **kwargs)
+
+    def _get_limited_reports(self, model_class, workflow_id,
+            limit, since=None):
+        query = self.session.query(model_class)
 
         if since is not None:
-            query = query.filter(models.Execution.workflow_id == workflow_id,
-                            models.Execution.timestamp >= since)
+            query = query.filter(model_class.workflow_id == workflow_id,
+                            model_class.timestamp >= since)
         else:
-            query = query.filter(models.Execution.workflow_id == workflow_id)
+            query = query.filter(model_class.workflow_id == workflow_id)
 
-        query = query.order_by(models.Execution.timestamp).limit(limit + 1)
-        executions = query.all()
+        query = query.order_by(model_class.timestamp).limit(limit + 1)
+        instances = query.all()
 
-        if executions:
-            if len(executions) == limit + 1:
-                # ensure that we return exactly the right number of executions
-                next_execution = executions.pop()
+        if instances:
+            if len(instances) == limit + 1:
+                # ensure that we return exactly the right number of results
+                next_execution = instances.pop()
             else:
-                next_execution = executions[-1]
+                next_execution = instances[-1]
 
             timestamp = next_execution.timestamp
-            reports = [e.as_dict_for_limited_executions_report()
-                    for e in executions]
-            num_remaining = self.session.query(models.Execution).\
-                    filter(models.Execution.id > executions[-1].id,
-                            models.Execution.workflow_id == workflow_id).count()
+            reports = [e.as_dict_for_limited_report()
+                    for e in instances]
+            num_remaining = self.session.query(model_class).\
+                    filter(model_class.id > instances[-1].id,
+                            model_class.workflow_id == workflow_id).count()
             return reports, timestamp, num_remaining
         else:
             return [], None

@@ -148,7 +148,7 @@ class Execution(Base):
 
         return result
 
-    def as_dict_for_limited_executions_report(self):
+    def as_dict_for_limited_report(self):
         result = {name: str(getattr(self, name)) for name in ['color',
             'colors', 'begins', 'status', 'id', 'timestamp']}
 
