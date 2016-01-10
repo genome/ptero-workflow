@@ -1,4 +1,5 @@
 from . import limited_workflow_executions
+from . import limited_workflow_status_updates
 from . import workflow_details
 from . import workflow_executions
 from . import workflow_outputs
@@ -9,6 +10,7 @@ from . import workflow_submission_data
 
 _REPORTS = {
     'limited-workflow-executions': limited_workflow_executions.report,
+    'limited-workflow-status-updates': limited_workflow_status_updates.report,
     'workflow-details': workflow_details.report,
     'workflow-executions': workflow_executions.report,
     'workflow-outputs': workflow_outputs.report,

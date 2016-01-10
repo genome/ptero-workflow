@@ -250,6 +250,10 @@ class Backend(object):
         else:
             return [], None
 
+    def get_limited_workflow_status_updates(self, **kwargs):
+        model_class = models.ExecutionStatusHistory
+        return self._get_limited_reports(model_class=model_class, **kwargs)
+
     def _get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)
         if execution is not None:
