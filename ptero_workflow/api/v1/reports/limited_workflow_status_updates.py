@@ -6,6 +6,7 @@ import os
 LOG = nicer_logging.getLogger(__name__)
 LIMIT = os.environ.get("PTERO_WORKFLOW_DEFAULT_STATUS_UPDATES_LIMIT", 500)
 
+
 def report(workflow_id, since=None, limit=LIMIT):
     updates, timestamp, num_remaining = g.backend.get_limited_workflow_status_updates(
             workflow_id=workflow_id, since=since, limit=int(limit))
