@@ -120,6 +120,18 @@ class Workflow(Base):
 
         return result
 
+    def as_dict_for_summary(self):
+        tasks = {name: task.as_dict_for_summary()
+            for name,task in self.tasks.iteritems()
+                if name not in ['input connector', 'output connector']}
+
+        result = {
+            'tasks': tasks,
+            'status': self.status,
+            'name': self.name,
+        }
+        return result
+
     def as_skeleton_dict(self):
         tasks = {name: task.as_skeleton_dict()
             for name,task in self.tasks.iteritems()

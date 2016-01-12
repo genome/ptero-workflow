@@ -160,6 +160,25 @@ class Method(Base):
 
         return result
 
+    def as_dict_for_summary(self):
+        execution_summary = self.execution_summary
+        result = {
+            'executionSummary': execution_summary,
+            'name': self.name,
+            'service': self.service,
+        }
+        return result
+
+    @property
+    def execution_summary(self):
+        s = object_session(self)
+        rows = s.execute("""
+            SELECT status, count(status)
+            FROM execution WHERE method_id = :id
+            GROUP BY status;
+        """, {"id": self.id})
+        return {row[0]: row[1] for row in rows}
+
     def as_skeleton_dict(self):
         result = {
             'id': self.id,

@@ -286,3 +286,18 @@ class Backend(object):
                 extra={'workflowName': workflow.name})
         self.session.delete(workflow)
         self.session.commit()
+
+    def get_workflow_summary(self, workflow_id):
+        m = models
+        method_lists = self.session.query(m.MethodList).\
+                options(
+                        joinedload(m.MethodList.method_list),
+                ).filter_by(workflow_id=workflow_id).all()
+
+        dags = self.session.query(m.DAG).\
+                filter_by(workflow_id=workflow_id).all()
+
+        jobs = self.session.query(m.Job).\
+                filter_by(workflow_id=workflow_id).all()
+
+        return self._get_workflow(workflow_id).as_dict_for_summary()

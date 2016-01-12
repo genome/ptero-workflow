@@ -98,6 +98,9 @@ class Task(Base, PetriMixin):
     def as_dict(self, detailed):
         raise NotImplementedError
 
+    def as_dict_for_summary(self):
+        raise NotImplementedError
+
     def attach_transitions(self, transitions, start_place):
 
         if self.parallel_by is None:

@@ -158,6 +158,15 @@ class DAG(Method):
             filter(destination_task.parent_id==self.id, source_task.parent_id==self.id).\
             order_by(source_task.name,destination_task.name).all()
 
+    def as_dict_for_summary(self):
+        result = super(DAG, self).as_dict_for_summary()
+        result['parameters'] = {
+            'tasks': {t.name: t.as_dict_for_summary()
+                for t in self.children.itervalues()
+                    if t.type not in ['InputConnector', 'OutputConnector']},
+        }
+        return result
+
     def as_skeleton_dict(self):
         result = super(DAG, self).as_skeleton_dict()
         result['parameters'] = {
