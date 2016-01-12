@@ -255,13 +255,19 @@ class Backend(object):
 
     def handle_method_callback(self, method_id, callback_type, body_data,
             query_string_data):
-        method = self.session.query(models.Method
+        try:
+            method = self.session.query(models.Method
                 ).filter_by(id=method_id).one()
-        LOG.info('Got "%s" callback for %s method (%s:%s) in workflow "%s"',
-            callback_type, method.__class__.__name__, method.name,
-            method_id, method.workflow.name,
-            extra={'workflowName':method.workflow.name})
-        method.handle_callback(callback_type, body_data, query_string_data)
+        except NoResultFound:
+            raise exceptions.NoSuchEntityError(
+                'Method with id (%s) not found '
+                'while handling "%s" callback' % (method_id, callback_type))
+        else:
+            LOG.info('Got "%s" callback for %s method (%s:%s) in workflow "%s"',
+                callback_type, method.__class__.__name__, method.name,
+                method_id, method.workflow.name,
+                extra={'workflowName':method.workflow.name})
+            method.handle_callback(callback_type, body_data, query_string_data)
 
     def server_info(self):
         result = get_server_info('ptero_workflow.implementation.celery_app')
