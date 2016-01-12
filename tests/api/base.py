@@ -76,8 +76,12 @@ class BaseAPITest(unittest.TestCase):
         return server
 
     @property
+    def base_url(self):
+        return 'http://%s:%s' % (self.api_host, self.api_port)
+
+    @property
     def post_url(self):
-        return 'http://%s:%s/v1/workflows' % (self.api_host, self.api_port)
+        return '%s/v1/workflows' % self.base_url
 
     @property
     def get_url(self):
