@@ -246,12 +246,18 @@ class Backend(object):
 
     def handle_task_callback(self, task_id, callback_type, body_data,
             query_string_data):
-        task = self.session.query(models.Task
+        try:
+            task = self.session.query(models.Task
                 ).filter_by(id=task_id).one()
-        LOG.info('Got "%s" callback for task (%s:%s) in workflow "%s"',
-            callback_type, task.name, task_id, task.workflow.name,
-            extra={'workflowName':task.workflow.name})
-        task.handle_callback(callback_type, body_data, query_string_data)
+        except NoResultFound:
+            raise exceptions.NoSuchEntityError(
+                'Task with id (%s) not found '
+                'while handling "%s" callback' % (task_id, callback_type))
+        else:
+            LOG.info('Got "%s" callback for task (%s:%s) in workflow "%s"',
+                callback_type, task.name, task_id, task.workflow.name,
+                extra={'workflowName':task.workflow.name})
+            task.handle_callback(callback_type, body_data, query_string_data)
 
     def handle_method_callback(self, method_id, callback_type, body_data,
             query_string_data):

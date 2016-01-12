@@ -7,3 +7,9 @@ class TestCallbackHandlers(BaseAPITest):
         bad_url = '%s%s' % (self.base_url, bad_endpoint)
         response = self.post(bad_url, {})
         self.assertEqual(404, response.status_code)
+
+    def test_callback_on_nonexistent_task(self):
+        bad_endpoint = '/v1/callbacks/tasks/55021/callbacks/errored'
+        bad_url = '%s%s' % (self.base_url, bad_endpoint)
+        response = self.post(bad_url, {})
+        self.assertEqual(404, response.status_code)
