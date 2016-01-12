@@ -42,9 +42,8 @@ class Execution(Base):
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
-    # timestamp will be nullable until after database backfilling occurs
     timestamp = Column(DateTime(timezone=True), default=func.now(),
-            index=True, nullable=True)
+            index=True, nullable=False)
 
     type = Column(String, index=True, nullable=False)
     __mapper_args__ = {
@@ -222,9 +221,8 @@ class ExecutionStatusHistory(Base):
             backref=backref('status_history', order_by=timestamp, lazy='joined',
             passive_deletes='all'))
 
-    # workflow_id will be nullable until after database backfilling occurs
     workflow_id = Column(Integer, ForeignKey('workflow.id', ondelete='CASCADE'),
-        nullable=True, index=True)
+        nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
     def as_dict(self, detailed=False):
