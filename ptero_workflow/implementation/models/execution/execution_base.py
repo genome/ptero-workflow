@@ -59,8 +59,12 @@ class Execution(Base):
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
         self._status = 'new'
-        ExecutionStatusHistory(execution=self, workflow=self.workflow,
-                status='new')
+        if self.workflow_id is not None:
+            ExecutionStatusHistory(execution=self,
+                    workflow_id=self.workflow_id, status='new')
+        else:
+            ExecutionStatusHistory(execution=self, workflow=self.workflow,
+                    status='new')
 
 
     @property
@@ -88,8 +92,12 @@ class Execution(Base):
             else:
                 self.send_webhooks(status)
                 self._status = status
-                return ExecutionStatusHistory(execution=self,
-                        workflow=self.workflow, status=status)
+                if self.workflow_id is not None:
+                    return ExecutionStatusHistory(execution=self,
+                            workflow_id=self.workflow_id, status=status)
+                else:
+                    return ExecutionStatusHistory(execution=self,
+                            workflow=self.workflow, status=status)
 
     @property
     def update_timestamp(self):
