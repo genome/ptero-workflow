@@ -1,6 +1,7 @@
 from .task_base import Task
 from sqlalchemy import Column, ForeignKey, Integer
 from sqlalchemy.orm import relationship
+from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.collections import attribute_mapped_collection
 
 
@@ -62,6 +63,28 @@ class MethodList(Task):
                     color: execution.as_dict(detailed=detailed)
                     for color, execution in self.executions.iteritems()}
         return result
+
+    def as_dict_for_summary(self):
+        execution_summary = self.execution_summary
+        result = {
+            'executionSummary': execution_summary,
+            'name': self.name,
+            'methods': [m.as_dict_for_summary() for m in self.method_list],
+            'topologicalIndex': self.topological_index,
+        }
+        if self.parallel_by is not None:
+            result['parallelBy'] = self.parallel_by
+        return result
+
+    @property
+    def execution_summary(self):
+        s = object_session(self)
+        rows = s.execute("""
+            SELECT status, count(status)
+            FROM execution WHERE task_id = :id
+            GROUP BY status;
+        """, {"id": self.id})
+        return {row[0]: row[1] for row in rows}
 
     def as_skeleton_dict(self):
         result = {
