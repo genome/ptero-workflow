@@ -70,7 +70,6 @@ class MethodList(Task):
             'executionSummary': execution_summary,
             'name': self.name,
             'methods': [m.as_dict_for_summary() for m in self.method_list],
-            'topologicalIndex': self.topological_index,
         }
         if self.parallel_by is not None:
             result['parallelBy'] = self.parallel_by

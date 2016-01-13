@@ -121,12 +121,13 @@ class Workflow(Base):
         return result
 
     def as_dict_for_summary(self):
-        tasks = {name: task.as_dict_for_summary()
-            for name,task in self.tasks.iteritems()
-                if name not in ['input connector', 'output connector']}
+        sorted_tasks = sorted(self.tasks.values(),
+                key=lambda x: x.topological_index)
+        tasks_list = [t.as_dict_for_summary() for t in sorted_tasks
+                if t.name not in ['input connector', 'output connector']]
 
         result = {
-            'tasks': tasks,
+            'tasks': tasks_list,
             'status': self.status,
             'name': self.name,
         }
