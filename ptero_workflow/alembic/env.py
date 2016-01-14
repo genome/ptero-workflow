@@ -3,16 +3,16 @@ from alembic import context
 from sqlalchemy import create_engine
 import os
 
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
-
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from ptero_workflow.implementation.models.base import Base
 target_metadata = Base.metadata
+
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
+config = context.config
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
