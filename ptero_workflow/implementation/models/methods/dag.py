@@ -160,11 +160,12 @@ class DAG(Method):
 
     def as_dict_for_summary(self):
         result = super(DAG, self).as_dict_for_summary()
-        result['parameters'] = {
-            'tasks': {t.name: t.as_dict_for_summary()
-                for t in self.children.itervalues()
-                    if t.type not in ['InputConnector', 'OutputConnector']},
-        }
+
+        sorted_tasks = sorted(self.children.values(),
+                key=lambda x: x.topological_index)
+        tasks_list = [t.as_dict_for_summary() for t in sorted_tasks
+                if t.name not in ['input connector', 'output connector']]
+        result['parameters'] = {'tasks': tasks_list}
         return result
 
     def as_skeleton_dict(self):
