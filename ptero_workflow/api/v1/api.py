@@ -1,30 +1,22 @@
 from flask.ext.restful import Api
 from . import views
+from ptero_workflow.urls import ENDPOINT_INFO
 
 
 __all__ = ['api']
 
-
 api = Api(default_mediatype='application/json')
 
-api.add_resource(views.WorkflowListView, '/workflows', endpoint='workflow-list')
+RESOURCES = {
+        'workflow-list': views.WorkflowListView,
+        'workflow-detail': views.WorkflowDetailView,
+        'execution-detail': views.ExecutionDetailView,
+        'task-callback': views.TaskCallback,
+        'method-callback': views.MethodCallback,
+        'report': views.ReportDetailView,
+        'server-info': views.ServerInfo,
+}
 
-api.add_resource(views.WorkflowDetailView,
-    '/workflows/<int:workflow_id>', endpoint='workflow-detail')
-
-api.add_resource(views.ExecutionDetailView,
-    '/executions/<int:execution_id>', endpoint='execution-detail')
-
-
-api.add_resource(views.TaskCallback,
-    '/callbacks/tasks/<int:task_id>/callbacks/<string:callback_type>',
-    endpoint='task-callback')
-
-api.add_resource(views.MethodCallback,
-    '/callbacks/methods/<int:method_id>/callbacks/<string:callback_type>',
-    endpoint='method-callback')
-
-api.add_resource(views.ReportDetailView, '/reports/<string:report_type>',
-        endpoint='report')
-
-api.add_resource(views.ServerInfo, '/server-info', endpoint='server-info')
+for endpoint_name, resource in RESOURCES.items():
+    info = ENDPOINT_INFO[endpoint_name]
+    api.add_resource(resource, info['url'], endpoint=endpoint_name)

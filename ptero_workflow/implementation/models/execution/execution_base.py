@@ -1,6 +1,6 @@
 from ..base import Base
 from ..json_type import JSON, MutableJSONDict
-from flask import url_for
+from ptero_workflow.urls import url_for
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, Text, String
 from sqlalchemy import UniqueConstraint, func
 from sqlalchemy.orm import backref, relationship
@@ -179,8 +179,7 @@ class Execution(Base):
 
     @property
     def url(self):
-        return url_for('.execution-detail', execution_id=self.id,
-                _external=True)
+        return url_for('execution-detail', execution_id=self.id)
 
     def cancel(self):
         self.status = statuses.canceled

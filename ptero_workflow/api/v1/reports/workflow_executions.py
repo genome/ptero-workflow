@@ -1,4 +1,5 @@
-from flask import g, url_for
+from flask import g
+from ptero_workflow.urls import url_for
 import urllib
 from ptero_common import nicer_logging
 
@@ -9,7 +10,7 @@ def report(workflow_id, since=None):
     executions, timestamp = g.backend.get_workflow_executions(
             workflow_id=workflow_id, since=since)
 
-    base_url = url_for('.report', report_type='workflow-executions', _external=True)
+    base_url = url_for('report', report_type='workflow-executions')
 
     url_query_string_args = {'workflow_id': workflow_id}
 

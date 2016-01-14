@@ -5,9 +5,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.model_builder import ModelBuilder
-import os
 from ptero_common import nicer_logging
 from ptero_common.server_info import get_server_info
+from ptero_workflow.urls import petri_url_for
 import re
 
 LOG = nicer_logging.getLogger(__name__)
@@ -72,11 +72,7 @@ class Backend(object):
         self.http_task.delay('PUT', self._petri_submit_url(workflow.net_key), **petri_data)
 
     def _petri_submit_url(self, net_key):
-        return 'http://%s:%d/v1/nets/%s' % (
-            os.environ.get('PTERO_PETRI_HOST', 'localhost'),
-            int(os.environ.get('PTERO_PETRI_PORT', 80)),
-            net_key,
-        )
+        return petri_url_for('net-detail', net_key=net_key)
 
     def _save_workflow(self, workflow_data):
         builder = ModelBuilder(workflow_data)
