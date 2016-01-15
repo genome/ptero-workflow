@@ -37,11 +37,11 @@ class WebhookTest(RoundTripSuccess):
 
 
 class CountingWebhooks(WebhookTest, BaseAPITest):
-    webhook_server_responses = [200 for i in range(40)]
+    webhook_server_responses = [200 for i in range(25)]
 
     def evaluate_webhook_data(self, webhook_data):
         print pformat(webhook_data)
-        self.assertEqual(len(webhook_data), 40)
+        self.assertEqual(len(webhook_data), 25)
 
     @property
     def post_data(self):

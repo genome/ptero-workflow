@@ -13,6 +13,14 @@ LOG = nicer_logging.getLogger(__name__)
 
 __all__ = ['Webhook']
 
+webhooks_awaiting_dispatch = []
+
+
+def dispatch_webhooks(session):
+    for webhook_fn in globals()['webhooks_awaiting_dispatch']:
+        webhook_fn(session)
+    globals()['webhooks_awaiting_dispatch'] = []
+
 
 class Webhook(Base):
     __tablename__ = 'webhook'
@@ -73,13 +81,17 @@ class Webhook(Base):
 
         # Note: closure over self, url, name, data, ect...
         # Closure is to ensure no SQL is emmitted on a 'committed' session
-        def callback(session):
+        def closure_fn(session):
             LOG.info('Sending webhook after commit: %s "%s" of workflow "%s" reached '
                     'status %s -- %s',
                     parent_type, parent_name, workflow_name, name, url,
                     extra={'workflowName':workflow_name})
             self.http.delay('POST', url, webhookName=name, **data)
-        event.listen(session, "after_commit", callback)
+
+        # globals is used to ensure that if 'after_commit' is called repeatedly,
+        # that webhooks only get sent once.
+        globals()['webhooks_awaiting_dispatch'].append(closure_fn)
+        event.listen(session, "after_commit", dispatch_webhooks)
 
 
 NAME_SYNONYMS = {
