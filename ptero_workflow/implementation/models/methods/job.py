@@ -5,10 +5,8 @@ from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session
 import celery
 from ptero_common import nicer_logging
-from pprint import pformat
-from ptero_common.statuses import (scheduled, running, canceled, errored,
+from ptero_common.statuses import (running, canceled, errored,
         succeeded, failed)
-import uuid
 
 LOG = nicer_logging.getLogger(__name__)
 
@@ -80,35 +78,9 @@ class Job(Method):
                     ' workflow "%s"', execution.name, self.workflow.name,
                     extra={'workflowName': self.workflow.name})
             self.http.delay('PUT', response_url)
-        else:
-            group = body_data['group']
-            color = body_data['color']
-            colors = group.get('color_lineage', []) + [color]
-            begins = group.get('begin_lineage', []) + [group['begin']]
-
-            job_id = str(uuid.uuid4())
-            execution.data['jobId'] = job_id
             s.commit()
-
-            try:
-                job_url = self._submit_to_job_service(job_id, colors,
-                        begins, execution)
-                execution.status = scheduled
-                execution.data['jobUrl'] = job_url
-            except Exception as e:
-                LOG.exception('Failed to submit job to service. '
-                        'Execution id: %s', execution.id,
-                        extra={'workflowName': self.workflow.name})
-                execution.status = errored;
-                execution.data['error_message'] = e.message
-
-                response_url = body_data['response_links']['failure']
-                LOG.info('Notifying petri: execution "%s" failed for'
-                        ' workflow "%s"', execution.name, self.workflow.name,
-                        extra={'workflowName':self.workflow.name})
-                self.http.delay('PUT', response_url)
-
-        s.commit()
+        else:
+            self.submit_job.delay(execution.id)
 
     def running(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
@@ -172,32 +144,15 @@ class Job(Method):
                 extra={'workflowName':self.workflow.name})
         self.http.delay('PUT', response_url)
 
-    def _submit_to_job_service(self, job_id, colors, begins, execution):
-        body_data = self._job_submit_data(colors, begins,
-                execution.id)
-        job_url = "%s/%s" % (self._job_submit_url, job_id)
-        LOG.info('Submitting Job for execution "%s" of workflow '
-                '"%s" -- %s', execution.name, self.workflow.name,
-                job_url, extra={'workflowName':self.workflow.name})
-        result = self.http_with_result.delay('PUT', job_url, **body_data)
-        response_info = result.wait()
-        if 'json' in response_info:
-            return response_info['headers']['location']
-        else:
-            raise RuntimeError("Cannot submit to job service.\n"
-                "URL: %s\nResponse info: %s" % (self._job_submit_url,
-                    pformat(response_info)))
-
     @property
-    def http_with_result(self):
+    def submit_job(self):
         return celery.current_app.tasks[
-                'ptero_common.celery.http.HTTPWithResult']
+                'ptero_workflow.implementation.celery_tasks.submit_job.SubmitJob']
 
-    @property
-    def _job_submit_url(self):
-        return '%s/jobs' % self.service_url
+    def get_job_submit_url(self, job_id):
+        return '%s/jobs/%s' % (self.service_url, job_id)
 
-    def _job_submit_data(self, colors, begins, execution_id):
+    def get_job_submit_data(self, execution_id):
         submit_data = self.parameters
 
         if 'environment' not in submit_data:
