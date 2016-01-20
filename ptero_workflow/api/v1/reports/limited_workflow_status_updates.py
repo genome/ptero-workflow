@@ -11,8 +11,7 @@ def report(workflow_id, since=None, limit=LIMIT):
     updates, timestamp, num_remaining = g.backend.get_limited_workflow_status_updates(
             workflow_id=workflow_id, since=since, limit=int(limit))
 
-    base_url = url_for('.report', report_type='limited-workflow-status-updates',
-            _external=True)
+    base_url = url_for('report', report_type='limited-workflow-status-updates')
 
     url_query_string_args = {'workflow_id': workflow_id, 'limit':limit}
 
