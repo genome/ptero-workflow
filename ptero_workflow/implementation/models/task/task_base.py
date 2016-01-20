@@ -14,10 +14,10 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 import celery
 from ptero_common import nicer_logging
-import os
 import urllib
 from ptero_common import statuses
 from ptero_workflow.implementation import exceptions
+from ptero_workflow.urls import url_for
 
 
 __all__ = ['Task']
@@ -369,13 +369,9 @@ class Task(Base, PetriMixin):
         else:
             query_string = ''
 
-        return 'http://%s:%d/v1/callbacks/tasks/%d/callbacks/%s%s' % (
-            os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
-            int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
-            self.id,
-            callback_type,
-            query_string,
-        )
+        base_url = url_for('task-callback',
+                task_id=self.id, callback_type=callback_type)
+        return base_url + query_string
 
     @property
     def input_tasks(self):

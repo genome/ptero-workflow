@@ -12,6 +12,7 @@ app = celery.Celery('PTero-workflow-celery',
 app.conf['CELERY_ROUTES'] = (
     {
         'ptero_workflow.implementation.celery_tasks.submit_net.SubmitNet': {'queue': 'submit'},
+        'ptero_workflow.implementation.celery_tasks.submit_job.SubmitJob': {'queue': 'submit'},
         'ptero_common.celery.http.HTTP': {'queue': 'http'},
         'ptero_common.celery.http.HTTPWithResult': {'queue': 'http'},
     },

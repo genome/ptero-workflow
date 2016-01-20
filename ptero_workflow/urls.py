@@ -1,0 +1,56 @@
+import os
+
+HOST = os.environ['PTERO_WORKFLOW_HOST']
+PORT = int(os.environ['PTERO_WORKFLOW_PORT'])
+
+ENDPOINT_INFO = {
+        'workflow-list': {
+            'url': '/workflows',
+            'format': '/workflows',
+        },
+        'workflow-detail': {
+            'url': '/workflows/<int:workflow_id>',
+            'format': '/workflows/%(workflow_id)d',
+        },
+        'execution-detail': {
+            'url': '/executions/<int:execution_id>',
+            'format': '/executions/%(execution_id)d',
+        },
+        'task-callback': {
+            'url': '/callbacks/tasks/<int:task_id>/callbacks/<string:callback_type>',
+            'format': '/callbacks/tasks/%(task_id)d/callbacks/%(callback_type)s',
+        },
+        'method-callback': {
+            'url': '/callbacks/methods/<int:method_id>/callbacks/<string:callback_type>',
+            'format': '/callbacks/methods/%(method_id)d/callbacks/%(callback_type)s',
+        },
+        'report': {
+            'url': '/reports/<string:report_type>',
+            'format': '/reports/%(report_type)s',
+        },
+        'server-info': {
+            'url': '/server-info',
+            'format': '/server-info',
+        },
+}
+
+PETRI_HOST = os.environ['PTERO_PETRI_HOST']
+PETRI_PORT = int(os.environ['PTERO_PETRI_PORT'])
+
+PETRI_ENDPOINT_INFO = {
+        'net-detail': {
+            'format': '/nets/%(net_key)s',
+        },
+}
+
+
+def url_for(endpoint_name, **kwargs):
+    endpoint_info = ENDPOINT_INFO[endpoint_name]
+    route = endpoint_info['format'] % kwargs
+    return "http://%s:%s/v1%s" % (HOST, PORT, route)
+
+
+def petri_url_for(endpoint_name, **kwargs):
+    endpoint_info = PETRI_ENDPOINT_INFO[endpoint_name]
+    route = endpoint_info['format'] % kwargs
+    return "http://%s:%s/v1%s" % (PETRI_HOST, PETRI_PORT, route)

@@ -1,5 +1,5 @@
 from .base import Base
-from flask import url_for
+from ptero_workflow.urls import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm import relationship, backref
 import base64
@@ -90,7 +90,7 @@ class Workflow(Base):
 
     @property
     def url(self):
-        return url_for('.workflow-detail', workflow_id=self.id, _external=True)
+        return url_for('workflow-detail', workflow_id=self.id)
 
     def get_webhooks(self, *args, **kwargs):
         return self.root_task.method_list[0].get_webhooks(*args, **kwargs)

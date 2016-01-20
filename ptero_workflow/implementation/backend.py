@@ -5,10 +5,12 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import joinedload
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.model_builder import ModelBuilder
-import os
 from ptero_common import nicer_logging
 from ptero_common.server_info import get_server_info
+from ptero_workflow.urls import petri_url_for
 import re
+from ptero_common.statuses import (scheduled, errored)
+import uuid
 
 LOG = nicer_logging.getLogger(__name__)
 
@@ -25,6 +27,10 @@ class Backend(object):
     @property
     def submit_net_task(self):
         return self.celery_app.tasks[_TASK_BASE + 'submit_net.SubmitNet']
+
+    @property
+    def http_with_result_task(self):
+        return self.celery_app.tasks['ptero_common.celery.http.HTTPWithResult']
 
     @property
     def http_task(self):
@@ -72,11 +78,7 @@ class Backend(object):
         self.http_task.delay('PUT', self._petri_submit_url(workflow.net_key), **petri_data)
 
     def _petri_submit_url(self, net_key):
-        return 'http://%s:%d/v1/nets/%s' % (
-            os.environ.get('PTERO_PETRI_HOST', 'localhost'),
-            int(os.environ.get('PTERO_PETRI_PORT', 80)),
-            net_key,
-        )
+        return petri_url_for('net-detail', net_key=net_key)
 
     def _save_workflow(self, workflow_data):
         builder = ModelBuilder(workflow_data)
@@ -313,3 +315,39 @@ class Backend(object):
                 filter_by(workflow_id=workflow_id).all()
 
         return self._get_workflow(workflow_id).as_dict_for_summary()
+
+    def submit_job(self, execution_id):
+        execution = self._get_execution(execution_id)
+
+        job_id = str(uuid.uuid4())
+        execution.data['jobId'] = job_id
+        self.session.commit()
+
+        job_url = execution.method.get_job_submit_url(job_id)
+        LOG.info('Submitting Job for execution "%s" of workflow '
+                '"%s" -- %s', execution.name, execution.workflow.name,
+                job_url, extra={'workflowName': execution.workflow.name})
+
+        submit_data = execution.method.get_job_submit_data(execution.id)
+        result = self.http_with_result_task.delay('PUT', job_url, **submit_data)
+
+        response_info = result.wait()
+        if 'json' in response_info:
+            execution.status = scheduled
+            url_from_header = response_info['headers']['location']
+            execution.data['jobUrl'] = url_from_header
+        else:
+            error_message = 'Failed to submit job to service. ' +\
+                    'Execution id: %s'
+            LOG.error(error_message, execution.id,
+                    extra={'workflowName': execution.workflow.name})
+            execution.status = errored
+            execution.data['error_message'] = error_message
+
+            response_url = execution.data[
+                    'petri_response_links_for_job']['failure']
+            LOG.info('Notifying petri: execution "%s" failed for'
+                    ' workflow "%s"', execution.name, execution.workflow.name,
+                    extra={'workflowName': execution.workflow.name})
+            self.http.delay('PUT', response_url)
+        self.session.commit()

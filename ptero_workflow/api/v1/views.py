@@ -2,7 +2,8 @@ from . import reports
 from . import validators
 from . import utils
 from ...implementation import exceptions
-from flask import g, request, url_for
+from flask import g, request
+from ptero_workflow.urls import url_for
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
@@ -101,8 +102,7 @@ class WorkflowListView(Resource):
         LOG.info("Responding 201 to workflow POST%s",
                 name_part, extra={'workflowName':name})
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 201, {
-            'Location': url_for('.workflow-detail', workflow_id=workflow_id,
-                _external=True)
+            'Location': url_for('workflow-detail', workflow_id=workflow_id)
         }
 
     @logged_response(logger=LOG)
@@ -202,7 +202,7 @@ def _generate_report_links(workflow_id):
 
 
 def _report_url(workflow_id, report_type):
-    base_url = url_for('.report', report_type=report_type, _external=True)
+    base_url = url_for('report', report_type=report_type)
 
     return '%s?%s' % (base_url, urllib.urlencode({'workflow_id': workflow_id}))
 

@@ -1,7 +1,7 @@
 from ..base import Base
 from ..execution.method_execution import MethodExecution
 from .. import webhook
-from flask import url_for
+from ptero_workflow.urls import url_for
 from sqlalchemy import Column, ForeignKey, Integer, Text, UniqueConstraint
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.orm.collections import attribute_mapped_collection
@@ -9,7 +9,6 @@ from sqlalchemy.orm.session import object_session
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 import celery
-import os
 import urllib
 from ptero_common import nicer_logging
 
@@ -116,24 +115,16 @@ class Method(Base):
         else:
             query_string = ''
 
-        # We cannot use url_for() here because this is called from outside the
-        # Flask Application Context
-
-        return 'http://%s:%d/v1/callbacks/methods/%d/callbacks/%s%s' % (
-            os.environ.get('PTERO_WORKFLOW_HOST', 'localhost'),
-            int(os.environ.get('PTERO_WORKFLOW_PORT', 80)),
-            self.id,
-            callback_type,
-            query_string,
-        )
+        base_url = url_for('method-callback',
+                method_id=self.id, callback_type=callback_type)
+        return base_url + query_string
 
     def execution_url(self, execution_id):
-        return url_for('.execution-detail', execution_id=execution_id,
-                _external=True)
+        return url_for('execution-detail', execution_id=execution_id)
 
     @property
     def workflow_submit_url(self):
-        return url_for('.workflow-list', _external=True)
+        return url_for('workflow-list')
 
     def create_input_sources(self, session, parallel_depths):
         pass
