@@ -1,9 +1,8 @@
 from . import reports
 from . import validators
-from . import utils
 from ...implementation import exceptions
 from flask import g, request
-from ptero_workflow.urls import url_for
+from ptero_workflow.urls import url_for, url_parse
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
@@ -132,8 +131,7 @@ class WorkflowListView(Resource):
 
 
 def get_execution_id_from_url(url):
-    (endpoint, params) = utils.split_url(url, method='GET')
-    return params['execution_id']
+    return url_parse('execution-detail', url)['execution_id']
 
 
 class WorkflowDetailView(Resource):
