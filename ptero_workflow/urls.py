@@ -12,7 +12,6 @@ ENDPOINT_INFO = {
         'workflow-detail': {
             'url': '/workflows/<int:workflow_id>',
             'format': '/workflows/%(workflow_id)d',
-            'parser': '/workflows/(?P<workflow_id>\d+)',
         },
         'execution-detail': {
             'url': '/executions/<int:execution_id>',
@@ -22,17 +21,14 @@ ENDPOINT_INFO = {
         'task-callback': {
             'url': '/callbacks/tasks/<int:task_id>/callbacks/<string:callback_type>',
             'format': '/callbacks/tasks/%(task_id)d/callbacks/%(callback_type)s',
-            'parser': '/callbacks/tasks/(?P<task_id>\d+)/callbacks/(P?<callback_type>\s+)',
         },
         'method-callback': {
             'url': '/callbacks/methods/<int:method_id>/callbacks/<string:callback_type>',
             'format': '/callbacks/methods/%(method_id)d/callbacks/%(callback_type)s',
-            'parser': '/callbacks/methods/(?P<method_id>\d+)/callbacks/(?P<callback_type>\s+)',
         },
         'report': {
             'url': '/reports/<string:report_type>',
             'format': '/reports/%(report_type)s',
-            'parser': '/reports/(?P<report_type>\s+)',
         },
         'server-info': {
             'url': '/server-info',
