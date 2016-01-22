@@ -54,6 +54,10 @@ class IllegalTaskNameError(ValidationError):
     pass
 
 
+class InvalidExecutionUrlError(ValidationError):
+    pass
+
+
 class DuplicatePetriNetError(Exception):
     pass
 
