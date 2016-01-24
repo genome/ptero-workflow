@@ -64,3 +64,7 @@ class DuplicatePetriNetError(Exception):
 
 class DuplicateJobError(Exception):
     pass
+
+
+class UrlParseError(Exception):
+    pass

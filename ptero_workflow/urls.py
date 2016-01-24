@@ -1,3 +1,4 @@
+from ptero_workflow.implementation.exceptions import UrlParseError
 import os
 import re
 
@@ -50,8 +51,10 @@ def url_parse(endpoint_name, url):
     route_regex = ENDPOINT_INFO[endpoint_name]['parser']
     regex = "http://[^/]+/v1%s" % route_regex
     match = re.match(regex, url)
-    if match is not None:
-        return match.groupdict()
+    if match is None:
+        raise UrlParseError
+
+    return match.groupdict()
 
 
 def url_for(endpoint_name, **kwargs):
