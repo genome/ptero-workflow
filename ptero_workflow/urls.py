@@ -1,4 +1,6 @@
+from ptero_workflow.implementation.exceptions import UrlParseError
 import os
+import re
 
 HOST = os.environ['PTERO_WORKFLOW_HOST']
 PORT = int(os.environ['PTERO_WORKFLOW_PORT'])
@@ -15,6 +17,7 @@ ENDPOINT_INFO = {
         'execution-detail': {
             'url': '/executions/<int:execution_id>',
             'format': '/executions/%(execution_id)d',
+            'parser': '/executions/(?P<execution_id>\d+)',
         },
         'task-callback': {
             'url': '/callbacks/tasks/<int:task_id>/callbacks/<string:callback_type>',
@@ -42,6 +45,16 @@ PETRI_ENDPOINT_INFO = {
             'format': '/nets/%(net_key)s',
         },
 }
+
+
+def url_parse(endpoint_name, url):
+    route_regex = ENDPOINT_INFO[endpoint_name]['parser']
+    regex = "http://[^/]+/v1%s" % route_regex
+    match = re.match(regex, url)
+    if match is None:
+        raise UrlParseError
+
+    return match.groupdict()
 
 
 def url_for(endpoint_name, **kwargs):

@@ -1,12 +1,12 @@
 from . import reports
 from . import validators
-from . import utils
 from ...implementation import exceptions
 from flask import g, request
-from ptero_workflow.urls import url_for
+from ptero_workflow.urls import url_for, url_parse
 from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
+from ...implementation.exceptions import InvalidExecutionUrlError
 from functools import wraps
 import uuid
 
@@ -132,8 +132,12 @@ class WorkflowListView(Resource):
 
 
 def get_execution_id_from_url(url):
-    (endpoint, params) = utils.split_url(url, method='GET')
-    return params['execution_id']
+    try:
+        parsed_url = url_parse('execution-detail', url)
+        return parsed_url['execution_id']
+    except:
+        LOG.error("Could not parse execution url %s" % url)
+        raise InvalidExecutionUrlError
 
 
 class WorkflowDetailView(Resource):
