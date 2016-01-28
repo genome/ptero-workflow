@@ -222,16 +222,10 @@ class Backend(object):
 
     def _get_limited_reports(self, model_class, workflow_id,
             limit, since=None):
-        query = self.session.query(model_class)
 
-        if since is not None:
-            query = query.filter(model_class.workflow_id == workflow_id,
-                            model_class.timestamp >= since)
-        else:
-            query = query.filter(model_class.workflow_id == workflow_id)
+        query = self._base_reports_query(model_class, workflow_id, since)
 
-        query = query.order_by(model_class.timestamp).limit(limit + 1)
-        instances = query.all()
+        instances = query.order_by(model_class.timestamp).limit(limit + 1).all()
 
         if instances:
             if len(instances) == limit + 1:
@@ -239,19 +233,29 @@ class Backend(object):
                 next_execution = instances.pop()
             else:
                 next_execution = instances[-1]
-
             timestamp = next_execution.timestamp
-            reports = [e.as_dict_for_limited_report()
-                    for e in instances]
-            num_remaining = self.session.query(model_class).\
-                    filter(model_class.id > instances[-1].id,
-                            model_class.workflow_id == workflow_id).count()
+
+            reports = [i.as_dict_for_limited_report() for i in instances]
+
+            total_count = query.count()
+            num_remaining = total_count - len(instances)
+
             return reports, timestamp, num_remaining
         else:
             # try to fetch the workflow, maybe it doesn't exist, in which case
             # an exception will be raised and response will be 404
             workflow = self._get_workflow(workflow_id)
             return [], None, 0
+
+    def _base_reports_query(self, model_class, workflow_id, since):
+        query = self.session.query(model_class)
+
+        if since is not None:
+            query = query.filter(model_class.workflow_id == workflow_id,
+                            model_class.timestamp >= since)
+        else:
+            query = query.filter(model_class.workflow_id == workflow_id)
+        return query
 
     def get_limited_workflow_status_updates(self, **kwargs):
         model_class = models.ExecutionStatusHistory
