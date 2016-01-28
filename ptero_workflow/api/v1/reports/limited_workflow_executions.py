@@ -1,7 +1,8 @@
-from flask import g, url_for
+from flask import g
 import urllib
 from ptero_common import nicer_logging
 import os
+from ptero_workflow.urls import url_for
 
 LOG = nicer_logging.getLogger(__name__)
 LIMIT = os.environ.get("PTERO_WORKFLOW_DEFAULT_EXECUTIONS_LIMIT", 100)
