@@ -2,7 +2,7 @@ from . import models
 from .models.execution.execution_base import Execution
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, contains_eager
 from ptero_workflow.implementation import exceptions
 from ptero_workflow.implementation.model_builder import ModelBuilder
 from ptero_common import nicer_logging
@@ -216,6 +216,51 @@ class Backend(object):
         else:
             return [], None
 
+    def get_limited_workflow_executions(self, **kwargs):
+        model_class = models.Execution
+        return self._get_limited_reports(model_class=model_class, **kwargs)
+
+    def _get_limited_reports(self, model_class, workflow_id,
+            limit, since=None):
+
+        query = self._base_reports_query(model_class, workflow_id, since)
+
+        instances = query.order_by(model_class.timestamp).limit(limit + 1).all()
+
+        if instances:
+            if len(instances) == limit + 1:
+                # ensure that we return exactly the right number of results
+                next_execution = instances.pop()
+            else:
+                next_execution = instances[-1]
+            timestamp = next_execution.timestamp
+
+            reports = [i.as_dict_for_limited_report() for i in instances]
+
+            total_count = query.count()
+            num_remaining = total_count - len(instances)
+
+            return reports, timestamp, num_remaining
+        else:
+            # try to fetch the workflow, maybe it doesn't exist, in which case
+            # an exception will be raised and response will be 404
+            workflow = self._get_workflow(workflow_id)
+            return [], None, 0
+
+    def _base_reports_query(self, model_class, workflow_id, since):
+        query = self.session.query(model_class)
+
+        if since is not None:
+            query = query.filter(model_class.workflow_id == workflow_id,
+                            model_class.timestamp >= since)
+        else:
+            query = query.filter(model_class.workflow_id == workflow_id)
+        return query
+
+    def get_limited_workflow_status_updates(self, **kwargs):
+        model_class = models.ExecutionStatusHistory
+        return self._get_limited_reports(model_class=model_class, **kwargs)
+
     def _get_execution(self, execution_id):
         execution = self.session.query(Execution).get(execution_id)
         if execution is not None:
@@ -351,3 +396,19 @@ class Backend(object):
                     extra={'workflowName': execution.workflow.name})
             self.http.delay('PUT', response_url)
         self.session.commit()
+
+    def get_spawned_workflows(self, workflow_id):
+        model_class = models.MethodExecution
+        query = self.session.query(model_class)
+        query = query.join(model_class.child_workflows)
+        query = query.options(contains_eager(model_class.child_workflows))
+        query = query.filter(model_class.workflow_id == workflow_id)
+        query = query.order_by(model_class.timestamp)
+        method_executions = query.all()
+        reports = [e.as_dict_for_spawned_workflows_report()
+                for e in method_executions]
+        if reports:
+            return reports
+        else:
+            workflow = self.get_workflow(workflow_id)
+            return []

@@ -42,6 +42,9 @@ class Execution(Base):
         nullable=False, index=True)
     workflow = relationship('Workflow', foreign_keys=[workflow_id])
 
+    timestamp = Column(DateTime(timezone=True), default=func.now(),
+            index=True, nullable=False)
+
     type = Column(String, index=True, nullable=False)
     __mapper_args__ = {
             'polymorphic_on': 'type',
@@ -56,7 +59,12 @@ class Execution(Base):
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
         self._status = 'new'
-        ExecutionStatusHistory(execution=self, status='new')
+        if self.workflow_id is not None:
+            ExecutionStatusHistory(execution=self,
+                    workflow_id=self.workflow_id, status='new')
+        else:
+            ExecutionStatusHistory(execution=self, workflow=self.workflow,
+                    status='new')
 
 
     @property
@@ -84,7 +92,12 @@ class Execution(Base):
             else:
                 self.send_webhooks(status)
                 self._status = status
-                return ExecutionStatusHistory(execution=self, status=status)
+                if self.workflow_id is not None:
+                    return ExecutionStatusHistory(execution=self,
+                            workflow_id=self.workflow_id, status=status)
+                else:
+                    return ExecutionStatusHistory(execution=self,
+                            workflow=self.workflow, status=status)
 
     @property
     def update_timestamp(self):
@@ -144,6 +157,21 @@ class Execution(Base):
 
         return result
 
+    def as_dict_for_limited_report(self):
+        result = {name: getattr(self, name) for name in ['color',
+            'colors', 'begins', 'status', 'id']}
+
+        result['timestamp'] = str(self.timestamp)
+        result['parentColor'] = self.parent_color
+
+        if self.task_id is not None:
+            result['taskId'] = self.task_id
+        else:
+            result['methodId'] = self.method_id
+
+        result['detailsUrl'] = self.url
+        return result
+
     @property
     def child_workflow_urls(self):
         return []
@@ -201,5 +229,16 @@ class ExecutionStatusHistory(Base):
             backref=backref('status_history', order_by=timestamp, lazy='joined',
             passive_deletes='all'))
 
+    workflow_id = Column(Integer, ForeignKey('workflow.id', ondelete='CASCADE'),
+        nullable=False, index=True)
+    workflow = relationship('Workflow', foreign_keys=[workflow_id])
+
     def as_dict(self, detailed=False):
         return {'timestamp': str(self.timestamp), 'status': self.status}
+
+    def as_dict_for_limited_report(self):
+        return {
+                'executionId': self.execution_id,
+                'timestamp': str(self.timestamp),
+                'status': self.status
+        }
