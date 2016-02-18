@@ -12,6 +12,7 @@ import uuid
 
 from ptero_common import nicer_logging
 from ptero_common.nicer_logging import logged_response
+from ptero_common.exceptions import NoSuchEntityError
 import urllib
 
 
@@ -23,7 +24,7 @@ def sends_404(target):
     def wrapper(*args, **kwargs):
         try:
             result = target(*args, **kwargs)
-        except exceptions.NoSuchEntityError as e:
+        except NoSuchEntityError as e:
             return {'error': e.message}, 404
         return result
     return wrapper

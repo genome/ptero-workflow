@@ -8,7 +8,7 @@ from . import workflow_skeleton
 from . import workflow_status
 from . import workflow_summary
 from . import workflow_submission_data
-from ptero_workflow.implementation.exceptions import NoSuchEntityError
+from ptero_common.exceptions import NoSuchEntityError
 
 _REPORTS = {
     'limited-workflow-executions': limited_workflow_executions.report,

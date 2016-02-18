@@ -18,10 +18,6 @@ class InvalidStatusError(RuntimeError):
     pass
 
 
-class NoSuchEntityError(RuntimeError):
-    pass
-
-
 class MissingResultError(RuntimeError):
     pass
 

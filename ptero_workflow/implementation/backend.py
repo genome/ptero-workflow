@@ -10,6 +10,7 @@ from ptero_common.server_info import get_server_info
 from ptero_workflow.urls import petri_url_for
 import re
 from ptero_common.statuses import (scheduled, errored)
+from ptero_common.exceptions import NoSuchEntityError
 import uuid
 
 LOG = nicer_logging.getLogger(__name__)
@@ -124,7 +125,7 @@ class Backend(object):
         if workflow is not None:
             return workflow
         else:
-            raise exceptions.NoSuchEntityError(
+            raise NoSuchEntityError(
                     "Workflow with id %s was not found." % workflow_id)
 
     def get_workflow(self, workflow_id):
@@ -150,7 +151,7 @@ class Backend(object):
                 name=workflow_name).one()
             return workflow
         except NoResultFound:
-            raise exceptions.NoSuchEntityError(
+            raise NoSuchEntityError(
                     "Workflow with name %s was not found." % workflow_name)
 
 
@@ -266,7 +267,7 @@ class Backend(object):
         if execution is not None:
             return execution
         else:
-            raise exceptions.NoSuchEntityError(
+            raise NoSuchEntityError(
                     "Execution with id %s was not found." % execution_id)
 
     def get_execution(self, execution_id):
@@ -297,7 +298,7 @@ class Backend(object):
             task = self.session.query(models.Task
                 ).filter_by(id=task_id).one()
         except NoResultFound:
-            raise exceptions.NoSuchEntityError(
+            raise NoSuchEntityError(
                 'Task with id (%s) not found '
                 'while handling "%s" callback' % (task_id, callback_type))
         else:
@@ -312,7 +313,7 @@ class Backend(object):
             method = self.session.query(models.Method
                 ).filter_by(id=method_id).one()
         except NoResultFound:
-            raise exceptions.NoSuchEntityError(
+            raise NoSuchEntityError(
                 'Method with id (%s) not found '
                 'while handling "%s" callback' % (method_id, callback_type))
         else:
