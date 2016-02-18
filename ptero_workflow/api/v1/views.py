@@ -7,27 +7,15 @@ from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
 from ...implementation.exceptions import InvalidExecutionUrlError
-from functools import wraps
 import uuid
 
 from ptero_common import nicer_logging
 from ptero_common.nicer_logging import logged_response
-from ptero_common.exceptions import NoSuchEntityError
+from ptero_common.view_wrapper import sends_404
 import urllib
 
 
 LOG = nicer_logging.getLogger(__name__)
-
-
-def sends_404(target):
-    @wraps(target)
-    def wrapper(*args, **kwargs):
-        try:
-            result = target(*args, **kwargs)
-        except NoSuchEntityError as e:
-            return {'error': e.message}, 404
-        return result
-    return wrapper
 
 
 class WorkflowListView(Resource):
