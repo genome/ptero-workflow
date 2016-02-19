@@ -244,7 +244,8 @@ class Backend(object):
             return reports, timestamp, num_remaining
         else:
             # try to fetch the workflow, maybe it doesn't exist, in which case
-            # an exception will be raised and response will be 404
+            # an exception will be raised and response will be handled by the
+            # ptero_common.view_wrapper.handles_no_such_entity_error() decorator
             workflow = self._get_workflow(workflow_id)
             return [], None, 0
 
