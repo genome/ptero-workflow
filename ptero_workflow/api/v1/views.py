@@ -7,31 +7,20 @@ from flask.ext.restful import Resource
 from jsonschema import ValidationError
 from ...implementation.exceptions import ValidationError as PteroValidationError
 from ...implementation.exceptions import InvalidExecutionUrlError
-from functools import wraps
 import uuid
 
 from ptero_common import nicer_logging
 from ptero_common.nicer_logging import logged_response
+from ptero_common.view_wrapper import handles_no_such_entity_error
 import urllib
 
 
 LOG = nicer_logging.getLogger(__name__)
 
 
-def sends_404(target):
-    @wraps(target)
-    def wrapper(*args, **kwargs):
-        try:
-            result = target(*args, **kwargs)
-        except exceptions.NoSuchEntityError as e:
-            return {'error': e.message}, 404
-        return result
-    return wrapper
-
-
 class WorkflowListView(Resource):
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def get(self):
         query_string_error = self._validate_querystring_args();
         if query_string_error is not None:
@@ -43,7 +32,7 @@ class WorkflowListView(Resource):
             return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def delete(self):
         query_string_error = self._validate_querystring_args();
         if query_string_error is not None:
@@ -56,7 +45,7 @@ class WorkflowListView(Resource):
                 200)
 
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def post(self):
         if 'name' in request.json:
             name = request.json['name']
@@ -106,7 +95,7 @@ class WorkflowListView(Resource):
         }
 
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def patch(self):
         query_string_error = self._validate_querystring_args();
         if query_string_error is not None:
@@ -142,20 +131,20 @@ def get_execution_id_from_url(url):
 
 class WorkflowDetailView(Resource):
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def get(self, workflow_id):
         workflow_as_dict = g.backend.get_workflow(workflow_id)
         return _prepare_workflow_data(workflow_id, workflow_as_dict), 200
 
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def delete(self, workflow_id):
         g.backend.delete_workflow(workflow_id)
         return ({"message": "deleted workflow with id:%s" % workflow_id},
             200)
 
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def patch(self, workflow_id):
         return _patch_workflow(request.get_json(), workflow_id)
 
@@ -174,13 +163,13 @@ def _patch_workflow(patch_data, workflow_id):
 
 class ExecutionDetailView(Resource):
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def get(self, execution_id):
         execution_data = g.backend.get_execution(execution_id)
         return execution_data, 200
 
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def patch(self, execution_id):
         update_data = request.get_json()
         try:
@@ -213,7 +202,7 @@ def _report_url(workflow_id, report_type):
 
 class TaskCallback(Resource):
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def post(self, task_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
@@ -224,7 +213,7 @@ class TaskCallback(Resource):
 
 class MethodCallback(Resource):
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def post(self, method_id, callback_type):
         body_data = request.get_json()
         query_string_data = request.args
@@ -235,7 +224,7 @@ class MethodCallback(Resource):
 
 class ReportDetailView(Resource):
     @logged_response(logger=LOG)
-    @sends_404
+    @handles_no_such_entity_error
     def get(self, report_type):
         generator = reports.get_report_generator(report_type)
         return generator(**request.args.to_dict(flat=True)), 200

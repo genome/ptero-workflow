@@ -1,4 +1,6 @@
 from ..base import BaseAPITest
+from os import environ
+from ptero_common.view_wrapper import NO_SUCH_ENTITY_STATUS_CODE
 import abc
 
 import base64
@@ -62,7 +64,7 @@ class QueryByName(QueryWorkflow, BaseAPITest):
             'expected_data': 'walrus',
         }, {
             'args': {'name': elephant},
-            'expected_code': 404,
+            'expected_code': NO_SUCH_ENTITY_STATUS_CODE,
             'expected_data': 'elephant',
         }
     ]
