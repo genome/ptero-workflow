@@ -88,6 +88,12 @@ class Workflow(Base):
             for task in self.all_tasks:
                 task.cancel()
 
+    def issue_job_delete_requests(self):
+        LOG.info("Issueing job delete requests for workflow ID:NAME (%s:%s)",
+            self.id, self.name, extra={'workflowName':self.name})
+        for task in self.all_tasks:
+            task.issue_job_delete_requests()
+
     @property
     def url(self):
         return url_for('workflow-detail', workflow_id=self.id)

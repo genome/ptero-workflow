@@ -91,6 +91,18 @@ class Task(Base, PetriMixin):
         for execution in self.executions.values():
             execution.cancel()
 
+    def issue_job_delete_requests(self):
+        if self.parent is not None:
+            parent_info = " in DAG ID:%s with name (%s)" %\
+                    (self.parent.id, self.parent.name)
+        else:
+            parent_info = ''
+        LOG.info("Issuing job delete requests for Task ID:%s with name (%s)%s",
+            self.id, self.name, parent_info,
+            extra={'workflowName':self.workflow.name})
+        for execution in self.executions.values():
+            execution.issue_job_delete_requests()
+
     def _pn(self, *args):
         name_base = '-'.join(['task', str(self.id), self.name.replace(' ','_')])
         return '-'.join([name_base] + list(args))

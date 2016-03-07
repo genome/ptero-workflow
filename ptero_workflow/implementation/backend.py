@@ -345,6 +345,7 @@ class Backend(object):
         LOG.info("Deleting workflow with name (%s) and id (%s)",
                 workflow.name, workflow.id,
                 extra={'workflowName': workflow.name})
+        workflow.issue_job_delete_requests()
         self.session.delete(workflow)
         self.session.commit()
 
