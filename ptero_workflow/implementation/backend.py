@@ -396,7 +396,7 @@ class Backend(object):
             LOG.info('Notifying petri: execution "%s" failed for'
                     ' workflow "%s"', execution.name, execution.workflow.name,
                     extra={'workflowName': execution.workflow.name})
-            self.http.delay('PUT', response_url)
+            self.http_task.delay('PUT', response_url)
         self.session.commit()
 
     def get_spawned_workflows(self, workflow_id):
