@@ -101,7 +101,6 @@ class MethodList(Task):
             method.cancel()
 
     def issue_job_delete_requests(self):
-        super(MethodList, self).cancel()
         for method in self.method_list:
             method.issue_job_delete_requests()
 

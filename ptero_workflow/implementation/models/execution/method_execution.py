@@ -56,7 +56,6 @@ class MethodExecution(Execution):
             self.method.http.delay('PATCH', url, status=statuses.canceled)
 
     def issue_job_delete_requests(self):
-        self.status = statuses.canceled
         for child_workflow in self.child_workflows:
             child_workflow.issue_job_delete_requests()
 
