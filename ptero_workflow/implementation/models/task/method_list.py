@@ -100,6 +100,10 @@ class MethodList(Task):
         for method in self.method_list:
             method.cancel()
 
+    def issue_job_delete_requests(self):
+        for method in self.method_list:
+            method.issue_job_delete_requests()
+
     def set_status_running(self, color, group):
         # Task executions are automatically put into 'running' state
         execution = self.get_or_create_execution(color, group)

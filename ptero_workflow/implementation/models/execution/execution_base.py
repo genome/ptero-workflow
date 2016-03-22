@@ -212,6 +212,9 @@ class Execution(Base):
     def cancel(self):
         self.status = statuses.canceled
 
+    def issue_job_delete_requests(self):
+        pass
+
 
 class ExecutionStatusHistory(Base):
     __tablename__ = 'execution_status_history'

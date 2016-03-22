@@ -55,6 +55,16 @@ class MethodExecution(Execution):
                    url, extra={'workflowName':self.workflow.name})
             self.method.http.delay('PATCH', url, status=statuses.canceled)
 
+    def issue_job_delete_requests(self):
+        for child_workflow in self.child_workflows:
+            child_workflow.issue_job_delete_requests()
+
+        if 'jobUrl' in self.data:
+            url = self.data['jobUrl']
+            LOG.info("Sending DELETE request to delete job at %s",
+                   url, extra={'workflowName':self.workflow.name})
+            self.method.http.delay('DELETE', url)
+
     def as_dict_for_spawned_workflows_report(self):
         return {
                 "executionId": self.id,

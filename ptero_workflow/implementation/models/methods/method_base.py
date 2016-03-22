@@ -192,6 +192,14 @@ class Method(Base):
         for execution in self.executions.values():
             execution.cancel()
 
+    def issue_job_delete_requests(self):
+        LOG.info("Issuing delete requests for "
+                "method ID:NAME (%s:%s) of task (%s:%s)",
+            self.id, self.name, self.task.id, self.task.name,
+            extra={'workflowName':self.workflow.name})
+        for execution in self.executions.values():
+            execution.issue_job_delete_requests()
+
 
 def _get_parent_color(colors):
     if len(colors) == 1:

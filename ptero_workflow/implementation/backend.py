@@ -334,7 +334,7 @@ class Backend(object):
 
     def delete_workflow_by_name(self, name):
         workflow = self._get_workflow_by_name(name)
-        self.delete_workflow(workflow.id)
+        self._delete_workflow(workflow)
         return workflow.id
 
     def delete_workflow(self, workflow_id):
@@ -345,6 +345,7 @@ class Backend(object):
         LOG.info("Deleting workflow with name (%s) and id (%s)",
                 workflow.name, workflow.id,
                 extra={'workflowName': workflow.name})
+        workflow.issue_job_delete_requests()
         self.session.delete(workflow)
         self.session.commit()
 
