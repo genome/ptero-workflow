@@ -86,9 +86,15 @@ class Job(Method):
         execution = self._get_execution(query_string_data['execution_id'])
 
         execution.status = running
+        self._update_execution_data(execution, body_data)
 
         s = object_session(self)
         s.commit()
+
+    def _update_execution_data(self, execution, body_data):
+        for field_name in self.service_data_to_save:
+            if field_name in body_data:
+                execution.data[field_name] = body_data[field_name]
 
     def _get_execution(self, execution_id):
         s = object_session(self)
@@ -105,6 +111,7 @@ class Job(Method):
             self.errored(body_data, query_string_data)
         else:
             execution.status = succeeded
+            self._update_execution_data(execution, body_data)
 
             s = object_session(self)
             s.commit()
@@ -120,6 +127,7 @@ class Job(Method):
         execution = self._get_execution(query_string_data['execution_id'])
 
         execution.status = failed
+        self._update_execution_data(execution, body_data)
 
         s = object_session(self)
         s.commit()
@@ -134,6 +142,7 @@ class Job(Method):
         execution = self._get_execution(query_string_data['execution_id'])
 
         execution.status = errored
+        self._update_execution_data(execution, body_data)
 
         s = object_session(self)
         s.commit()
