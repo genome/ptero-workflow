@@ -5,8 +5,8 @@ from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.orm.session import object_session
 import celery
 from ptero_common import nicer_logging
-from ptero_common.statuses import (running, canceled, errored,
-        succeeded, failed)
+from ptero_common.statuses import (submitted, running,
+        canceled, errored, succeeded, failed)
 
 LOG = nicer_logging.getLogger(__name__)
 
@@ -24,12 +24,15 @@ class Job(Method):
 
     service_url = Column(Text, nullable=False)
 
+    service_data_to_save = Column(JSON, nullable=False)
+
     __mapper_args__ = {
         'polymorphic_identity': 'Job',
     }
 
     VALID_CALLBACK_TYPES = Method.VALID_CALLBACK_TYPES.union(
-            ['execute', 'running', 'succeeded', 'errored', 'failed'])
+            ['execute', 'submitted', 'running', 'succeeded',
+             'errored', 'failed'])
 
     def attach_subclass_transitions(self, transitions, input_place_name):
         transitions.append({
@@ -81,6 +84,15 @@ class Job(Method):
             s.commit()
         else:
             self.submit_job.delay(execution.id)
+
+    def submitted(self, body_data, query_string_data):
+        execution = self._get_execution(query_string_data['execution_id'])
+
+        execution.status = submitted
+        self._update_execution_data(execution, body_data)
+
+        s = object_session(self)
+        s.commit()
 
     def running(self, body_data, query_string_data):
         execution = self._get_execution(query_string_data['execution_id'])
@@ -178,7 +190,7 @@ class Job(Method):
     def add_webhooks_to_submit_data(self, submit_data, execution_id):
         webhooks = submit_data.get('webhooks', {})
 
-        for status in (running, errored, failed, succeeded):
+        for status in (submitted, running, errored, failed, succeeded):
             webhooks_entry = webhooks.get(status, [])
             new_webhook = self.callback_url(status, execution_id=execution_id)
             if isinstance(webhooks_entry, list):
