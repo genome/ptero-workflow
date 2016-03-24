@@ -175,7 +175,6 @@ class ModelBuilder(object):
 
         if 'serviceUrl' in method_data:
             constructor_args['service_url'] = method_data['serviceUrl']
-            constructor_args['service_data_to_save'] = method_data.get('serviceDataToSave', [])
 
         return cls(**constructor_args)
 
