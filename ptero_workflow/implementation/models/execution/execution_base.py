@@ -168,6 +168,9 @@ class Execution(Base):
             result['taskId'] = self.task_id
         else:
             result['methodId'] = self.method_id
+            result['data'] = self.data
+            if 'petri_response_links_for_job' in result['data']:
+                del result['data']['petri_response_links_for_job']
 
         result['detailsUrl'] = self.url
         return result
