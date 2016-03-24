@@ -170,12 +170,7 @@
                     "type": "string",
                     "format": "uri"
                 },
-                "webhooks": { "$ref": "#/definitions/webhook_set" },
-                "serviceDataToSave": {
-                    "type": "array",
-                    "items": { "$ref": "#/definitions/name" },
-                    "minItems": 1
-                }
+                "webhooks": { "$ref": "#/definitions/webhook_set" }
             },
             "required": ["name", "parameters", "service", "serviceUrl"],
             "additionalProperties": false
