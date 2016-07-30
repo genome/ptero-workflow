@@ -1,8 +1,9 @@
-from dag import *  # noqa
-from .method_base import *  # noqa
-from .job import *  # noqa
-from .block import *  # noqa
-from .converge import *  # noqa
+# flake8: noqa
+from dag import *
+from .method_base import *
+from .job import *
+from .block import *
+from .converge import *
 
 METHOD_SUBCLASSES = [DAG, Job, Block, Converge]
 
