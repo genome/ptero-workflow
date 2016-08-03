@@ -5,3 +5,4 @@ psutil
 pyyaml
 requests == 2.9.1
 eventlet
+flake8 == 3.0.3
